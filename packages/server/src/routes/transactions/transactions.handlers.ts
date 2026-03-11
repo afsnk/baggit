@@ -32,7 +32,9 @@ export const init: AppRouteHandler<PaymentInitRoute> = async (c) => {
     console.log(`Transaction created`, { newTransaction });
 
     return c.json({
-      ...newTransaction,
+      address: newTransaction.metadata?.address,
+      status: newTransaction.status,
+      amount: body.amount,
     }, HttpStatusCodes.OK);
   }
   catch (error: any) {
@@ -46,6 +48,7 @@ export const init: AppRouteHandler<PaymentInitRoute> = async (c) => {
 export const confirm: AppRouteHandler<ConfirmRoute> = async (c) => {
   try {
     const params = c.req.valid("param");
+    console.log("Params: ", { params });
 
     const transaction = await db.query.transactions.findFirst({
       where: (fields, ops) => ops.eq(fields.reference, params.reference),

@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "start": "node ./dist/src/index.js",
+    "db:migrate": "npx drizzle-kit migrate --config ./dist/drizzle.config.js",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "lint:fix": "npm run lint --fix",
@@ -39,6 +40,7 @@
     "eslint": "^9.32.0",
     "eslint-plugin-format": "^1.0.1",
     "tsc-alias": "^1.8.16",
+    "tslib": "^2.8.1",
     "tsx": "^4.19.4",
     "typescript": "^5.8.3",
     "vitest": "^3.2.1"

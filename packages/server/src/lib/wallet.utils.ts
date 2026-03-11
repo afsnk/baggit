@@ -205,6 +205,8 @@ export async function getLogs(chain: Chain, fromBlock: number, toAddress: Addres
     fromBlock,
   });
 
+  const latestBlock = Number(await publicClient.getBlockNumber());
+
   const logs = await publicClient.getLogs({
     address: contractAddress,
     event: transferEventAbi,
@@ -212,7 +214,7 @@ export async function getLogs(chain: Chain, fromBlock: number, toAddress: Addres
       to: toAddress,
     },
     fromBlock: BigInt(fromBlock),
-    toBlock: BigInt(fromBlock + 1000),
+    toBlock: BigInt(latestBlock > fromBlock + 1000 ? fromBlock + 1000 : latestBlock),
     strict: true,
   });
 

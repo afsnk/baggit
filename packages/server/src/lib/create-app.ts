@@ -1,6 +1,7 @@
 import type { Schema } from "hono";
 
 import { OpenAPIHono } from "@hono/zod-openapi";
+import { cors } from "hono/cors";
 import { requestId } from "hono/request-id";
 import { notFound, onError, serveEmojiFavicon } from "stoker/middlewares";
 import { defaultHook } from "stoker/openapi";
@@ -18,9 +19,12 @@ export function createRouter() {
 
 export default function createApp() {
   const app = createRouter();
-  app.use(requestId())
-    .use(serveEmojiFavicon("📝"))
-    .use(pinoLogger());
+  app.use(cors({
+    origin: ["*", "http://localhost:3000", "https://ugamy.io", "https://staging-api.ugamy.io"],
+    allowHeaders: ["*"],
+    allowMethods: ["*"],
+    exposeHeaders: ["Access-Control-Allow-Origin"],
+  })).use(requestId()).use(serveEmojiFavicon("📝")).use(pinoLogger());
 
   app.notFound(notFound);
   app.onError(onError);

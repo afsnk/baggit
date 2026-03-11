@@ -3,7 +3,7 @@ import * as HttpStatusCodes from "stoker/http-status-codes";
 import { jsonContent, jsonContentRequired } from "stoker/openapi/helpers";
 import { createErrorSchema } from "stoker/openapi/schemas";
 
-import { insertTransactions, selectTransactions } from "@/db/schema";
+import { insertTransactions } from "@/db/schema";
 
 const tags = ["Payment"];
 export const init = createRoute({
@@ -19,7 +19,11 @@ export const init = createRoute({
   },
   responses: {
     [HttpStatusCodes.OK]: jsonContent(
-      selectTransactions.refine(args => ({ ...args, metadata: null })),
+      z.object({
+        address: z.string().startsWith("0x"),
+        status: z.string().nullable(),
+        amount: z.number(),
+      }),
       "The created transaction",
     ),
     [HttpStatusCodes.UNPROCESSABLE_ENTITY]: jsonContent(
