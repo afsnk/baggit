@@ -8,8 +8,25 @@
       "type": "registry:component",
       "title": "Payment Modal",
       "description": "A custom payment modal with card input, amount display, confirmation flow and useful hooks.",
-      "dependencies": ["zod", "react-hook-form", "@hookform/resolvers"],
-      "registryDependencies": ["dialog", "button", "input", "label", "card"],
+      "dependencies": [
+        "zod",
+        "@tanstack/react-query",
+        "tailwind-merge",
+        "tw-animate-css",
+        "@better-fetch/fetch",
+        "@base-ui/react",
+        "@hugeicons/core-free-icons",
+        "@hugeicons/react"
+      ],
+      "registryDependencies": [
+        "dialog",
+        "button",
+        "input",
+        "label",
+        "card",
+        "sonner",
+        "select"
+      ],
       "files": [
         {
           "path": "registry/default/afsnk/stablecoin-payment/stablecoin-payment-modal.tsx",

@@ -10,6 +10,9 @@ import { nitro } from 'nitro/vite'
 // import path from 'path'
 
 const config = defineConfig({
+  server: {
+    port: parseInt(process.env.PORT ?? "3000"),
+  },
   plugins: [
     devtools(),
     nitro({ rollupConfig: { external: [/^@sentry\//] } }),
