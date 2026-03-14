@@ -2,13 +2,13 @@ import type { Address } from "viem";
 
 import { eq } from "drizzle-orm";
 import * as HttpStatusCodes from "stoker/http-status-codes";
-import { formatUnits } from "viem";
+import { encodeFunctionData, formatUnits, parseAbi, parseUnits } from "viem";
 
 import type { AppRouteHandler } from "@/lib/types";
 
 import db from "@/db";
 import { transactions } from "@/db/schema";
-import { generateAccount, getChain, getLogs, TOKEN_ADDRESSES } from "@/lib/wallet.utils";
+import { generateAccount, getChain, refactoredGetLogs, runTransaction, TOKEN_ADDRESSES } from "@/lib/wallet.utils";
 import { Webhook } from "@/lib/webhook-trigger";
 
 import type { ConfirmRoute, PaymentInitRoute } from "./transactions.routes";
@@ -66,7 +66,7 @@ export const confirm: AppRouteHandler<ConfirmRoute> = async (c) => {
     // Call smart contract and check for Transfer event on address
     const chain = getChain(transaction.network);
     const token = TOKEN_ADDRESSES[chain.id][`${transaction.asset}`];
-    const { hasTransferEvent, decodedLog } = await getLogs(chain, transaction.metadata?.fromBlock, transaction.metadata.address!, token.address as Address);
+    const { hasTransferEvent, decodedLog } = await refactoredGetLogs(chain, transaction.metadata?.fromBlock, transaction.metadata.address!, token.address as Address);
 
     if (hasTransferEvent) {
       // Call calbackUrl with reference and transaction details
@@ -82,6 +82,7 @@ export const confirm: AppRouteHandler<ConfirmRoute> = async (c) => {
         })
         .where(eq(transactions.reference, params.reference))
         .returning();
+
       Webhook.trigger(transaction.callbackUrl, transaction.reference, {
         reference: params.reference,
         hash: decodedLog?.transactionHash,
@@ -97,19 +98,63 @@ export const confirm: AppRouteHandler<ConfirmRoute> = async (c) => {
         status: hasTransferEvent ? "completed" : "failed",
       }).then(() => console.log("Webhook transaction sent")).catch(error => console.log("failed to sent webhook", { error }));
       console.log("Transaction has Transfer event and updated", { updatedTransaction });
-    }
 
-    return c.json({
-      reference: params.reference,
-      hash: decodedLog?.transactionHash,
-      from: decodedLog?.args.from,
-      to: decodedLog?.args.to,
-      amountSent: formatUnits((decodedLog?.args.value ?? 0n), token.decimal),
-      asset: transaction.asset,
-      network: transaction.network,
-      hasTransferEvent,
-      status: hasTransferEvent ? "completed" : "failed",
-    }, HttpStatusCodes.OK);
+      await runTransaction(
+        updatedTransaction.metadata?.pk,
+        chain,
+        token.address as Address,
+        [
+          encodeFunctionData({
+            abi: parseAbi([
+              "function transfer(address to, uint256 amount) external returns (bool)",
+            ]),
+            functionName: "transfer",
+            args: [
+              `0x3a91a76d654e24021eec78472d06c5d8846b6dee`, // Send to mercahnt
+              parseUnits((amountSent - (amountSent * 0.07)).toString(), token.decimal),
+            ],
+          }),
+          encodeFunctionData({
+            abi: parseAbi([
+              "function transfer(address to, uint256 amount) external returns (bool)",
+            ]),
+            functionName: "transfer",
+            args: [
+              `0xdc338f02185f09086985aFc26264B3AC47CDb406`, // Send to mercahnt
+              parseUnits((amountSent * 0.07).toString(), token.decimal),
+            ],
+          }),
+        ],
+      ).then((receipt) => {
+        console.log(`Reciept of payout transaction`, { receipt });
+        db.update(transactions)
+          .set({
+            metadata: {
+              ...updatedTransaction.metadata,
+              payoutHash: receipt.transactionHash,
+            },
+          })
+          .where(eq(transactions.reference, params.reference));
+      }).catch(error => console.log(`Error sweeping funds`, { error }));
+
+      return c.json({
+        reference: params.reference,
+        hash: decodedLog?.transactionHash,
+        from: decodedLog?.args.from,
+        to: decodedLog?.args.to,
+        amountSent: formatUnits((decodedLog?.args.value ?? 0n), token.decimal),
+        asset: transaction.asset,
+        network: transaction.network,
+        hasTransferEvent,
+        status: hasTransferEvent ? "completed" : "failed",
+      }, HttpStatusCodes.OK);
+    }
+    else {
+      return c.json({
+        reference: params.reference,
+        status: "failed",
+      }, HttpStatusCodes.BAD_REQUEST);
+    }
   }
   catch (error: any) {
     console.log("Error while confirming transacrtion", { error });

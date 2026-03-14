@@ -1,9 +1,9 @@
-import type { Address, Chain } from "viem";
+import type { Address, Chain, Log } from "viem";
 
 import { signerToEcdsaValidator } from "@zerodev/ecdsa-validator";
 import { createKernelAccount, createKernelAccountClient, createZeroDevPaymasterClient } from "@zerodev/sdk";
 import { getEntryPoint, KERNEL_V3_3 } from "@zerodev/sdk/constants";
-import { createPublicClient, extractChain, http, parseAbiItem, parseEventLogs } from "viem";
+import { createPublicClient, extractChain, http, parseAbi, parseAbiItem, parseEventLogs } from "viem";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { base, baseSepolia, bsc, bscTestnet } from "viem/chains";
 
@@ -125,7 +125,7 @@ export async function generateAccount(chain: Chain): Promise<{ pk: string; addre
   };
 }
 
-export async function runTransaction(privateKey: `0x${string}`, chain: Chain, contractAddress: Address, data?: `0x${string}`): Promise<any> {
+export async function runTransaction(privateKey: `0x${string}`, chain: Chain, contractAddress: Address, data: `0x${string}`[]): Promise<any> {
   // Construct a signer
   // const privateKey = generatePrivateKey();
   const signer = privateKeyToAccount(privateKey);
@@ -174,10 +174,11 @@ export async function runTransaction(privateKey: `0x${string}`, chain: Chain, co
   });
 
   const hash = await kernelClient.sendTransaction({
-    chain,
-    data: data ?? "0x",
-    value: 0n,
-    to: contractAddress,
+    calls: data?.map((d: `0x${string}`) => ({
+      to: contractAddress,
+      value: 0n,
+      data: d,
+    })),
   }).catch((error) => {
     console.log("Error runnning transaction", { error });
     throw error;
@@ -187,45 +188,149 @@ export async function runTransaction(privateKey: `0x${string}`, chain: Chain, co
   return receipt;
 }
 
-export async function getLogs(chain: Chain, fromBlock: number, toAddress: Address, contractAddress: Address) {
-  const rpc = ``;
+const CHUNK_SIZE = 500n;
+const INITIAL_RANGE = 1000n;
+const MAX_EXPAND_RANGE = 100_000n;
+const EXPAND_STEP = 500n;
+
+export async function refactoredGetLogs(
+  chain: Chain,
+  fromBlock: number,
+  toAddress: Address,
+  contractAddress: Address,
+) {
   const transferEventAbi = parseAbiItem([
     "event Transfer(address indexed from, address indexed to, uint256 value)",
   ]);
 
   const publicClient = createPublicClient({
-    // Use your own RPC provider in production (e.g. Infura/Alchemy).
-    transport: http(rpc),
+    transport: http(),
     chain,
   });
 
-  console.log(`params to check on`, {
-    toAddress,
-    contractAddress,
-    fromBlock,
-  });
+  console.log("Params to check on", { toAddress, contractAddress, fromBlock });
 
-  const latestBlock = Number(await publicClient.getBlockNumber());
+  const latestBlock = BigInt(await publicClient.getBlockNumber());
+  const startBlock = BigInt(fromBlock);
 
-  const logs = await publicClient.getLogs({
+  // ── Helper: fetch all logs in [start, end] in 500-block chunks ────────────
+  async function fetchLogsInRange(
+    rangeStart: bigint,
+    rangeEnd: bigint,
+  ): Promise<Log[]> {
+    const effectiveEnd = rangeEnd < latestBlock ? rangeEnd : latestBlock;
+    if (rangeStart > effectiveEnd)
+      return [];
+
+    const allLogs: Log[] = [];
+    let cursor = rangeStart;
+
+    while (cursor <= effectiveEnd) {
+      const chunkEnd
+        = cursor + CHUNK_SIZE - 1n < effectiveEnd
+          ? cursor + CHUNK_SIZE - 1n
+          : effectiveEnd;
+
+      console.log(`Fetching logs chunk [${cursor} → ${chunkEnd}]`);
+
+      const chunkLogs = await publicClient.getLogs({
+        address: contractAddress,
+        event: transferEventAbi,
+        args: { to: toAddress },
+        fromBlock: cursor,
+        toBlock: chunkEnd,
+        strict: true,
+      });
+
+      allLogs.push(...chunkLogs);
+      cursor = chunkEnd + 1n;
+    }
+
+    return allLogs;
+  }
+
+  // ── Helper: decode & find the relevant Transfer log ───────────────────────
+  function findTransferLog(rawLogs: Log[]) {
+    const decoded = parseEventLogs({
+      abi: [transferEventAbi],
+      logs: rawLogs,
+    });
+
+    console.log(
+      "Decoded logs",
+      JSON.stringify(
+        decoded,
+        (_, v) => (typeof v === "bigint" ? v.toString() : v),
+        2,
+      ),
+    );
+
+    const match = decoded.find(
+      log => log.eventName === "Transfer" && log.args.to === toAddress,
+    );
+
+    return { hasTransferEvent: Boolean(match), decodedLog: match };
+  }
+
+  // ── Step 1: Scan the initial fromBlock → fromBlock + 1000 range ───────────
+  const initialEnd = startBlock + INITIAL_RANGE - 1n;
+  console.log(`Initial scan [${startBlock} → ${initialEnd}]`);
+
+  const initialLogs = await fetchLogsInRange(startBlock, initialEnd);
+  const initialResult = findTransferLog(initialLogs);
+
+  if (initialResult.hasTransferEvent) {
+    console.log("Transfer found in initial range ✓");
+    return initialResult;
+  }
+
+  // ── Step 2: Confirm on-chain balance ──────────────────────────────────────
+  const balance = await publicClient.readContract({
     address: contractAddress,
-    event: transferEventAbi,
-    args: {
-      to: toAddress,
-    },
-    fromBlock: BigInt(fromBlock),
-    toBlock: BigInt(latestBlock > fromBlock + 1000 ? fromBlock + 1000 : latestBlock),
-    strict: true,
+    abi: parseAbi(["function balanceOf(address) view returns (uint256)"]),
+    functionName: "balanceOf",
+    args: [toAddress],
   });
 
-  const decodedLogs = parseEventLogs({
-    abi: [transferEventAbi],
-    logs,
-  });
+  console.log(`Balance of ${toAddress}: ${balance}`);
 
-  const hasTransferEvent = decodedLogs.some(log => log.eventName === "Transfer" && log.args.to === toAddress);
-  const decodedLog = decodedLogs.find(log => log.eventName === "Transfer" && log.args.to === toAddress);
-  console.log("Has transfer event", hasTransferEvent);
-  console.log("Decoded logs", decodedLogs);
-  return { hasTransferEvent, decodedLog };
+  if (balance === 0n) {
+    console.log("No balance and no logs found.");
+    return { hasTransferEvent: false, decodedLog: undefined };
+  }
+
+  // ── Step 3: Balance confirmed — expand search forward in 500-block steps ──
+  console.log(
+    "Balance confirmed but no Transfer log yet — expanding forward search…",
+  );
+
+  let scanCursor = initialEnd + 1n;
+  let totalExpanded = 0n;
+
+  while (totalExpanded < MAX_EXPAND_RANGE) {
+    if (scanCursor > latestBlock) {
+      console.warn("Reached latest block — no Transfer log found.");
+      break;
+    }
+
+    const chunkEnd = scanCursor + EXPAND_STEP - 1n;
+    console.log(`Expanding scan [${scanCursor} → ${chunkEnd}]`);
+
+    const expandedLogs = await fetchLogsInRange(scanCursor, chunkEnd);
+    const expandedResult = findTransferLog(expandedLogs);
+
+    if (expandedResult.hasTransferEvent) {
+      console.log(`Transfer found in expanded range [${scanCursor} → ${chunkEnd}] ✓`);
+      return { hasTransferEvent: true, decodedLog: expandedResult.decodedLog };
+    }
+
+    scanCursor = chunkEnd + 1n;
+    totalExpanded += EXPAND_STEP;
+  }
+
+  // Balance exists but log not found within MAX_EXPAND_RANGE
+  console.warn(
+    "Could not locate Transfer log after full forward expansion; returning balance-confirmed flag.",
+  );
+  return { hasTransferEvent: true, decodedLog: undefined };
 }
