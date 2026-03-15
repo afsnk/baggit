@@ -217,7 +217,11 @@ export const Route = createFileRoute("/overview")({
   component: RouteComponent,
   loader: async () => {
     const { data, error } = await betterFetch<Transaction[]>(
-      `http://localhost:9999/payment/transactions`,
+      `${
+        import.meta.env.DEV
+          ? "http://localhost:9999"
+          : "https://afsnk-pay-server.fly.dev"
+      }/payment/transactions`,
     );
     if (error) {
       console.log("Failed to fetch transactions", { error });
