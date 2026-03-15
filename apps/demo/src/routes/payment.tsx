@@ -13,12 +13,8 @@ function RouteComponent() {
   const paymentRef = useRef<string>(null);
 
   useEffect(() => {
-    setTimeout(() => {
-      paymentRef.current = crypto.randomUUID();
-      // Handle wallet connection logic here
-      console.log("Wallet connection initiated", paymentRef.current);
-    }, 100);
-  }, []);
+    paymentRef.current = crypto.randomUUID();
+  }, [isOpen]);
 
   useEffect(() => {
     console.log("Payment ref", paymentRef.current);
@@ -49,9 +45,10 @@ function RouteComponent() {
           reference={paymentRef.current}
           isOpen={isOpen}
           onOpenChange={setIsOpen}
-          onPaymentFinished={(result) =>
-            console.log("Result from finished transaction", { result })
-          }
+          onPaymentFinished={(result) => {
+            console.log("Result from finished transaction", { result });
+            setIsOpen(false);
+          }}
           amount={0.06}
         />
       </section>

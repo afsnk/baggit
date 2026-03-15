@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as PaymentRouteImport } from './routes/payment'
+import { Route as OverviewRouteImport } from './routes/overview'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as RRegistryDotjsonRouteImport } from './routes/r.registry[.]json'
@@ -18,6 +19,11 @@ import { Route as RNameDotjsonRouteImport } from './routes/r.$name[.]json'
 const PaymentRoute = PaymentRouteImport.update({
   id: '/payment',
   path: '/payment',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OverviewRoute = OverviewRouteImport.update({
+  id: '/overview',
+  path: '/overview',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -44,6 +50,7 @@ const RNameDotjsonRoute = RNameDotjsonRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/overview': typeof OverviewRoute
   '/payment': typeof PaymentRoute
   '/r/$name.json': typeof RNameDotjsonRoute
   '/r/registry.json': typeof RRegistryDotjsonRoute
@@ -51,6 +58,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/overview': typeof OverviewRoute
   '/payment': typeof PaymentRoute
   '/r/$name.json': typeof RNameDotjsonRoute
   '/r/registry.json': typeof RRegistryDotjsonRoute
@@ -59,19 +67,33 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/overview': typeof OverviewRoute
   '/payment': typeof PaymentRoute
   '/r/$name.json': typeof RNameDotjsonRoute
   '/r/registry.json': typeof RRegistryDotjsonRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about' | '/payment' | '/r/$name.json' | '/r/registry.json'
+  fullPaths:
+    | '/'
+    | '/about'
+    | '/overview'
+    | '/payment'
+    | '/r/$name.json'
+    | '/r/registry.json'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/payment' | '/r/$name.json' | '/r/registry.json'
+  to:
+    | '/'
+    | '/about'
+    | '/overview'
+    | '/payment'
+    | '/r/$name.json'
+    | '/r/registry.json'
   id:
     | '__root__'
     | '/'
     | '/about'
+    | '/overview'
     | '/payment'
     | '/r/$name.json'
     | '/r/registry.json'
@@ -80,6 +102,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  OverviewRoute: typeof OverviewRoute
   PaymentRoute: typeof PaymentRoute
   RNameDotjsonRoute: typeof RNameDotjsonRoute
   RRegistryDotjsonRoute: typeof RRegistryDotjsonRoute
@@ -92,6 +115,13 @@ declare module '@tanstack/react-router' {
       path: '/payment'
       fullPath: '/payment'
       preLoaderRoute: typeof PaymentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/overview': {
+      id: '/overview'
+      path: '/overview'
+      fullPath: '/overview'
+      preLoaderRoute: typeof OverviewRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about': {
@@ -128,6 +158,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  OverviewRoute: OverviewRoute,
   PaymentRoute: PaymentRoute,
   RNameDotjsonRoute: RNameDotjsonRoute,
   RRegistryDotjsonRoute: RRegistryDotjsonRoute,
