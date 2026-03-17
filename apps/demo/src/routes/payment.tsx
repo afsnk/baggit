@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 // import { StablecoinPaymentModal } from "@/components/StablecoinPaymentModal";
 import { StablePayModal } from "../../registry/default/afsnk/stablecoin-payment/stablecoin-payment-modal";
 import { useEffect, useRef, useState } from "react";
+import { useWebSocket } from "@/hooks/use-websocket";
 
 export const Route = createFileRoute("/payment")({
   component: RouteComponent,
@@ -19,6 +20,11 @@ function RouteComponent() {
   useEffect(() => {
     console.log("Payment ref", paymentRef.current);
   }, [paymentRef.current]);
+
+  const { readyState, reconnectAttempt } = useWebSocket(
+    "ws://localhost:9999/ws",
+  );
+  console.log("Ready state", readyState, "Reconnect attempt", reconnectAttempt);
 
   return (
     <main className="page-wrap px-4 py-12">

@@ -28,6 +28,7 @@
         "label",
         "card",
         "sonner",
+        "toast",
         "select",
         "item",
         "drawer",
@@ -43,6 +44,10 @@
         },
         {
           "path": "registry/default/afsnk/stablecoin-payment/use-payment.tsx",
+          "type": "registry:hook"
+        },
+        {
+          "path": "registry/default/afsnk/stablecoin-payment/use-countdown.tsx",
           "type": "registry:hook"
         },
         {

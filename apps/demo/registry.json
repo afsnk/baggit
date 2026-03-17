@@ -47,6 +47,10 @@
           "type": "registry:hook"
         },
         {
+          "path": "registry/default/afsnk/stablecoin-payment/use-countdown.tsx",
+          "type": "registry:hook"
+        },
+        {
           "path": "registry/default/afsnk/stablecoin-payment/components/ui/credenza.tsx",
           "type": "registry:component"
         },

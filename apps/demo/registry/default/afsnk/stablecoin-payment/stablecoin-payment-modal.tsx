@@ -47,6 +47,7 @@ import {
 } from "@/components/ui/hover-card";
 import QRCode from "react-qr-code";
 import { Spinner } from "@/components/ui/spinner";
+import { useCountdown } from "@/hooks/use-countdown";
 
 const { useStepper } = defineStepper(
   { id: "step-1", title: "Choose Asset" },
@@ -258,6 +259,10 @@ export function StablePayModal({
               paymentInit={paymentInit}
               paymentConfirm={paymentConfirm}
               onPaymentMade={setPaymentMade}
+              onTimerEnd={() => {
+                paymentInit?.reset();
+                stepper.navigation.goTo("step-1");
+              }}
             />
           ),
         })}
@@ -293,7 +298,7 @@ const formatTime = (totalSeconds: number) => {
   return `${pad(h)}:${pad(m)}:${pad(s)}`;
 };
 
-const parseToSeconds = (h, m, s) =>
+const parseToSeconds = (h: number, m: number, s: number) =>
   Number(h) * 3600 + Number(m) * 60 + Number(s);
 
 function Deposit({
@@ -308,97 +313,26 @@ function Deposit({
   onPaymentMade,
   networkName,
   onCopyAddress,
+  onTimerEnd,
 }: any) {
-  const [total, setTotal] = useState(300);
-  const [remaining, setRemaining] = useState(300);
-  const [status, setStatus] = useState("idle"); // idle | running | paused | done
-  const intervalRef = useRef(null);
-  const startTimeRef = useRef(null);
-  const savedRemRef = useRef(300);
-
-  const clearTimer = useCallback(() => {
-    clearInterval(intervalRef.current);
-    intervalRef.current = null;
-  }, []);
-
-  const tick = useCallback(() => {
-    setRemaining((prev) => {
-      if (prev <= 1) {
-        clearTimer();
-        setStatus("done");
-        return 0;
-      }
-      return prev - 1;
+  const stepper = useStepper();
+  const [intervalValue, setIntervalValue] = useState<number>(1000);
+  const [count, { startCountdown, stopCountdown, resetCountdown }] =
+    useCountdown({
+      countStart: 10,
+      intervalMs: intervalValue,
     });
-  }, [clearTimer]);
-
-  const handleStart = useCallback(() => {
-    if (status === "idle") {
-      const t = parseToSeconds(0, 5, 0);
-      if (t <= 0) return;
-      setTotal(t);
-      setRemaining(t);
-      savedRemRef.current = t;
-    }
-    if (status === "paused") {
-      setRemaining(savedRemRef.current);
-    }
-    setStatus("running");
-    intervalRef.current = setInterval(tick, 1000);
-  }, [status, tick]);
-
-  const handlePause = useCallback(() => {
-    clearTimer();
-    savedRemRef.current = remaining;
-    setStatus("paused");
-  }, [clearTimer, remaining]);
-
-  const handleReset = useCallback(() => {
-    clearTimer();
-    const t = parseToSeconds(0, 5, 0);
-    const safe = t > 0 ? t : 300;
-    setTotal(safe);
-    setRemaining(safe);
-    savedRemRef.current = safe;
-    setStatus("idle");
-  }, [clearTimer]);
 
   useEffect(() => {
-    if (status === "running") {
-      clearTimer();
-      intervalRef.current = setInterval(tick, 1000);
-    }
-    return clearTimer;
-  }, [tick]);
-
-  useEffect(() => {
-    if (status === "idle") {
-      handleStart();
-    }
+    console.log("Starting countdown");
+    startCountdown();
   }, []);
-
-  // useEffect(() => {
-  //   if (status === "idle") {
-  //     const t = parseToSeconds(0, 5, 0);
-  //     const safe = Math.max(t, 0);
-  //     setTotal(safe);
-  //     setRemaining(safe);
-  //   }
-  // }, [inputH, inputM, inputS]);
-
-  const progress = total > 0 ? remaining / total : 0;
-  const isRunning = status === "running";
-  const isDone = status === "done";
-  const isPaused = status === "paused";
-  const isIdle = status === "idle";
-
-  const hms = formatTime(remaining);
-  const [dH, dM, dS] = hms.split(":");
-
-  // const numInput = (setter) => (e) => {
-  //   const raw = e.target.value.replace(/\D/g, "");
-  //   setter(String(Math.min(Number(raw), 59)));
-  // };
+  useEffect(() => {
+    if (count <= 0) {
+      window.alert("Timer ran out! Please try again.");
+      onTimerEnd();
+    }
+  }, [count]);
 
   return (
     <div className="space-y-6 py-4">
@@ -410,7 +344,7 @@ function Deposit({
         <ItemActions>
           <Badge>
             <Clock className="size-4" />
-            <span>{formatTime(savedRemRef.current)}</span>
+            <span>{formatTime(count)}</span>
           </Badge>
         </ItemActions>
       </Item>
