@@ -14,8 +14,8 @@
     "registry:build": "shadcn build"
   },
   "dependencies": {
-    "@afsnk/ui": "workspace:*",
     "@afsnk/pay-server": "workspace:*",
+    "@afsnk/ui": "workspace:*",
     "@base-ui/react": "^1.2.0",
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/modifiers": "^9.0.0",
@@ -44,6 +44,7 @@
     "nitro": "npm:nitro-nightly@latest",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
+    "react-qr-code": "^2.0.18",
     "recharts": "2.15.4",
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.5.0",

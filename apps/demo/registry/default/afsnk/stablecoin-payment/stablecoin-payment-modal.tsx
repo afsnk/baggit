@@ -1,12 +1,12 @@
 import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  Credenza,
+  CredenzaClose,
+  CredenzaContent,
+  CredenzaDescription,
+  CredenzaHeader,
+  CredenzaTitle,
+} from "@/components/ui/credenza";
 import {
   Select,
   SelectContent,
@@ -14,11 +14,43 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Check, CheckCircle, Copy, Wallet, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import {
+  Check,
+  CheckCircle,
+  Clock,
+  Copy,
+  InfoIcon,
+  Send,
+  Wallet,
+  X,
+} from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useQuery } from "@tanstack/react-query";
 import { betterFetch } from "@better-fetch/fetch";
+import { defineStepper } from "@stepperize/react";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent } from "@/components/ui/card";
+import {
+  Item,
+  ItemActions,
+  ItemContent,
+  ItemDescription,
+  ItemTitle,
+} from "@/components/ui/item";
+import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
+import QRCode from "react-qr-code";
+
+const { useStepper } = defineStepper(
+  { id: "step-1", title: "Choose Asset" },
+  { id: "step-2", title: "Send Deposit" },
+);
 
 interface StablecoinPaymentModalProps {
   isOpen: boolean;
@@ -59,6 +91,7 @@ export function StablePayModal({
   const [copied, setCopied] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
   const [paymentMade, setPaymentMade] = useState(false);
+  const stepper = useStepper();
 
   useEffect(() => {
     console.log("Reference", { reference });
@@ -105,6 +138,7 @@ export function StablePayModal({
     onSuccess: (data) => {
       console.log("Data injustice...", { data });
       setPaymentAddress(data?.address);
+      stepper.navigation.goTo("step-2");
     },
     onError: (error) => {
       console.log("Ressponse...", { error });
@@ -168,142 +202,52 @@ export function StablePayModal({
     STABLECOINS.find((s) => s.id === selectedStablecoin)?.symbol || "USDC";
 
   return (
-    <Dialog
+    <Credenza
       open={isOpen}
       onOpenChange={onOpenChange}
       disablePointerDismissal={true}
     >
-      <DialogContent className="max-w-md w-full border-0 shadow-2xl">
-        <DialogHeader className="space-y-1">
-          <DialogTitle className="text-2xl font-semibold">
-            Pay with Stablecoin
-          </DialogTitle>
-          <DialogDescription className="text-base text-muted-foreground">
-            Send {amount} {currency} in {stablecoinSymbol}
-          </DialogDescription>
-        </DialogHeader>
+      <CredenzaContent className="sm:max-w-md max-w-lg w-full border-0 shadow-2xl">
+        <CredenzaHeader className="space-y-1">
+          <CredenzaTitle className="text-2xl font-semibold">
+            Complete payment
+          </CredenzaTitle>
+          <CredenzaDescription className="text-sm text-muted-foreground">
+            Select the blockchain network and token you want to use to complete
+            this payment.
+          </CredenzaDescription>
+        </CredenzaHeader>
+        <NavHeader />
 
-        <div className="space-y-6 py-4">
-          <div className="flex justify-around space-x-2">
-            {/* Network Selection */}
-            <div className="space-y-2.5">
-              <label className="text-sm font-medium text-foreground">
-                Network
-              </label>
-              <Select
-                value={selectedNetwork}
-                onValueChange={setSelectedNetwork}
-              >
-                <SelectTrigger className="h-11 border border-border bg-background hover:border-accent transition-colors">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {NETWORKS.map((network) => (
-                    <SelectItem key={network.id} value={network.id}>
-                      <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full bg-accent" />
-                        <span>{network.name}</span>
-                      </div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+        {stepper.flow.switch({
+          "step-1": () => (
+            <ConfigSelect
+              amount={amount}
+              currency={currency}
+              selectedNetwork={selectedNetwork}
+              onNetworkSelect={setSelectedNetwork}
+              selectedAsset={selectedStablecoin}
+              onAssetSelected={setSelectedStablecoin}
+              paymentInit={paymentInit}
+              reference={reference}
+              callbackUrl={callbackUrl}
+            />
+          ),
+          "step-2": () => (
+            <Deposit
+              amount={amount}
+              currency={currency}
+              networkName={selectedNetwork}
+              stablecoinSymbol={selectedStablecoin}
+              onCopyAddress={handleCopyAddress}
+              copied={copied}
+              paymentAddress={paymentAddress}
+              paymentInit={paymentInit}
+            />
+          ),
+        })}
 
-            {/* Stablecoin Selection */}
-            <div className="space-y-2.5">
-              <label className="text-sm font-medium text-foreground">
-                Stablecoin
-              </label>
-              <Select
-                value={selectedStablecoin}
-                onValueChange={setSelectedStablecoin}
-              >
-                <SelectTrigger className="h-11 border border-border bg-background hover:border-accent transition-colors">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {STABLECOINS.map((coin) => (
-                    <SelectItem key={coin.id} value={coin.id}>
-                      <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full bg-accent" />
-                        <span>{coin.name}</span>
-                        <span className="text-muted-foreground text-sm">
-                          ({coin.symbol})
-                        </span>
-                      </div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-
-          {paymentInit.data && (
-            <>
-              {/* Payment Address Section */}
-              <div className="space-y-3 pt-2">
-                <label className="text-sm font-medium text-foreground">
-                  Payment Address
-                </label>
-                <div className="relative">
-                  <div className="flex items-center justify-between bg-muted/50 border border-border rounded-lg px-4 py-3 group hover:border-accent/50 transition-colors">
-                    <code className="font-mono text-sm tracking-wider text-foreground break-all">
-                      {paymentInit?.data?.address ?? paymentAddress}
-                    </code>
-                    <button
-                      onClick={handleCopyAddress}
-                      className="ml-2 flex-shrink-0 p-2 rounded-md hover:bg-muted transition-colors"
-                      aria-label="Copy address"
-                    >
-                      {copied ? (
-                        <Check className="w-5 h-5 text-accent" />
-                      ) : (
-                        <Copy className="w-5 h-5 text-muted-foreground hover:text-foreground transition-colors" />
-                      )}
-                    </button>
-                  </div>
-                  {copied && (
-                    <p className="text-xs text-accent mt-2 animate-in fade-in">
-                      Address copied to clipboard
-                    </p>
-                  )}
-                </div>
-              </div>
-
-              {/* Info Box */}
-              <div className="bg-accent/10 border border-accent/20 rounded-lg px-4 py-3 space-y-1">
-                <p className="text-sm font-medium text-foreground">
-                  Send exactly {amount} {stablecoinSymbol}
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  Transaction will be processed on {networkName}. Do not send
-                  from exchange or other smart contracts.
-                </p>
-              </div>
-            </>
-          )}
-        </div>
-
-        {!paymentInit.data && (
-          <>
-            <Button
-              disabled={paymentInit.isPending}
-              className="ml-2 flex-shrink-0 p-2 rounded-md hover:bg-muted transition-colors"
-              onClick={() => {
-                paymentInit.mutate({
-                  reference: reference,
-                  amount: amount,
-                  callbackUrl: callbackUrl,
-                  network: selectedNetwork,
-                  asset: selectedStablecoin,
-                } as any);
-              }}
-            >
-              Get payment address
-            </Button>
-          </>
-        )}
+        {!paymentInit.data && <></>}
         {paymentInit.data && (
           <>
             {/* Connect Wallet Button */}
@@ -344,7 +288,324 @@ export function StablePayModal({
             </p>
           </>
         )}
-      </DialogContent>
-    </Dialog>
+      </CredenzaContent>
+    </Credenza>
+  );
+}
+
+function NavHeader() {
+  return (
+    <div className="flex w-full items-center">
+      <div className="grid place-items-center">
+        <Wallet className="w-5 h-5 text-primary" />
+        <span className="text-primary">Choose asset</span>
+      </div>
+      <div className="h-0.5 rounded-2xl w-[150px] mx-auto bg-white" />
+      <div className="grid place-items-center">
+        <Send className="w-5 h-5" />
+        <span>Send deposit</span>
+      </div>
+    </div>
+  );
+}
+
+// ─── Formatting Utilities ────────────────────────────────────────────────────
+
+const pad = (n: number) => String(n).padStart(2, "0");
+
+const formatTime = (totalSeconds: number) => {
+  const h = Math.floor(totalSeconds / 3600);
+  const m = Math.floor((totalSeconds % 3600) / 60);
+  const s = totalSeconds % 60;
+  return `${pad(h)}:${pad(m)}:${pad(s)}`;
+};
+
+const parseToSeconds = (h, m, s) =>
+  Number(h) * 3600 + Number(m) * 60 + Number(s);
+
+function Deposit({
+  amount,
+  currency,
+  copied,
+  stablecoinSymbol,
+  paymentAddress,
+  paymentInit,
+  networkName,
+  onCopyAddress,
+}: any) {
+  const [total, setTotal] = useState(300);
+  const [remaining, setRemaining] = useState(300);
+  const [status, setStatus] = useState("idle"); // idle | running | paused | done
+  const intervalRef = useRef(null);
+  const startTimeRef = useRef(null);
+  const savedRemRef = useRef(300);
+
+  const clearTimer = useCallback(() => {
+    clearInterval(intervalRef.current);
+    intervalRef.current = null;
+  }, []);
+
+  const tick = useCallback(() => {
+    setRemaining((prev) => {
+      if (prev <= 1) {
+        clearTimer();
+        setStatus("done");
+        return 0;
+      }
+      return prev - 1;
+    });
+  }, [clearTimer]);
+
+  const handleStart = useCallback(() => {
+    if (status === "idle") {
+      const t = parseToSeconds(0, 5, 0);
+      if (t <= 0) return;
+      setTotal(t);
+      setRemaining(t);
+      savedRemRef.current = t;
+    }
+    if (status === "paused") {
+      setRemaining(savedRemRef.current);
+    }
+    setStatus("running");
+    intervalRef.current = setInterval(tick, 1000);
+  }, [status, tick]);
+
+  const handlePause = useCallback(() => {
+    clearTimer();
+    savedRemRef.current = remaining;
+    setStatus("paused");
+  }, [clearTimer, remaining]);
+
+  const handleReset = useCallback(() => {
+    clearTimer();
+    const t = parseToSeconds(0, 5, 0);
+    const safe = t > 0 ? t : 300;
+    setTotal(safe);
+    setRemaining(safe);
+    savedRemRef.current = safe;
+    setStatus("idle");
+  }, [clearTimer]);
+
+  useEffect(() => {
+    if (status === "running") {
+      clearTimer();
+      intervalRef.current = setInterval(tick, 1000);
+    }
+    return clearTimer;
+  }, [tick]);
+
+  useEffect(() => {
+    if (status === "idle") {
+      handleStart();
+    }
+  }, []);
+
+  // useEffect(() => {
+  //   if (status === "idle") {
+  //     const t = parseToSeconds(0, 5, 0);
+  //     const safe = Math.max(t, 0);
+  //     setTotal(safe);
+  //     setRemaining(safe);
+  //   }
+  // }, [inputH, inputM, inputS]);
+
+  const progress = total > 0 ? remaining / total : 0;
+  const isRunning = status === "running";
+  const isDone = status === "done";
+  const isPaused = status === "paused";
+  const isIdle = status === "idle";
+
+  const hms = formatTime(remaining);
+  const [dH, dM, dS] = hms.split(":");
+
+  // const numInput = (setter) => (e) => {
+  //   const raw = e.target.value.replace(/\D/g, "");
+  //   setter(String(Math.min(Number(raw), 59)));
+  // };
+
+  return (
+    <div className="space-y-6 py-4">
+      <Item>
+        <ItemContent>
+          <ItemTitle>Awaiting payment</ItemTitle>
+          <ItemDescription>Send exact amount to avoid delays</ItemDescription>
+        </ItemContent>
+        <ItemActions>
+          <Badge>
+            <Clock className="size-4" />
+            <span>{formatTime(savedRemRef.current)}</span>
+          </Badge>
+        </ItemActions>
+      </Item>
+      {paymentInit.data && (
+        <>
+          <Card>
+            <CardContent className="grid items-center place-items-center gap-2 justify-center">
+              <div className="flex space-x-0.5 items-center justify-center w-full">
+                <span className="text-sm font-normal">Pay exactly</span>
+                <h1 className="text-3xl font-semibold">
+                  {amount} {stablecoinSymbol.toUpperCase()}
+                </h1>
+                <Button variant="outline" size="icon-sm">
+                  <Copy className="size-4" />
+                </Button>
+              </div>
+              <span className="text-xs font-normal text-center text-muted-foreground">
+                {amount * 1400} NGN
+              </span>
+              <Badge>
+                Network: {stablecoinSymbol.toUpperCase()}-
+                {networkName.toUpperCase()}
+              </Badge>
+            </CardContent>
+          </Card>
+          <Alert variant="default">
+            <InfoIcon />
+            <AlertTitle>Warning</AlertTitle>
+            <AlertDescription>
+              Send only the exact amount shown on the correct network to ensure
+              automatic detection of funds and avoid loss.
+            </AlertDescription>
+          </Alert>
+          {/* Payment Address Section */}
+          <div className="space-y-3 pt-2">
+            <Item>
+              <ItemContent>
+                <ItemTitle>Payment address</ItemTitle>
+                <HoverCard>
+                  <HoverCardTrigger
+                    delay={10}
+                    closeDelay={100}
+                    render={
+                      <ItemDescription>
+                        {paymentInit?.data?.addresss ?? paymentAddress}
+                      </ItemDescription>
+                    }
+                  />
+                  <HoverCardContent className="flex w-64 flex-col gap-0.5">
+                    <QRCode
+                      size={256}
+                      style={{
+                        height: "auto",
+                        maxWidth: "100%",
+                        width: "100%",
+                      }}
+                      viewBox={`0 0 256 256`}
+                      value={paymentInit?.data?.address ?? paymentAddress}
+                    />
+                  </HoverCardContent>
+                </HoverCard>
+              </ItemContent>
+              <ItemActions>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={onCopyAddress}
+                  className="ml-2 flex-shrink-0 p-2 rounded-md hover:bg-muted transition-colors"
+                  aria-label="Copy address"
+                >
+                  {copied ? (
+                    <Check className="w-5 h-5 text-accent" />
+                  ) : (
+                    <Copy className="w-5 h-5 text-muted-foreground hover:text-foreground transition-colors" />
+                  )}
+                </Button>
+              </ItemActions>
+            </Item>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+function ConfigSelect({
+  selectedNetwork,
+  onNetworkSelect,
+  selectedAsset,
+  onAssetSelected,
+  amount,
+  currency,
+  paymentInit,
+  reference,
+  callbackUrl,
+}: any) {
+  return (
+    <div className="grid grid-cols-1 gap-4 w-full">
+      <Card>
+        <CardContent>
+          <span className="text-sm font-normal">Amount to pay</span>
+          <h1 className="text-3xl font-semibold">
+            {amount} {currency}
+          </h1>
+          <span className="text-xs font-normal text-muted-foreground">
+            {amount * 1400} NGN
+          </span>
+        </CardContent>
+      </Card>
+      {/* Stablecoin Selection */}
+      <div className="flex-col space-y-2.5 w-full h-24">
+        <Label className="text-sm font-medium text-foreground">
+          Select stablecoin
+        </Label>
+        <Select value={selectedAsset} onValueChange={onAssetSelected}>
+          <SelectTrigger className="h-24 w-full border border-border bg-background hover:border-accent transition-colors">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {STABLECOINS.map((coin) => (
+              <SelectItem key={coin.id} value={coin.id}>
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-accent" />
+                  <span>{coin.name}</span>
+                  <span className="text-muted-foreground text-sm">
+                    ({coin.symbol})
+                  </span>
+                </div>
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      {/* Network Selection */}
+      <div className="flex-col gap-1 w-full h-24">
+        <Label className="text-sm font-medium text-foreground">
+          Select network
+        </Label>
+        <Select value={selectedNetwork} onValueChange={onNetworkSelect}>
+          <SelectTrigger className="h-20 w-full border border-border bg-background hover:border-accent transition-colors">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {NETWORKS.map((network) => (
+              <SelectItem key={network.id} value={network.id}>
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-accent" />
+                  <span>{network.name}</span>
+                </div>
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      <Button
+        disabled={paymentInit.isPending}
+        className="ml-2 flex-shrink-0 p-2 rounded-md hover:bg-muted transition-colors"
+        onClick={() => {
+          paymentInit.mutate({
+            reference: reference,
+            amount: amount,
+            callbackUrl: callbackUrl,
+            network: selectedNetwork,
+            asset: selectedAsset,
+          } as any);
+        }}
+      >
+        Get payment address
+      </Button>
+    </div>
   );
 }
