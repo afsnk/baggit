@@ -46,6 +46,7 @@ import {
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
 import QRCode from "react-qr-code";
+import { Spinner } from "@/components/ui/spinner";
 
 const { useStepper } = defineStepper(
   { id: "step-1", title: "Choose Asset" },
@@ -56,6 +57,7 @@ interface StablecoinPaymentModalProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   onPaymentFinished: (result: any) => void;
+  onPaymentFailed: (error: any) => void;
   amount?: number;
   currency?: string;
   apiUrl: string;
@@ -79,6 +81,7 @@ export function StablePayModal({
   isOpen,
   onOpenChange,
   onPaymentFinished,
+  onPaymentFailed,
   currency,
   apiUrl,
   callbackUrl,
@@ -169,8 +172,15 @@ export function StablePayModal({
   useEffect(() => {
     if (paymentConfirm.data) {
       onPaymentFinished(paymentConfirm.data);
+      stepper.navigation.goTo("step-1");
+      paymentInit.reset();
+    } else if (paymentConfirm.error) {
+      console.log("Call payment confirm failed with error object");
+      onPaymentFailed(paymentConfirm.error);
+      stepper.navigation.goTo("step-1");
+      paymentInit.reset();
     }
-  }, [paymentConfirm.data]);
+  }, [paymentConfirm.data, paymentConfirm.error, paymentConfirm]);
   // Generate address when network or stablecoin changes
   useEffect(() => {
     setCopied(false);
@@ -246,51 +256,11 @@ export function StablePayModal({
               copied={copied}
               paymentAddress={paymentAddress}
               paymentInit={paymentInit}
+              paymentConfirm={paymentConfirm}
+              onPaymentMade={setPaymentMade}
             />
           ),
         })}
-
-        {!paymentInit.data && <></>}
-        {paymentInit.data && (
-          <>
-            {/* Connect Wallet Button */}
-            {/*<Button
-              onClick={handleConnectWallet}
-              disabled={isConnecting}
-              className="w-full h-11 bg-accent hover:bg-accent/90 text-accent-foreground font-semibold rounded-lg transition-all active:scale-95"
-            >
-              {isConnecting ? (
-                <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 rounded-full border-2 border-accent-foreground border-t-transparent animate-spin" />
-                  <span>Connecting Wallet...</span>
-                </div>
-              ) : (
-                <div className="flex items-center gap-2">
-                  <Wallet className="w-5 h-5" />
-                  <span>Connect Wallet</span>
-                </div>
-              )}
-            </Button>*/}
-            <Button
-              onClick={() => setPaymentMade((_prev) => !_prev)}
-              disabled={paymentConfirm.isLoading}
-              className="w-full h-11 bg-accent hover:bg-accent/90 text-accent-foreground font-semibold rounded-lg transition-all active:scale-95"
-            >
-              <div className="flex items-center gap-2">
-                <CheckCircle className="w-5 h-5" />
-                <span>I have made payment</span>
-              </div>
-            </Button>
-
-            {/* Alternative Payment Text */}
-            <p className="text-xs text-center text-muted-foreground pt-2">
-              Don't have a wallet?{" "}
-              <button className="text-accent hover:underline font-medium">
-                Learn more
-              </button>
-            </p>
-          </>
-        )}
       </CredenzaContent>
     </Credenza>
   );
@@ -334,6 +304,8 @@ function Deposit({
   stablecoinSymbol,
   paymentAddress,
   paymentInit,
+  paymentConfirm,
+  onPaymentMade,
   networkName,
   onCopyAddress,
 }: any) {
@@ -442,7 +414,7 @@ function Deposit({
           </Badge>
         </ItemActions>
       </Item>
-      {paymentInit.data && (
+      {
         <>
           <Card>
             <CardContent className="grid items-center place-items-center gap-2 justify-center">
@@ -519,7 +491,55 @@ function Deposit({
             </Item>
           </div>
         </>
-      )}
+      }
+      {
+        <>
+          {/* Connect Wallet Button */}
+          {/*<Button
+            onClick={handleConnectWallet}
+            disabled={isConnecting}
+            className="w-full h-11 bg-accent hover:bg-accent/90 text-accent-foreground font-semibold rounded-lg transition-all active:scale-95"
+          >
+            {isConnecting ? (
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 rounded-full border-2 border-accent-foreground border-t-transparent animate-spin" />
+                <span>Connecting Wallet...</span>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2">
+                <Wallet className="w-5 h-5" />
+                <span>Connect Wallet</span>
+              </div>
+            )}
+          </Button>*/}
+          <Button
+            onClick={() => onPaymentMade((_prev: boolean) => !_prev)}
+            disabled={paymentConfirm.isLoading}
+            className="w-full h-11 bg-accent hover:bg-accent/90 text-accent-foreground font-semibold rounded-lg transition-all active:scale-95"
+          >
+            <div className="flex items-center gap-2">
+              {paymentConfirm.isLoading ? (
+                <Spinner className="w-5 h-5" />
+              ) : (
+                <CheckCircle className="w-5 h-5" />
+              )}
+              <span>
+                {paymentConfirm.isLoading
+                  ? "Confirming Payment..."
+                  : "I have made payment"}
+              </span>
+            </div>
+          </Button>
+
+          {/* Alternative Payment Text */}
+          <p className="text-xs text-center text-muted-foreground pt-2">
+            Don't have a wallet?{" "}
+            <button className="text-accent hover:underline font-medium">
+              Learn more
+            </button>
+          </p>
+        </>
+      }
     </div>
   );
 }

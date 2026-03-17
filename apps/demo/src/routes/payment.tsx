@@ -49,6 +49,11 @@ function RouteComponent() {
             console.log("Result from finished transaction", { result });
             setIsOpen(false);
           }}
+          onPaymentFailed={(error) => {
+            console.log("Payment failed", { error });
+            window.alert(`Payment failed to process: ${error?.message}`);
+            setIsOpen(false);
+          }}
           currency="NGN"
           amount={40000}
         />
