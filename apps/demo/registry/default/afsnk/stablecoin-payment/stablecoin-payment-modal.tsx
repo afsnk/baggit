@@ -48,6 +48,7 @@ import {
 import QRCode from "react-qr-code";
 import { Spinner } from "@/components/ui/spinner";
 import { useCountdown } from "@/hooks/use-countdown";
+import { cn } from "@/lib/utils";
 
 const { useStepper } = defineStepper(
   { id: "step-1", title: "Choose Asset" },
@@ -272,16 +273,33 @@ export function StablePayModal({
 }
 
 function NavHeader() {
+  const stepper = useStepper();
+  const isStep1 = stepper.flow.is("step-1");
+  const isStep2 = stepper.flow.is("step-2");
   return (
     <div className="flex w-full items-center">
       <div className="grid place-items-center">
-        <Wallet className="w-5 h-5 text-primary" />
-        <span className="text-primary">Choose asset</span>
+        <Wallet
+          className={cn("w-5 h-5", {
+            isStep1: "text-primary",
+          })}
+        />
+        <span className={cn({ isStep1: "text-primary" })}>Choose asset</span>
       </div>
       <div className="h-0.5 rounded-2xl w-[150px] mx-auto bg-white" />
       <div className="grid place-items-center">
-        <Send className="w-5 h-5" />
-        <span>Send deposit</span>
+        <Send
+          className={cn("w-5 h-5", {
+            isStep2: "text-primary",
+          })}
+        />
+        <span
+          className={cn({
+            isStep2: "text-primary",
+          })}
+        >
+          Send deposit
+        </span>
       </div>
     </div>
   );
