@@ -1,0 +1,59 @@
+# flyctl launch added from .gitignore
+**/afsnk_labs.zip
+**/node_modules
+**/**/node_modules
+**/**/dist
+**/tsconfig.tsbuildinfo
+
+# flyctl launch added from apps/demo/.gitignore
+apps/demo/**/node_modules
+apps/demo/**/.DS_Store
+apps/demo/**/dist
+apps/demo/**/dist-ssr
+apps/demo/**/*.local
+apps/demo/**/.env
+apps/demo/**/.nitro
+apps/demo/**/.tanstack
+apps/demo/**/.wrangler
+apps/demo/**/.output
+apps/demo/**/.vinxi
+apps/demo/**/__unconfig*
+apps/demo/**/todos.json
+
+# flyctl launch added from packages/server/.gitignore
+# dev
+packages/server/**/.yarn
+!packages/server/**/.yarn/releases
+packages/server/**/.vscode/*
+!packages/server/**/.vscode/launch.json
+!packages/server/**/.vscode/*.code-snippets
+packages/server/**/.idea/workspace.xml
+packages/server/**/.idea/usage.statistics.xml
+packages/server/**/.idea/shelf
+
+# deps
+packages/server/**/node_modules
+
+# env
+packages/server/**/.env
+packages/server/**/.env.production
+
+# logs
+packages/server/**/logs
+packages/server/**/*.log
+packages/server/**/npm-debug.log*
+packages/server/**/yarn-debug.log*
+packages/server/**/yarn-error.log*
+packages/server/**/pnpm-debug.log*
+packages/server/**/lerna-debug.log*
+
+# misc
+packages/server/**/.DS_Store
+
+packages/server/**/dev.db
+packages/server/**/test.db
+packages/server/**/.vercel
+packages/server/**/dist
+
+packages/server/**/.dev.vars
+fly.toml

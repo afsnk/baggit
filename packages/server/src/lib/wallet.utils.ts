@@ -9,6 +9,8 @@ import { base, baseSepolia, bsc, bscTestnet } from "viem/chains";
 
 import env from "@/env";
 
+import { Cypher } from "./cypher.utils";
+
 export const TOKEN_ADDRESSES = {
   [baseSepolia.id]: {
     usdc: { address: "0x036CbD53842c5426634e7929541eC2318f3dCF7e", decimal: 6 },
@@ -119,7 +121,7 @@ export async function generateAccount(chain: Chain): Promise<{ pk: string; addre
   console.log("My account:", accountAddress);
 
   return {
-    pk: privateKey,
+    pk: Cypher.encrypt(privateKey, env.ENC_KEY).encrypted,
     address: account.address,
     fromBlock: Number(await publicClient.getBlockNumber()),
   };

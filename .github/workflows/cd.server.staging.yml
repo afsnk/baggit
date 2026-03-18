@@ -1,0 +1,37 @@
+name: pay-server-gateway-staging
+on:
+  push:
+    branches:
+      - staging
+    paths:
+      - packages/server/**
+      # - packages/shared/**
+  pull_request:
+    branches:
+      - staging
+    paths:
+      - packages/server/**
+      # - packages/shared/**
+
+env:
+  NODE_ENV: staging
+  PORT: 9999
+
+concurrency:
+  group: deploy-gateway
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploys api gateway for payments to staging
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 10
+      - run: pnpm run deploy:server:staging
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}

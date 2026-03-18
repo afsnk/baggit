@@ -24,6 +24,9 @@ const EnvSchema = z.object({
 
   // Rates API key
   MONIERATE_API_KEY: z.string(),
+
+  // Encryption key
+  ENC_KEY: z.string().min(16),
 }).superRefine((input, ctx) => {
   if (input.NODE_ENV === "production" && !input.DATABASE_AUTH_TOKEN) {
     ctx.addIssue({

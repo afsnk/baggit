@@ -1,4 +1,4 @@
-import type { Address } from "viem";
+import type { Address, Hex } from "viem";
 
 import { desc, eq } from "drizzle-orm";
 import * as HttpStatusCodes from "stoker/http-status-codes";
@@ -8,6 +8,8 @@ import type { AppRouteHandler } from "@/lib/types";
 
 import db from "@/db";
 import { transactions as transactionSchema } from "@/db/schema";
+import env from "@/env";
+import { Cypher } from "@/lib/cypher.utils";
 import { generateAccount, getChain, refactoredGetLogs, runTransaction, TOKEN_ADDRESSES } from "@/lib/wallet.utils";
 import { Webhook } from "@/lib/webhook-trigger";
 
@@ -141,7 +143,7 @@ export const confirm: AppRouteHandler<ConfirmRoute> = async (c) => {
       console.log("Transaction has Transfer event and updated", { updatedTransaction });
 
       await runTransaction(
-        updatedTransaction.metadata?.pk,
+        Cypher.decrypt(updatedTransaction.metadata?.pk, env.ENC_KEY) as Hex,
         chain,
         token.address as Address,
         [
