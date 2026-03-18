@@ -5,13 +5,17 @@ on:
       - staging
     paths:
       - packages/server/**
-      # - packages/shared/**
+      - ./**
+    paths-ignore:
+      - apps/**
   pull_request:
     branches:
       - staging
     paths:
       - packages/server/**
-      # - packages/shared/**
+      - ./**
+    paths-ignore:
+      - apps/**
 
 env:
   NODE_ENV: staging
