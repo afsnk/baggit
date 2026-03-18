@@ -3,17 +3,17 @@ on:
   push:
     branches:
       - staging
-    paths:
-      - packages/server/**
-      - ./**
+    # paths:
+    #   - packages/server/**
+    #   - ./**
     paths-ignore:
       - apps/**
   pull_request:
     branches:
       - staging
-    paths:
-      - packages/server/**
-      - ./**
+    # paths:
+    #   - packages/server/**
+    #   - ./**
     paths-ignore:
       - apps/**
 
