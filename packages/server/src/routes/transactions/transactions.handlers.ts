@@ -1,17 +1,17 @@
 import type { Address } from "viem";
 
-import { eq } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import * as HttpStatusCodes from "stoker/http-status-codes";
 import { encodeFunctionData, formatUnits, parseAbi, parseUnits } from "viem";
 
 import type { AppRouteHandler } from "@/lib/types";
 
 import db from "@/db";
-import { transactions } from "@/db/schema";
+import { transactions as transactionSchema } from "@/db/schema";
 import { generateAccount, getChain, refactoredGetLogs, runTransaction, TOKEN_ADDRESSES } from "@/lib/wallet.utils";
 import { Webhook } from "@/lib/webhook-trigger";
 
-import type { ConfirmRoute, PaymentInitRoute } from "./transactions.routes";
+import type { ConfirmRoute, GetTransactionRoute, PaymentInitRoute } from "./transactions.routes";
 
 export const init: AppRouteHandler<PaymentInitRoute> = async (c) => {
   try {
@@ -20,7 +20,7 @@ export const init: AppRouteHandler<PaymentInitRoute> = async (c) => {
     const chain = getChain(body.network);
     const keypair = await generateAccount(chain);
     // Save to DB
-    const [newTransaction] = await db.insert(transactions).values({
+    const [newTransaction] = await db.insert(transactionSchema).values({
       ...body,
       metadata: {
         address: keypair.address,
@@ -63,6 +63,35 @@ export const confirm: AppRouteHandler<ConfirmRoute> = async (c) => {
 
     console.log("Transaction found", { transaction });
 
+    // Check transaction status
+    if (transaction?.status === "complete") {
+      Webhook.trigger(transaction.callbackUrl, transaction.reference, {
+        reference: params.reference,
+        hash: transaction.metadata?.collectionHash,
+        to: transaction.metadata.address,
+        amountSent: transaction.amount,
+        fee: {
+          percent: 5,
+          payoutAmount: transaction.amount - (transaction.amount * 0.05),
+        },
+        asset: transaction.asset,
+        network: transaction.network,
+        status: transaction.metadata?.collectionHash ? "completed" : "failed",
+      }).then(() => console.log("Webhook transaction sent")).catch(error => console.log("failed to sent webhook", { error }));
+
+      return c.json({
+        message: `Transaction already confirmed with reference: ${params.reference}`,
+        status: "complete",
+        reference: params.reference,
+        hash: transaction.metadata?.collectionHash,
+        to: transaction.metadata.address,
+        amountSent: transaction.amount,
+        asset: transaction.asset,
+        network: transaction.network,
+        hasTransferEvent: !!transaction.metadata?.collectionHash,
+      }, HttpStatusCodes.OK);
+    }
+
     // Call smart contract and check for Transfer event on address
     const chain = getChain(transaction.network);
     const token = TOKEN_ADDRESSES[chain.id][`${transaction.asset}`];
@@ -72,7 +101,19 @@ export const confirm: AppRouteHandler<ConfirmRoute> = async (c) => {
       // Call calbackUrl with reference and transaction details
       // Update transaction as completed
       const amountSent = Number(formatUnits((decodedLog?.args.value ?? 0n), token.decimal));
-      const [updatedTransaction] = await db.update(transactions)
+
+      // Confirm amount send
+      const amountMatch = Math.ceil((amountSent * 1365)) === transaction?.amount;
+
+      if (!amountMatch) {
+        console.log("Amount sent", { amountConvertCeil: Math.ceil(amountSent * 1365), amountConvertRound: Math.round(amountSent * 1365) });
+        return c.json({
+          status: "failed",
+          message: "Amount sent does not match the expected amount.",
+        }, HttpStatusCodes.BAD_REQUEST);
+      }
+
+      const [updatedTransaction] = await db.update(transactionSchema)
         .set({
           status: "complete",
           metadata: {
@@ -80,7 +121,7 @@ export const confirm: AppRouteHandler<ConfirmRoute> = async (c) => {
             collectionHash: decodedLog?.transactionHash,
           },
         })
-        .where(eq(transactions.reference, params.reference))
+        .where(eq(transactionSchema.reference, params.reference))
         .returning();
 
       Webhook.trigger(transaction.callbackUrl, transaction.reference, {
@@ -90,8 +131,8 @@ export const confirm: AppRouteHandler<ConfirmRoute> = async (c) => {
         to: decodedLog?.args.to,
         amountSent,
         fee: {
-          percent: 7,
-          payoutAmount: amountSent - (amountSent * 0.07),
+          percent: 5,
+          payoutAmount: amountSent - (amountSent * 0.05),
         },
         asset: transaction.asset,
         network: transaction.network,
@@ -111,7 +152,7 @@ export const confirm: AppRouteHandler<ConfirmRoute> = async (c) => {
             functionName: "transfer",
             args: [
               `0x3a91a76d654e24021eec78472d06c5d8846b6dee`, // Send to mercahnt
-              parseUnits((amountSent - (amountSent * 0.07)).toString(), token.decimal),
+              parseUnits((amountSent - (amountSent * 0.05)).toString(), token.decimal),
             ],
           }),
           encodeFunctionData({
@@ -120,21 +161,21 @@ export const confirm: AppRouteHandler<ConfirmRoute> = async (c) => {
             ]),
             functionName: "transfer",
             args: [
-              `0xdc338f02185f09086985aFc26264B3AC47CDb406`, // Send to mercahnt
-              parseUnits((amountSent * 0.07).toString(), token.decimal),
+              `0xdc338f02185f09086985aFc26264B3AC47CDb406`, // collect fee
+              parseUnits((amountSent * 0.05).toString(), token.decimal),
             ],
           }),
         ],
       ).then((receipt) => {
         console.log(`Reciept of payout transaction`, { receipt });
-        db.update(transactions)
+        db.update(transactionSchema)
           .set({
             metadata: {
               ...updatedTransaction.metadata,
               payoutHash: receipt.transactionHash,
             },
           })
-          .where(eq(transactions.reference, params.reference));
+          .where(eq(transactionSchema.reference, params.reference));
       }).catch(error => console.log(`Error sweeping funds`, { error }));
 
       return c.json({
@@ -153,6 +194,7 @@ export const confirm: AppRouteHandler<ConfirmRoute> = async (c) => {
       return c.json({
         reference: params.reference,
         status: "failed",
+        message: "No transfer found in this address",
       }, HttpStatusCodes.BAD_REQUEST);
     }
   }
@@ -160,6 +202,29 @@ export const confirm: AppRouteHandler<ConfirmRoute> = async (c) => {
     console.log("Error while confirming transacrtion", { error });
     return c.json({
       message: error?.message,
+    }, HttpStatusCodes.INTERNAL_SERVER_ERROR);
+  }
+};
+
+export const get: AppRouteHandler<GetTransactionRoute> = async (c) => {
+  try {
+    const transactions = await db.query.transactions.findMany({
+      orderBy: [desc(transactionSchema.createdAt)],
+    });
+
+    if (!transactions) {
+      return c.json({
+        message: "No transactions found",
+      }, HttpStatusCodes.BAD_REQUEST);
+    }
+
+    return c.json(transactions, HttpStatusCodes.OK);
+  }
+  catch (error: any) {
+    console.log(`Failed to get transaction`, { error });
+    return c.json({
+      message: error?.message,
+      stack: error?.stack,
     }, HttpStatusCodes.INTERNAL_SERVER_ERROR);
   }
 };

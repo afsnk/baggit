@@ -3,7 +3,7 @@ import * as HttpStatusCodes from "stoker/http-status-codes";
 import { jsonContent, jsonContentRequired } from "stoker/openapi/helpers";
 import { createErrorSchema } from "stoker/openapi/schemas";
 
-import { insertTransactions } from "@/db/schema";
+import { cleanedTransaction, insertTransactions } from "@/db/schema";
 
 const tags = ["Payment"];
 export const init = createRoute({
@@ -60,5 +60,24 @@ export const confirm = createRoute({
   },
 });
 
+export const get = createRoute({
+  tags,
+  hide: true,
+  method: "get",
+  path: "/payment/transactions",
+  responses: {
+    [HttpStatusCodes.OK]: jsonContent(
+      z.array(cleanedTransaction),
+      "Get transactions",
+    ),
+    [HttpStatusCodes.BAD_REQUEST]: jsonContent(z.any(), "Bad request"),
+    [HttpStatusCodes.INTERNAL_SERVER_ERROR]: jsonContent(
+      z.any(),
+      "Internal server error",
+    ),
+  },
+});
+
 export type PaymentInitRoute = typeof init;
 export type ConfirmRoute = typeof confirm;
+export type GetTransactionRoute = typeof get;

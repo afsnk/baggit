@@ -20,11 +20,14 @@ export function createRouter() {
 export default function createApp() {
   const app = createRouter();
   app.use(cors({
-    origin: ["*", "http://localhost:3000", "https://ugamy.io", "https://staging.ugamy.io"],
-    allowHeaders: ["*"],
-    allowMethods: ["*"],
+    origin: ["*", "http://localhost:3000", "https://ugamy.io", "https://dashboard.ugamy.io", "https://staging.ugamy.io"],
+    allowHeaders: ["*", "OPTIONS", "POST", "GET"],
+    allowMethods: ["*", "Upgrade", "Connection", "Content-Type"],
     exposeHeaders: ["Access-Control-Allow-Origin"],
   })).use(requestId()).use(serveEmojiFavicon("📝")).use(pinoLogger());
+
+  app.get("/health", c =>
+    c.json({ status: "ok", uptime: process.uptime(), timestamp: Date.now() }));
 
   app.notFound(notFound);
   app.onError(onError);

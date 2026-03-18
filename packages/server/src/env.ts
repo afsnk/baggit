@@ -21,6 +21,9 @@ const EnvSchema = z.object({
   // Zerodev
   ZERODEV_RPC: z.string().url(),
   FEE_COLLECTION_ADDRESS: z.string().startsWith("0x"),
+
+  // Rates API key
+  MONIERATE_API_KEY: z.string(),
 }).superRefine((input, ctx) => {
   if (input.NODE_ENV === "production" && !input.DATABASE_AUTH_TOKEN) {
     ctx.addIssue({

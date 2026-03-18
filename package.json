@@ -15,6 +15,7 @@
     "lint": "pnpm -r lint",
     "publish:npm": "pnpm -C packages/npm publish --access public",
     "publish:registry": "pnpm -C packages/registry publish --access public",
+    "deploy:server": "flyctl deploy --config ./packages/server/fly.toml --dockerfile ./packages/server/api.Dockerfile",
     "clean": "pnpm -r exec rm -rf dist node_modules"
   },
   "keywords": [

@@ -19,6 +19,9 @@ export const transactions = sqliteTable("transactions", {
     fromBlock: number;
     [x: string]: any;
   }>().notNull(),
+  merchantMetadata: text("merchant_metadata", { mode: "json" }).$type<{
+    [x: string]: any;
+  }>(),
   createdAt: integer({ mode: "timestamp" })
     .$defaultFn(() => new Date()),
   updatedAt: integer({ mode: "timestamp" })
@@ -27,6 +30,7 @@ export const transactions = sqliteTable("transactions", {
 });
 
 export const selectTransactions = toZodV4SchemaTyped(createSelectSchema(transactions));
+export const cleanedTransaction = toZodV4SchemaTyped(createSelectSchema(transactions).omit({ metadata: true }));
 export const insertTransactions = toZodV4SchemaTyped(createInsertSchema(
   transactions,
 ).required({
