@@ -1,1 +1,0 @@
-ALTER TABLE `transactions` ALTER COLUMN "callback_url" TO "callback_url" text NOT NULL DEFAULT 'https://webhook.site/a6428992-34ce-4b09-90c0-7fe778d762e4';

@@ -5,36 +5,8 @@
     {
       "idx": 0,
       "version": "6",
-      "when": 1728133964232,
-      "tag": "0000_same_squadron_sinister",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "6",
-      "when": 1773151260280,
-      "tag": "0001_amazing_nuke",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "6",
-      "when": 1773155228668,
-      "tag": "0002_medical_blink",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "6",
-      "when": 1773155293828,
-      "tag": "0003_far_pandemic",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "6",
-      "when": 1773588742092,
-      "tag": "0004_fantastic_apocalypse",
+      "when": 1773852258465,
+      "tag": "0000_married_prodigy",
       "breakpoints": true
     }
   ]

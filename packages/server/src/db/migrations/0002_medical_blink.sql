@@ -1,1 +1,0 @@
-ALTER TABLE `transactions` ALTER COLUMN "callback_url" TO "callback_url" text NOT NULL;
