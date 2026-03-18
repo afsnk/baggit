@@ -15,8 +15,8 @@
     "lint": "pnpm -r lint",
     "publish:npm": "pnpm -C packages/npm publish --access public",
     "publish:registry": "pnpm -C packages/registry publish --access public",
-    "deploy:server": "flyctl deploy --config ./packages/server/fly.toml --dockerfile ./packages/server/api.Dockerfile",
-    "deploy:server:staging": "flyctl deploy --config ./packages/server/fly.staging.toml --dockerfile ./packages/server/staging.api.Dockerfile",
+    "deploy:server": "flyctl deploy --config ./packages/server/fly.toml --dockerfile ./packages/server/api.Dockerfile --remote-only",
+    "deploy:server:staging": "flyctl deploy --config ./packages/server/fly.staging.toml --dockerfile ./packages/server/staging.api.Dockerfile --remote-only",
     "clean": "pnpm -r exec rm -rf dist node_modules"
   },
   "keywords": [
