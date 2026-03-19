@@ -1,4 +1,4 @@
-CREATE TABLE `transactions` IF NOT EXISTS (
+CREATE TABLE `transactions` (
 	`id` text PRIMARY KEY NOT NULL,
 	`reference` text NOT NULL,
 	`amount` real NOT NULL,
