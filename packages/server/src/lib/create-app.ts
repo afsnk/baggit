@@ -20,7 +20,7 @@ export function createRouter() {
 export default function createApp() {
   const app = createRouter();
   app.use(cors({
-    origin: ["*", "http://localhost:3000", "https://ugamy.io", "https://dashboard.ugamy.io", "https://staging.ugamy.io"],
+    origin: ["*", "http://localhost:3000", "https://ugamy.io", "https://dashboard.ugamy.io", "https://staging.ugamy.io", "https://afsnk.afullsnack.dev", "https://afullsnack.dev"],
     allowHeaders: ["*", "OPTIONS", "POST", "GET"],
     allowMethods: ["*", "Upgrade", "Connection", "Content-Type"],
     exposeHeaders: ["Access-Control-Allow-Origin"],
