@@ -339,7 +339,10 @@ export function StablePayModal({
     dispatch({ type: "SET_STABLECOIN", payload: value });
   }, []);
 
-  const convertedAmount = useMemo(() => (amount ? amount / 1365 : 0), [amount]);
+  const convertedAmount = useMemo(
+    () => (amount ? Math.ceil(amount / 1365) : 0),
+    [amount],
+  );
 
   return (
     <Credenza
