@@ -220,19 +220,21 @@ export const get: AppRouteHandler<GetTransactionRoute> = async (c) => {
       }, HttpStatusCodes.BAD_REQUEST);
     }
 
-    const modifiedTransactions: (Transaction & {hasBalance: boolean})[] = []
+    const modifiedTransactions: (Transaction & {hasBalance: boolean, balance: string | number})[] = []
     for(const trx of transactions) {
       if(trx.status === "pending") {
-        const hasBalance = Boolean(await getBalance(trx.network, trx.metadata.address, trx.asset))
+        const balance = await getBalance(trx.network, trx.metadata.address, trx.asset)
+        const hasBalance = Boolean(balance)
         modifiedTransactions.push({
           ...trx,
           hasBalance,
+          balance,
         })
       } else {
-
         modifiedTransactions.push({
           ...trx,
-          hasBalance: false
+          hasBalance: false,
+          balance: 0
         })
       }
     }

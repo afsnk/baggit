@@ -86,7 +86,7 @@ export const TransactionTableContext = createContext<{
   table: TableType<Transaction>;
 }>({ table: {} as any });
 
-const defaultColumns: Array<ColumnDef<Transaction & {hasBalance?: boolean}>> = [
+const defaultColumns: Array<ColumnDef<Transaction & {hasBalance?: boolean, balance: number | string}>> = [
   // {
   //   id: 'drag',
   //   header: () => null,
@@ -145,7 +145,7 @@ const defaultColumns: Array<ColumnDef<Transaction & {hasBalance?: boolean}>> = [
   },
   {
     accessorKey: "hasBalance",
-    header: "Amount Paid",
+    header: "Has balance",
     cell: ({ row }) => (
       <Badge variant="outline" className="text-muted-foreground px-1.5">
         {row.original.hasBalance? (
@@ -155,6 +155,15 @@ const defaultColumns: Array<ColumnDef<Transaction & {hasBalance?: boolean}>> = [
         )}
         {row.original.hasBalance? "Paid" : "Not Paid"}
       </Badge>
+    ),
+  },
+  {
+    accessorKey: "balance",
+    header: "Balance",
+    cell: ({ row }) => (
+      <span className="px-1.5">
+        {row.original.balance}
+      </span>
     ),
   },
   {
