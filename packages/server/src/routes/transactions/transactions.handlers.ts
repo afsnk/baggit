@@ -4,13 +4,13 @@ import { desc, eq } from "drizzle-orm";
 import * as HttpStatusCodes from "stoker/http-status-codes";
 import { encodeFunctionData, formatUnits, parseAbi, parseUnits } from "viem";
 
-import type { AppRouteHandler } from "@/lib/types";
+import type { AppRouteHandler, Transaction } from "@/lib/types";
 
 import db from "@/db";
 import { transactions as transactionSchema } from "@/db/schema";
 import env from "@/env";
 import { Cypher } from "@/lib/cypher.utils";
-import { generateAccount, getChain, refactoredGetLogs, runTransaction, TOKEN_ADDRESSES } from "@/lib/wallet.utils";
+import { generateAccount, getBalance, getChain, refactoredGetLogs, runTransaction, TOKEN_ADDRESSES } from "@/lib/wallet.utils";
 import { Webhook } from "@/lib/webhook-trigger";
 
 import type { ConfirmRoute, GetTransactionRoute, PaymentInitRoute } from "./transactions.routes";
@@ -220,7 +220,23 @@ export const get: AppRouteHandler<GetTransactionRoute> = async (c) => {
       }, HttpStatusCodes.BAD_REQUEST);
     }
 
-    return c.json(transactions, HttpStatusCodes.OK);
+    const modifiedTransactions: (Transaction & {hasBalance: boolean})[] = []
+    for(const trx of transactions) {
+      if(trx.status === "pending") {
+        const hasBalance = Boolean(await getBalance(trx.network, trx.metadata.address, trx.asset))
+        modifiedTransactions.push({
+          ...trx,
+          hasBalance,
+        })
+      } else {
+
+        modifiedTransactions.push({
+          ...trx,
+          hasBalance: false
+        })
+      }
+    }
+    return c.json(modifiedTransactions, HttpStatusCodes.OK);
   }
   catch (error: any) {
     console.log(`Failed to get transaction`, { error });

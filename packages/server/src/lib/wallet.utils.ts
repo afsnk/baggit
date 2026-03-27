@@ -3,7 +3,7 @@ import type { Address, Chain, Log } from "viem";
 import { signerToEcdsaValidator } from "@zerodev/ecdsa-validator";
 import { createKernelAccount, createKernelAccountClient, createZeroDevPaymasterClient } from "@zerodev/sdk";
 import { getEntryPoint, KERNEL_V3_3 } from "@zerodev/sdk/constants";
-import { createPublicClient, extractChain, http, parseAbi, parseAbiItem, parseEventLogs } from "viem";
+import { createPublicClient, extractChain, formatUnits, http, parseAbi, parseAbiItem, parseEventLogs } from "viem";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { base, baseSepolia, bsc, bscTestnet } from "viem/chains";
 
@@ -335,4 +335,22 @@ export async function refactoredGetLogs(
     "Could not locate Transfer log after full forward expansion; returning balance-confirmed flag.",
   );
   return { hasTransferEvent: true, decodedLog: undefined };
+}
+
+
+export async function getBalance(network: "base" | "bsc", address: Address, asset: "usdt" | "usdc" | "cngn") {
+  const chain = getChain(network)
+  const publicClient = createPublicClient({
+    transport: http(),
+    chain,
+  });
+  const token = TOKEN_ADDRESSES[chain.id][asset]
+  const balance = await publicClient.readContract({
+    address: token.address as Address,
+    abi: parseAbi(["function balanceOf(address) view returns (uint256)"]),
+    functionName: "balanceOf",
+    args: [address],
+  });
+  
+  return formatUnits(balance, token.decimal)
 }
