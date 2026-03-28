@@ -4,13 +4,12 @@ import { desc, eq } from "drizzle-orm";
 import * as HttpStatusCodes from "stoker/http-status-codes";
 import { encodeFunctionData, formatUnits, parseAbi, parseUnits } from "viem";
 
-import type { AppRouteHandler, ExtendedTransaction } from "@/lib/types";
+import type { AppRouteHandler } from "@/lib/types";
 
 import db from "@/db";
 import { transactions as transactionSchema } from "@/db/schema";
 import env from "@/env";
 import { Cypher } from "@/lib/cypher.utils";
-import { sequentialMap } from "@/lib/retry";
 import { generateAccount, getChain, refactoredGetLogs, runTransaction, TOKEN_ADDRESSES } from "@/lib/wallet.utils";
 import { Webhook } from "@/lib/webhook-trigger";
 
@@ -221,47 +220,47 @@ export const get: AppRouteHandler<GetTransactionRoute> = async (c) => {
       }, HttpStatusCodes.BAD_REQUEST);
     }
 
-    const tasks = transactions.map<() => Promise<ExtendedTransaction>>(t => async () => {
-      if (t.status === "pending") {
-        // const balance = await getBalance(t.network, t.metadata.address, t.asset);
-        // console.log("Balance", { balance });
-        // const hasBalance = Boolean(balance);
-        return {
-          id: t.id,
-          amount: t.amount,
-          asset: t.asset,
-          callbackUrl: t.callbackUrl,
-          merchantMetadata: t.merchantMetadata,
-          network: t.network,
-          status: t.status,
-          reference: t.reference,
-          hasBalance: false,
-          balance: 0,
-          createdAt: t.createdAt,
-          updatedAt: t.updatedAt,
-        } as unknown as ExtendedTransaction;
-      }
-      else {
-        return {
-          id: t.id,
-          amount: t.amount,
-          asset: t.asset,
-          callbackUrl: t.callbackUrl,
-          merchantMetadata: t.merchantMetadata,
-          network: t.network,
-          status: t.status,
-          reference: t.reference,
-          hasBalance: false,
-          balance: 0,
-          createdAt: t.createdAt,
-          updatedAt: t.updatedAt,
-        } as unknown as ExtendedTransaction;
-      }
-    });
-    const modifiedTransactions: ExtendedTransaction[] = await sequentialMap<ExtendedTransaction>(tasks, 2000);
-    console.log("Modified transaction", modifiedTransactions);
+    // const tasks = transactions.map<() => Promise<ExtendedTransaction>>(t => async () => {
+    //   if (t.status === "pending") {
+    //     // const balance = await getBalance(t.network, t.metadata.address, t.asset);
+    //     // console.log("Balance", { balance });
+    //     // const hasBalance = Boolean(balance);
+    //     return {
+    //       id: t.id,
+    //       amount: t.amount,
+    //       asset: t.asset,
+    //       callbackUrl: t.callbackUrl,
+    //       merchantMetadata: t.merchantMetadata,
+    //       network: t.network,
+    //       status: t.status,
+    //       reference: t.reference,
+    //       hasBalance: false,
+    //       balance: 0,
+    //       createdAt: t.createdAt,
+    //       updatedAt: t.updatedAt,
+    //     } as unknown as ExtendedTransaction;
+    //   }
+    //   else {
+    //     return {
+    //       id: t.id,
+    //       amount: t.amount,
+    //       asset: t.asset,
+    //       callbackUrl: t.callbackUrl,
+    //       merchantMetadata: t.merchantMetadata,
+    //       network: t.network,
+    //       status: t.status,
+    //       reference: t.reference,
+    //       hasBalance: false,
+    //       balance: 0,
+    //       createdAt: t.createdAt,
+    //       updatedAt: t.updatedAt,
+    //     } as unknown as ExtendedTransaction;
+    //   }
+    // });
+    // const modifiedTransactions: ExtendedTransaction[] = await sequentialMap<ExtendedTransaction>(tasks, 2000);
+    // console.log("Modified transaction", modifiedTransactions);
 
-    return c.json(modifiedTransactions, HttpStatusCodes.OK);
+    return c.json(transactions, HttpStatusCodes.OK);
   }
   catch (error: any) {
     console.log(`Failed to get transaction`, { error });

@@ -1,8 +1,8 @@
 import { integer, real, sqliteTable, text } from "drizzle-orm/sqlite-core";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
+import { z } from "zod";
 
 import { toZodV4SchemaTyped } from "@/lib/zod-utils";
-import {z} from "zod"
 
 export const transactions = sqliteTable("transactions", {
   id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
@@ -32,8 +32,8 @@ export const transactions = sqliteTable("transactions", {
 
 export const selectTransactions = toZodV4SchemaTyped(createSelectSchema(transactions));
 export const cleanedTransaction = createSelectSchema(transactions).omit({ metadata: true }).extend({
-  hasBalance: z.boolean(),
-  balance: z.union([z.string(), z.number()])
+  hasBalance: z.boolean().optional(),
+  balance: z.union([z.string(), z.number()]).optional(),
 });
 export const insertTransactions = toZodV4SchemaTyped(createInsertSchema(
   transactions,
