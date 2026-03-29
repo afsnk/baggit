@@ -144,9 +144,19 @@ const defaultColumns: Array<ColumnDef<Transaction>> = [
     ),
   },
   {
-    header: "Virtual Address",
+    header: "Address",
     cell: ({ row }) => (
       <span>{row.original.vAddress}</span>
+    ),
+  },
+  {
+    header: "Explorer",
+    cell: ({ row }) => (
+      <a href={row.original.network === "bsc"
+        ? `https://bscscan.com/address/${row.original.vAddress}`
+        : `https://basescan.org/address/${row.original.vAddress}`}>{
+          row.original.vAddress?.slice(0, 6)}...{row.original.vAddress?.slice(-6)
+        }</a>
     ),
   },
   {
@@ -234,10 +244,9 @@ export const Route = createFileRoute("/overview")({
     const { data, error } = await betterFetch<
       (Transaction & { hasBalance: boolean; balance: string | number })[]
     >(
-      `${
-        import.meta.env.DEV
-          ? "http://localhost:9999"
-          : "https://afsnk-pay-server.fly.dev"
+      `${import.meta.env.DEV
+        ? "http://localhost:9999"
+        : "https://afsnk-pay-server.fly.dev"
       }/payment/transactions`,
     );
     if (error) {
@@ -322,9 +331,9 @@ function RouteComponent() {
                         {header.isPlaceholder
                           ? null
                           : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext(),
-                            )}
+                            header.column.columnDef.header,
+                            header.getContext(),
+                          )}
                       </TableHead>
                     );
                   })}
