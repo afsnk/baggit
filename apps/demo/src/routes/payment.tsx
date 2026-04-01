@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 // import { StablecoinPaymentModal } from "@/components/StablecoinPaymentModal";
-import { StablePayModal } from "../../registry/default/afsnk/stablecoin-payment/stablecoin-payment-modal";
+import { StablePayModal } from "../../registry/base-ui/afsnk/stablecoin-payment/stablecoin-payment-modal";
 import { useEffect, useRef, useState } from "react";
 import { useWebSocket } from "@/hooks/use-websocket";
 

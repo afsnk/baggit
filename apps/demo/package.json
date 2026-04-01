@@ -4,7 +4,7 @@
   "type": "module",
   "version": "0.0.l",
   "imports": {
-    "#/*": "./src/*"
+    "@/*": "./src/*"
   },
   "scripts": {
     "dev": "vite dev --port 3000",

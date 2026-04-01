@@ -1,0 +1,64 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "name": "afullsnack",
+  "homepage": "https://afsnk.afullsnack.dev",
+  "items": [
+    {
+      "name": "payment-modal",
+      "type": "registry:component",
+      "title": "Payment Modal",
+      "description": "A custom payment modal with card input, amount display, confirmation flow and useful hooks.",
+      "dependencies": [
+        "zod",
+        "@tanstack/react-query",
+        "tailwind-merge",
+        "tw-animate-css",
+        "@better-fetch/fetch",
+        "@base-ui/react",
+        "@hugeicons/core-free-icons",
+        "@hugeicons/react",
+        "lucide-react",
+        "@stepperize/react",
+        "react-qr-code"
+      ],
+      "registryDependencies": [
+        "dialog",
+        "button",
+        "input",
+        "label",
+        "card",
+        "sonner",
+        "select",
+        "item",
+        "drawer",
+        "badge",
+        "spinner",
+        "alert",
+        "hover-card",
+        "scroll-area"
+      ],
+      "files": [
+        {
+          "path": "registry/default/afsnk/stablecoin-payment/stablecoin-payment-modal.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/default/afsnk/stablecoin-payment/use-payment.tsx",
+          "type": "registry:hook"
+        },
+        {
+          "path": "registry/default/afsnk/stablecoin-payment/use-countdown.tsx",
+          "type": "registry:hook"
+        },
+        {
+          "path": "registry/default/afsnk/stablecoin-payment/components/ui/credenza.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/default/afsnk/stablecoin-payment/use-media-query.tsx",
+          "type": "registry:hook"
+        }
+      ]
+    }
+  ]
+}

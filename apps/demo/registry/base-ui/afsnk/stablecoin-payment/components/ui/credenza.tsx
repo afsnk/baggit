@@ -1,3 +1,5 @@
+"use client";
+
 import * as React from "react";
 
 import { cn } from "@/lib/utils";
@@ -30,7 +32,6 @@ interface BaseProps {
 interface RootCredenzaProps extends BaseProps {
   open?: boolean;
   disablePointerDismissal?: boolean;
-  dismissable?: boolean;
   onOpenChange?: (open: boolean) => void;
 }
 

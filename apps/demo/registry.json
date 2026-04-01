@@ -6,15 +6,14 @@
     {
       "name": "payment-modal",
       "type": "registry:component",
-      "title": "Payment Modal",
-      "description": "A custom payment modal with card input, amount display, confirmation flow and useful hooks.",
+      "title": "Payment Modal (Radix UI / shadcn)",
+      "description": "A custom payment modal with card input, amount display, confirmation flow and useful hooks. Built on top of shadcn/ui (Radix UI primitives).",
       "dependencies": [
         "zod",
         "@tanstack/react-query",
         "tailwind-merge",
         "tw-animate-css",
         "@better-fetch/fetch",
-        "@base-ui/react",
         "@hugeicons/core-free-icons",
         "@hugeicons/react",
         "lucide-react",
@@ -29,10 +28,8 @@
         "card",
         "sonner",
         "select",
-        "item",
         "drawer",
         "badge",
-        "spinner",
         "alert",
         "hover-card",
         "scroll-area"
@@ -51,12 +48,54 @@
           "type": "registry:hook"
         },
         {
+          "path": "registry/default/afsnk/stablecoin-payment/use-media-query.tsx",
+          "type": "registry:hook"
+        },
+        {
           "path": "registry/default/afsnk/stablecoin-payment/components/ui/credenza.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "payment-modal-base-ui",
+      "type": "registry:component",
+      "title": "Payment Modal (Base UI)",
+      "description": "A custom payment modal with card input, amount display, confirmation flow and useful hooks. Built on top of Base UI primitives (@base-ui/react).",
+      "dependencies": [
+        "zod",
+        "@tanstack/react-query",
+        "tailwind-merge",
+        "tw-animate-css",
+        "@better-fetch/fetch",
+        "@base-ui/react",
+        "@hugeicons/core-free-icons",
+        "@hugeicons/react",
+        "lucide-react",
+        "@stepperize/react",
+        "react-qr-code"
+      ],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "registry/base-ui/afsnk/stablecoin-payment/stablecoin-payment-modal.tsx",
           "type": "registry:component"
         },
         {
-          "path": "registry/default/afsnk/stablecoin-payment/use-media-query.tsx",
+          "path": "registry/base-ui/afsnk/stablecoin-payment/use-payment.tsx",
           "type": "registry:hook"
+        },
+        {
+          "path": "registry/base-ui/afsnk/stablecoin-payment/use-countdown.tsx",
+          "type": "registry:hook"
+        },
+        {
+          "path": "registry/base-ui/afsnk/stablecoin-payment/use-media-query.tsx",
+          "type": "registry:hook"
+        },
+        {
+          "path": "registry/base-ui/afsnk/stablecoin-payment/components/ui/credenza.tsx",
+          "type": "registry:component"
         }
       ]
     }
