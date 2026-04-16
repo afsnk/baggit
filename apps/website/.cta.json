@@ -1,0 +1,25 @@
+{
+  "projectName": "website",
+  "mode": "file-router",
+  "typescript": true,
+  "packageManager": "bun",
+  "includeExamples": false,
+  "tailwind": true,
+  "addOnOptions": {},
+  "envVarValues": {},
+  "git": false,
+  "routerOnly": false,
+  "version": 1,
+  "framework": "react",
+  "chosenAddOns": [
+    "eslint",
+    "compiler",
+    "form",
+    "paraglide",
+    "shadcn",
+    "t3env",
+    "store",
+    "posthog",
+    "tanstack-query"
+  ]
+}
