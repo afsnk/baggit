@@ -1,5 +1,5 @@
 {
-  "name": "@afsnk/stable-pay",
+  "name": "@afsnk/stable-pay-npm",
   "version": "1.0.0",
   "description": "Minimal, modern stablecoin payment modal component",
   "license": "MIT",
