@@ -32,7 +32,7 @@ export default function CryptoSale({
 }: CryptoSaleProps) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-[3fr_2fr] gap-3">
-      <div className="flex flex-col items-start space-y-5">
+      <div className="flex flex-col items-start space-y-5 p-4 md:p-0!">
         <Badge className="space-x-3 bg-primary max-h-10">
           <img
             className="size-5"
@@ -51,11 +51,21 @@ export default function CryptoSale({
           with a credit or debit card, bank transfer, Apple Pay, Google Pay, and
           more.
         </p>
+        <Button
+          variant="outline"
+          size="lg"
+          asChild
+          className="md:hidden flex my-3 capitalize"
+        >
+          <a href={`#buy-frame`}>
+            {action} {token} <ArrowUpRight className="size-4" />
+          </a>
+        </Button>
         <div className="w-full">
-          <h3 className="font-medium text-sm">
+          <h3 className="font-semibold md:font-medium text-xl md:text-sm">
             How to {action} {token} in 3 simple steps
           </h3>
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
             <Card className="relative pt-0">
               <div className="absolute inset-0 z-30 aspect-video bg-black/35" />
               <img
@@ -101,7 +111,9 @@ export default function CryptoSale({
           </div>
         </div>
         <div className="w-full">
-          <h3 className="font-medium text-sm">Payment methods in Denmark</h3>
+          <h3 className="font-semibold md:font-medium text-xl md:text-sm">
+            Payment methods in Denmark
+          </h3>
           <div className="flex flex-wrap gap-2">
             {[
               'Card',
@@ -286,7 +298,7 @@ export default function CryptoSale({
           </div>
         </MarketStats>
       </div>
-      <div className="sticky top-18 self-start flex flex-col">
+      <div className="sticky top-18 self-start flex flex-col" id="buy-frame">
         <Card className="w-full max-w-sm py-2">
           <CardContent className="px-2">
             <Item variant="outline">

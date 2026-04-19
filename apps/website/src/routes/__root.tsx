@@ -19,7 +19,8 @@ import { getLocale } from '#/paraglide/runtime'
 import appCss from '../styles.css?url'
 
 import type { QueryClient } from '@tanstack/react-query'
-import { Container, Main, Section } from '#/components/craft'
+import { Main } from '#/components/craft'
+import { NotFoundPage } from '../components/not-found'
 
 interface MyRouterContext {
   queryClient: QueryClient
@@ -61,6 +62,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
     ],
   }),
   shellComponent: RootDocument,
+  notFoundComponent: () => <NotFoundPage />,
 })
 
 function RootDocument({ children }: { children: React.ReactNode }) {

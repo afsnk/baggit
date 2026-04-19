@@ -8,7 +8,7 @@ import {
 } from '#/components/ui/navigation-menu'
 import { mainNavLinks } from '#/components/nav-links'
 import { LinkItem } from '#/components/sheard'
-import { cn } from '#/lib/utils'
+import { Badge } from './ui/badge'
 
 export function DesktopNav() {
   return (
@@ -72,13 +72,16 @@ export function DesktopNav() {
                   </span>
                 </NavigationMenuLink>
               </div>
-              <div className="space-y-2 bg-popover">
-                <NavigationMenuLink href="/rewards" className="p-4">
+              <div className="bg-popover relative inline-flex">
+                <NavigationMenuLink href="#" className="p-4">
                   <span className="font-medium">Rewards</span>
                   <span className="line-clamp-2 text-muted-foreground text-xs">
                     Monitize your users' loyalty with rewards and incentives.
                   </span>
                 </NavigationMenuLink>
+                <Badge className="absolute top-2 right-2" variant="destructive">
+                  Coming soon...
+                </Badge>
               </div>
               <div className="space-y-2 bg-popover col-span-2">
                 <NavigationMenuLink href="/referral" className="px-4 py-6">

@@ -21,7 +21,7 @@ const config = defineConfig({
     tanstackStart(),
     viteReact(),
     nitro({
-      preset: 'vercel',
+      preset: import.meta.dev ? undefined : 'vercel',
     }),
     reactCompilerPreset(),
   ],

@@ -1,5 +1,10 @@
 import type { LinkItemType, MainNavItemType } from '#/components/sheard'
 import {
+  IconBasketDollar,
+  IconWallet,
+  IconWalletOff,
+} from '@tabler/icons-react'
+import {
   GlobeIcon,
   LayersIcon,
   UserPlusIcon,
@@ -114,23 +119,27 @@ export const mainNavLinks: MainNavItemType[] = [
         href: '/buy',
         description:
           'Buy crypto easily with bank transfer and other payment methods coming soon',
-        icon: <Wallet />,
+        icon: <IconBasketDollar />,
       },
       {
         label: 'Buy USDT',
         href: '/buy/usdt',
+        icon: <img src="/assets/token/usdt.svg" className="size-4" />,
       },
       {
         label: 'Buy USDC',
         href: '/buy/usdc',
+        icon: <img src="/assets/token/usdc.png" className="size-4" />,
       },
       {
         label: 'Buy BTC',
         href: '/buy/btc',
+        icon: <img src="/assets/token/bitcoin.svg" className="size-4" />,
       },
       {
-        label: 'Buy cNGN',
-        href: '/buy/cngn',
+        label: 'Buy Solana',
+        href: '/buy/solana',
+        icon: <img src="/assets/token/solana.svg" className="size-4" />,
       },
     ],
   },
@@ -147,18 +156,22 @@ export const mainNavLinks: MainNavItemType[] = [
       {
         label: 'Sell USDT',
         href: '/sell/usdt',
+        icon: <img src="/assets/token/usdt.svg" className="size-4" />,
       },
       {
         label: 'Sell USDC',
         href: '/sell/usdc',
+        icon: <img src="/assets/token/usdc.png" className="size-4" />,
       },
       {
         label: 'Sell BTC',
         href: '/sell/btc',
+        icon: <img src="/assets/token/bitcoin.svg" className="size-4" />,
       },
       {
-        label: 'Sell cNGN',
-        href: '/sell/cngn',
+        label: 'Sell solana',
+        href: '/sell/solana',
+        icon: <img src="/assets/token/solana.svg" className="size-4" />,
       },
     ],
   },

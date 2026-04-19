@@ -42,7 +42,7 @@ export function FeatureSection() {
         Best crypto on-ramp, billing, onboarding infra on the market, Designed
         for transparency, speed and peace of mind.
       </span>
-      <div className="relative mx-auto grid w-full max-w-5xl grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-6">
+      <div className="relative mt-4 mx-auto grid w-full max-w-5xl grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-6">
         {features.map((feature) => (
           <FeatureCard className={feature.className} key={feature.id}>
             {feature.children}
