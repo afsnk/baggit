@@ -97,11 +97,11 @@ export function DesktopNav() {
             </div>
           </NavigationMenuContent>
         </NavigationMenuItem>
-        <NavigationMenuLink asChild className="px-4">
+        {/*<NavigationMenuLink asChild className="px-4">
           <a className="rounded-md p-2 hover:bg-accent" href="/docs">
             Documentation
           </a>
-        </NavigationMenuLink>
+        </NavigationMenuLink>*/}
       </NavigationMenuList>
     </NavigationMenu>
   )
