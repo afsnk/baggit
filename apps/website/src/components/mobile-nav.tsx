@@ -116,15 +116,15 @@ export function MobileNav() {
               </Link>
             </div>
             <div className="mt-5 flex flex-col gap-2">
-              <Button
+              {/*<Button
                 className="w-full"
                 variant="secondary"
                 onClick={closeMenu}
               >
                 Documentaion
-              </Button>
+              </Button>*/}
               <Button className="w-full" onClick={closeMenu} asChild>
-                <Link to="/onboarding">Get Started</Link>
+                <Link to="#">Get Started</Link>
               </Button>
             </div>
           </div>
