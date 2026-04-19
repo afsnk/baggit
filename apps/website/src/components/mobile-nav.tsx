@@ -6,6 +6,7 @@ import { mainNavLinks } from '#/components/nav-links'
 import { LinkItem } from '#/components/sheard'
 import { XIcon, MenuIcon } from 'lucide-react'
 import { Link } from '@tanstack/react-router'
+import { Badge } from './ui/badge'
 
 export function MobileNav() {
   const [open, setOpen] = React.useState(false)
@@ -85,16 +86,21 @@ export function MobileNav() {
                   Handle billing, subscriptions, make onboarding super seamless.
                 </span>
               </Link>
-              <Link
-                to="/rewards"
-                onClick={closeMenu}
-                className="rounded-lg p-2 active:bg-muted dark:active:bg-muted/50"
-              >
-                <span className="font-medium">Rewards</span>
-                <span className="line-clamp-2 text-muted-foreground text-xs">
-                  Monitize your users' loyalty with rewards and incentives.
-                </span>
-              </Link>
+              <div className="relative inline-flex">
+                <Link
+                  to="#"
+                  onClick={closeMenu}
+                  className="rounded-lg p-2 active:bg-muted dark:active:bg-muted/50"
+                >
+                  <span className="font-medium">Rewards</span>
+                  <span className="line-clamp-2 text-muted-foreground text-xs">
+                    Monitize your users' loyalty with rewards and incentives.
+                  </span>
+                </Link>
+                <Badge className="absolute right-1 top-1" variant="destructive">
+                  Coming soon...
+                </Badge>
+              </div>
               <Link
                 to="/referral"
                 onClick={closeMenu}

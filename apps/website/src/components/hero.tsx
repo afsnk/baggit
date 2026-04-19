@@ -18,9 +18,9 @@ export function HeroSection() {
           )}
         />
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 w-full gap-2">
-        <div className="order-1 border border-cyan-200 p-16 h-8/12 md:h-auto"></div>
-        <div className="order-2 relative z-10 flex flex-col gap-5 px-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 w-full gap-4 md:gap-4">
+        <div className="order-1 border border-gray-400 p-16 mx-2.5 h-[450px] md:min-h-[545px] bg-[url('/assets/billing.png')] rounded-2xl bg-cover bg-center"></div>
+        <div className="order-2 relative z-10 flex flex-col justify-center gap-5 px-4">
           <Link
             className={cn(
               'group flex w-fit items-center gap-3 rounded-sm border bg-card p-1 shadow-xs',
@@ -71,7 +71,7 @@ export function HeroSection() {
               </a>
             </Button>
             <Button variant="default" asChild>
-              <Link to="/onboarding" className="flex items-center">
+              <Link to="#" className="flex items-center">
                 <span className="text-black">Get started</span>{' '}
                 <ArrowRightIcon className="inline-end text-black" />
               </Link>
