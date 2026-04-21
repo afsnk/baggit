@@ -131,16 +131,16 @@ export const mainNavLinks: MainNavItemType[] = [
         href: '/buy/usdc',
         icon: <img src="/assets/token/usdc.png" className="size-4" />,
       },
-      {
-        label: 'Buy BTC',
-        href: '/buy/btc',
-        icon: <img src="/assets/token/bitcoin.svg" className="size-4" />,
-      },
-      {
-        label: 'Buy Solana',
-        href: '/buy/solana',
-        icon: <img src="/assets/token/solana.svg" className="size-4" />,
-      },
+      // {
+      //   label: 'Buy BTC',
+      //   href: '/buy/btc',
+      //   icon: <img src="/assets/token/bitcoin.svg" className="size-4" />,
+      // },
+      // {
+      //   label: 'Buy Solana',
+      //   href: '/buy/solana',
+      //   icon: <img src="/assets/token/solana.svg" className="size-4" />,
+      // },
     ],
   },
   {
@@ -163,16 +163,16 @@ export const mainNavLinks: MainNavItemType[] = [
         href: '/sell/usdc',
         icon: <img src="/assets/token/usdc.png" className="size-4" />,
       },
-      {
-        label: 'Sell BTC',
-        href: '/sell/btc',
-        icon: <img src="/assets/token/bitcoin.svg" className="size-4" />,
-      },
-      {
-        label: 'Sell solana',
-        href: '/sell/solana',
-        icon: <img src="/assets/token/solana.svg" className="size-4" />,
-      },
+      // {
+      //   label: 'Sell BTC',
+      //   href: '/sell/btc',
+      //   icon: <img src="/assets/token/bitcoin.svg" className="size-4" />,
+      // },
+      // {
+      //   label: 'Sell solana',
+      //   href: '/sell/solana',
+      //   icon: <img src="/assets/token/solana.svg" className="size-4" />,
+      // },
     ],
   },
 ]
