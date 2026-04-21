@@ -471,7 +471,7 @@ const tokenContent = {
             </Button>
             <Button asChild variant="link">
               <a href={`/${action === 'buy' ? 'sell' : 'buy'}/${symbol}`}>
-                {action === 'buy' ? 'Sell' : 'Buy'} {symbol}{' '}
+                {action === 'buy' ? 'Sell' : 'Buy'} {symbol.toUpperCase()}{' '}
                 <ArrowUpRight className="size-4" />
               </a>
             </Button>
@@ -491,7 +491,7 @@ const tokenContent = {
             </Button>
             <Button asChild variant="link">
               <a href={`#`}>
-                whitepaper <ArrowUpRight className="size-4" />
+                Whitepaper <ArrowUpRight className="size-4" />
               </a>
             </Button>
           </div>
