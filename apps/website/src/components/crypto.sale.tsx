@@ -463,12 +463,12 @@ const tokenContent = {
           description="Check the current USDT price, detailed charts, and key market statistics. Stay updated with real-time data to track USDT's performance and market trends."
         >
           <div className="flex">
-            <Button asChild variant="link">
+            {/*<Button asChild variant="link">
               <a href={`#`} className="no-undeline">
                 Explorer
                 <ArrowUpRight className="size-4" />
               </a>
-            </Button>
+            </Button>*/}
             <Button asChild variant="link">
               <a href={`/${action === 'buy' ? 'sell' : 'buy'}/${symbol}`}>
                 {action === 'buy' ? 'Sell' : 'Buy'} {symbol.toUpperCase()}{' '}
@@ -484,13 +484,17 @@ const tokenContent = {
         >
           <div className="flex">
             <Button asChild variant="link">
-              <a href={`#`} className="no-undeline">
+              <a
+                href={`https://tether.to/`}
+                className="no-undeline"
+                target="_blank"
+              >
                 Website
                 <ArrowUpRight className="size-4" />
               </a>
             </Button>
             <Button asChild variant="link">
-              <a href={`#`}>
+              <a href={`https://tether.to/en/whitepaper/`} target="_blank">
                 Whitepaper <ArrowUpRight className="size-4" />
               </a>
             </Button>
@@ -643,12 +647,12 @@ const tokenContent = {
           description="Check the current USDC price, detailed charts, and key market statistics. Stay updated with real-time data to track USDC's performance and market trends."
         >
           <div className="flex">
-            <Button asChild variant="link">
+            {/*<Button asChild variant="link">
               <a href={`#`} className="no-undeline">
                 Explorer
                 <ArrowUpRight className="size-4" />
               </a>
-            </Button>
+            </Button>*/}
             <Button asChild variant="link">
               <a href={`/${action === 'buy' ? 'sell' : 'buy'}/${symbol}`}>
                 {action === 'buy' ? 'Sell' : 'Buy'} {symbol.toUpperCase()}{' '}
@@ -664,13 +668,20 @@ const tokenContent = {
         >
           <div className="flex">
             <Button asChild variant="link">
-              <a href={`#`} className="no-undeline">
+              <a
+                href={`https://www.circle.com/en/usdc`}
+                target="_blank"
+                className="no-undeline"
+              >
                 Website
                 <ArrowUpRight className="size-4" />
               </a>
             </Button>
             <Button asChild variant="link">
-              <a href={`#`}>
+              <a
+                href={`https://www.circle.com/legal/mica-usdc-whitepaper`}
+                target="_blank"
+              >
                 Whitepaper <ArrowUpRight className="size-4" />
               </a>
             </Button>
