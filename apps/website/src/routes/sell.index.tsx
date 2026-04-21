@@ -1,3 +1,5 @@
+import { Container, Section } from '#/components/craft'
+import CryptoSale from '#/components/crypto.sale'
 import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/sell/')({
@@ -5,5 +7,11 @@ export const Route = createFileRoute('/sell/')({
 })
 
 function RouteComponent() {
-  return <div>Hello "/sell"!</div>
+  return (
+    <Section>
+      <Container>
+        <CryptoSale token="Crypto" symbol="crypto" action="sell" />
+      </Container>
+    </Section>
+  )
 }
