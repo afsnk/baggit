@@ -10,12 +10,7 @@ function RouteComponent() {
   return (
     <Section>
       <Container>
-        <CryptoSale
-          token="USD Tether"
-          symbol="USDT"
-          icon="/logo512.png"
-          action="buy"
-        />
+        <CryptoSale token="Crypto" symbol="crypto" action="buy" />
       </Container>
     </Section>
   )

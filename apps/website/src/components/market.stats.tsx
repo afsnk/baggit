@@ -20,7 +20,7 @@ export default function MarketStats({
   children?: ReactNode
 }) {
   return (
-    <Card className="w-full bg-accent-foreground/20">
+    <Card className="w-full bg-muted">
       <CardHeader>
         <CardTitle className="w-full flex items-center justify-start gap-3 mb-4">
           <div className="size-8 rounded-full bg-gradient-to-br from-cyan-400 to-teal-500 flex items-center justify-center text-slate-900 font-bold">
@@ -56,7 +56,7 @@ export function StatCard({
   variant = 'default',
 }: StatCardProps) {
   return (
-    <div className="flex items-start justify-between bg-accent rounded-xl p-4">
+    <div className="flex items-start justify-between border border-gray-400 rounded-xl p-4">
       <div className="flex-1">
         <p className="text-sm font-medium text-slate-400 mb-2">{label}</p>
         <p className="text-lg md:text-2xl font-bold text-white break-words">
