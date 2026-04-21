@@ -88,8 +88,8 @@ const tiles: TileData[] = [
     row: 0,
     col: 3,
     logo: {
-      src: 'https://storage.efferd.com/logo/notion.svg',
-      alt: 'Notion Logo',
+      src: '/assets/blockchain/arbitrium.jpeg',
+      alt: 'Arbitrium blockchain Logo',
     },
   },
 
@@ -99,8 +99,8 @@ const tiles: TileData[] = [
     row: 1,
     col: 2,
     logo: {
-      src: 'https://storage.efferd.com/logo/cursor.svg',
-      alt: 'Cursor Logo',
+      src: '/assets/blockchain/optimism.svg',
+      alt: 'Optimism blockchain Logo',
       isInvertable: true,
     },
   },
@@ -108,9 +108,9 @@ const tiles: TileData[] = [
     row: 1,
     col: 4,
     logo: {
-      src: 'https://storage.efferd.com/logo/vercel.svg',
-      alt: 'Vercel Logo',
-      isInvertable: true,
+      src: '/assets/token/bitcoin.svg',
+      alt: 'Bitcoin Logo',
+      isInvertable: false,
     },
   },
 
@@ -119,17 +119,17 @@ const tiles: TileData[] = [
     row: 2,
     col: 1,
     logo: {
-      src: 'https://storage.efferd.com/logo/planetscale.svg',
-      alt: 'Planetscale Logo',
-      isInvertable: true,
+      src: '/assets/blockchain/base.jpeg',
+      alt: 'Base blockchain Logo',
+      isInvertable: false,
     },
   },
   {
     row: 2,
     col: 3,
     logo: {
-      src: 'https://storage.efferd.com/logo/gmail.svg',
-      alt: 'Gmail Logo',
+      src: '/assets/token/usdc.png',
+      alt: 'USDC Logo',
     },
   }, // Empty
 
@@ -140,16 +140,16 @@ const tiles: TileData[] = [
     row: 3,
     col: 2,
     logo: {
-      src: 'https://storage.efferd.com/logo/supabase.svg',
-      alt: 'Supabase Logo',
+      src: '/assets/token/usdt.svg',
+      alt: 'USD Tether Logo',
     },
   },
   {
     row: 3,
     col: 4,
     logo: {
-      src: 'https://storage.efferd.com/logo/canva.svg',
-      alt: 'Canva Logo',
+      src: '/assets/blockchain/binance.svg',
+      alt: 'Binance exchange Logo',
     },
   },
 
@@ -158,16 +158,17 @@ const tiles: TileData[] = [
     row: 4,
     col: 1,
     logo: {
-      src: 'https://storage.efferd.com/logo/adobe.svg',
-      alt: 'Adobe Logo',
+      src: '/assets/token/solana.svg',
+      alt: 'Solana Logo',
     },
   },
   {
     row: 4,
     col: 3,
     logo: {
-      src: 'https://storage.efferd.com/logo/polar.svg',
-      alt: 'Polar Logo',
+      src: '/assets/blockchain/ethereum.svg',
+      alt: 'Ethereum blockchain Logo',
+      isInvertable: true,
     },
   },
 ]
