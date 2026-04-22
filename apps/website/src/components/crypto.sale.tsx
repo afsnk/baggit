@@ -2,14 +2,7 @@ import { ArrowUpRight } from 'lucide-react'
 import MarketStats, { StatCard, StatsDisplay } from '#/components/market.stats'
 import { Badge } from './ui/badge'
 import { Button } from './ui/button'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from './ui/card'
+import { Card, CardContent, CardFooter } from './ui/card'
 import {
   Item,
   ItemActions,
@@ -20,13 +13,13 @@ import {
   ItemTitle,
 } from './ui/item'
 import { FaqsSection } from './faqs-section'
-import { useEffect } from 'react'
 import { useLoaderData } from '@tanstack/react-router'
-import { format } from '#/lib/utils'
+import { formatNumber } from '#/lib/utils'
+import type { Asset } from '#/lib/types'
 
 interface CryptoSaleProps {
   token: string
-  symbol: string
+  symbol: Exclude<Asset, 'bitcoin' | 'solana'>
   action: 'buy' | 'sell'
   icon?: string
 }
@@ -117,7 +110,6 @@ export default function CryptoSale({
             {steps[action].map((step) => (
               <Item className="relative pt-0" key={step.title} variant="muted">
                 <ItemHeader>
-                  {/*<div className="absolute inset-0 z-30 aspect-video bg-black/45" />*/}
                   <img
                     src={step.url}
                     alt={step.title}
@@ -310,7 +302,7 @@ const tokenContent = {
     </>
   ),
   usdt: ({ symbol, action }: { symbol: string; action: string }) => {
-    const data = useLoaderData({ from: `/${action}/$asset` })
+    const data = useLoaderData({ from: `/${action}/$asset` as any })
 
     return (
       <>
@@ -437,22 +429,22 @@ const tokenContent = {
           <StatsDisplay columns={2}>
             <StatCard
               label="Price"
-              value={`${format(data[0].quote[0].price)} ${data[0].quote[0].symbol}`}
+              value={`${formatNumber(data[0].quote[0].price)} ${data[0].quote[0].symbol}`}
               variant="highlight"
             />
             <StatCard
               label="Market cap"
-              value={`${format(data[0].quote[0].market_cap)} ${data[0].quote[0].symbol}`}
+              value={`${formatNumber(data[0].quote[0].market_cap)} ${data[0].quote[0].symbol}`}
               variant="highlight"
             />
             <StatCard
               label="Volume (24h)"
-              value={`${format(data[0].quote[0].volume_24h)} ${data[0].quote[0].symbol}`}
+              value={`${formatNumber(data[0].quote[0].volume_24h)} ${data[0].quote[0].symbol}`}
               variant="highlight"
             />
             <StatCard
               label="Circulation"
-              value={`${format(data[0].circulating_supply)}`}
+              value={`${formatNumber(data[0].circulating_supply)}`}
               variant="highlight"
             />
           </StatsDisplay>
@@ -463,12 +455,6 @@ const tokenContent = {
           description="Check the current USDT price, detailed charts, and key market statistics. Stay updated with real-time data to track USDT's performance and market trends."
         >
           <div className="flex">
-            {/*<Button asChild variant="link">
-              <a href={`#`} className="no-undeline">
-                Explorer
-                <ArrowUpRight className="size-4" />
-              </a>
-            </Button>*/}
             <Button asChild variant="link">
               <a href={`/${action === 'buy' ? 'sell' : 'buy'}/${symbol}`}>
                 {action === 'buy' ? 'Sell' : 'Buy'} {symbol.toUpperCase()}{' '}
@@ -504,7 +490,7 @@ const tokenContent = {
     )
   },
   usdc: ({ symbol, action }: { symbol: string; action: string }) => {
-    const data = useLoaderData({ from: `/${action}/$asset` })
+    const data = useLoaderData({ from: `/${action}/$asset` as any })
 
     return (
       <>
@@ -616,27 +602,27 @@ const tokenContent = {
         <MarketStats
           symbol={symbol}
           title="USDT (USDC) market stats"
-          description={`USDC is priced at ${format(data[0].quote[0].price)} ${data[0].quote[0].symbol}, up ${data[0].quote[0].percent_change_24h}% in the last 24 hours, with a trading volume of ${format(data[0].quote[0].volume_24h)} ${data[0].quote[0].symbol}. As the #1 cryptocurrency by market cap.`}
+          description={`USDC is priced at ${formatNumber(data[0].quote[0].price)} ${data[0].quote[0].symbol}, up ${data[0].quote[0].percent_change_24h}% in the last 24 hours, with a trading volume of ${formatNumber(data[0].quote[0].volume_24h)} ${data[0].quote[0].symbol}. As the #1 cryptocurrency by market cap.`}
         >
           <StatsDisplay columns={2}>
             <StatCard
               label="Price"
-              value={`${format(data[0].quote[0].price)} ${data[0].quote[0].symbol}`}
+              value={`${formatNumber(data[0].quote[0].price)} ${data[0].quote[0].symbol}`}
               variant="highlight"
             />
             <StatCard
               label="Market cap"
-              value={`${format(data[0].quote[0].market_cap)} ${data[0].quote[0].symbol}`}
+              value={`${formatNumber(data[0].quote[0].market_cap)} ${data[0].quote[0].symbol}`}
               variant="highlight"
             />
             <StatCard
               label="Volume (24h)"
-              value={`${format(data[0].quote[0].volume_24h)} ${data[0].quote[0].symbol}`}
+              value={`${formatNumber(data[0].quote[0].volume_24h)} ${data[0].quote[0].symbol}`}
               variant="highlight"
             />
             <StatCard
               label="Circulation"
-              value={`${format(data[0].circulating_supply)}`}
+              value={`${formatNumber(data[0].circulating_supply)}`}
               variant="highlight"
             />
           </StatsDisplay>
@@ -647,12 +633,6 @@ const tokenContent = {
           description="Check the current USDC price, detailed charts, and key market statistics. Stay updated with real-time data to track USDC's performance and market trends."
         >
           <div className="flex">
-            {/*<Button asChild variant="link">
-              <a href={`#`} className="no-undeline">
-                Explorer
-                <ArrowUpRight className="size-4" />
-              </a>
-            </Button>*/}
             <Button asChild variant="link">
               <a href={`/${action === 'buy' ? 'sell' : 'buy'}/${symbol}`}>
                 {action === 'buy' ? 'Sell' : 'Buy'} {symbol.toUpperCase()}{' '}
