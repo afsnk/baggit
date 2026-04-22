@@ -1,11 +1,11 @@
 import { env } from '#/env'
 import { betterFetch } from '@better-fetch/fetch'
 import { createServerFn } from '@tanstack/react-start'
+import type { Asset } from './types'
 
 export const getTokenData = createServerFn()
-  .inputValidator((data: 'usdc' | 'usdt') => data)
+  .inputValidator((data: Asset) => data)
   .handler(async ({ data: asset }) => {
-    console.log('Envs', { env, asset })
     const { data, error } = await betterFetch<{
       data: Array<{
         name: string
@@ -37,8 +37,6 @@ export const getTokenData = createServerFn()
       console.log('Failed to get data', { error })
       throw error
     }
-
-    console.log(`Data`, { quote: data.data[0].quote[0] })
 
     return data
   })
