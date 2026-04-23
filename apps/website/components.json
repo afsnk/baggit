@@ -19,6 +19,7 @@
     "hooks": "#/hooks"
   },
   "registries": {
-    "@efferd": "https://efferd.com/r/{style}/{name}.json"
+    "@efferd": "https://efferd.com/r/{style}/{name}.json",
+    "@blocks-so": "https://blocks.so/r/{name}.json"
   }
 }
