@@ -141,7 +141,21 @@ export default function CryptoSale({
         {tokenContent[symbol]({ symbol, action })}
       </div>
       <div className="sticky top-18 self-start flex flex-col" id="buy-frame">
-        <Card className="w-full max-w-sm py-2">
+        <iframe
+          src={`http://localhost:3011?apiKey=pk_bgit_00001&signature=sig_aosdbvoadubosbdoado`}
+          title="Embedded home content in about page."
+          style={{
+            width: '100%',
+            height: '500px',
+            // border: '1px solid white',
+            borderRadius: 12,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+          allow="accelerometer; autoplay; camera; encrypted-media; gyroscope; payment; clipboard-read; clipboard-write"
+        ></iframe>
+        {/*<Card className="w-full max-w-sm py-2">
           <CardContent className="px-2">
             <Item variant="outline">
               <ItemContent>
@@ -165,7 +179,7 @@ export default function CryptoSale({
               Cancel
             </Button>
           </CardFooter>
-        </Card>
+        </Card>*/}
       </div>
     </div>
   )
