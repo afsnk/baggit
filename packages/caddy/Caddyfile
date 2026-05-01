@@ -1,0 +1,18 @@
+
+# Auth and API reverse proxies for Baggit Production applications
+auth.baggit.link {
+  reverse_proxy http://auth.process.baggit.internal
+}
+
+api.baggit.link {
+  reverse_proxy http://api.process.baggit.internal
+}
+
+# Staging reverse proxies for Baggit Staging applications
+staging.auth.baggit.link {
+  reverse_proxy http://auth.process.baggit-staging.internal
+}
+
+staging.api.baggit.link {
+  reverse_proxy http://api.process.baggit-staging.internal
+}
