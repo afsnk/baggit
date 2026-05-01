@@ -1,7 +1,10 @@
 {
-  "$schema": "https://turborepo.dev/schema.json",
+  "$schema": "https://turborepo.com/schema.json",
+  "globalDependencies": ["**/.env.*local", "**/.env*", "**/.env"],
+  "envMode": "loose",
   "tasks": {
     "build": {
+      "dependsOn": ["^build"],
       "outputs": ["dist/**"]
     },
     "check-types": {
