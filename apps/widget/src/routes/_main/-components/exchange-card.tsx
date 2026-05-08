@@ -14,8 +14,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '#/components/ui/select'
+import { Spinner } from '#/components/ui/spinner'
+import { assets } from '#/lib/switch-client'
 import { cn } from '#/lib/utils'
+import { useQuery } from '@tanstack/react-query'
 import { Link } from '@tanstack/react-router'
+import { useServerFn } from '@tanstack/react-start'
 
 export default function ExchangeCard({
   defaultMode = 'buy',
@@ -36,18 +40,18 @@ function SwitchButton({ order }: { order: 'sell' | 'buy' }) {
     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 size-8">
       <Button size="icon-sm" asChild>
         <Link to={order === 'buy' ? '/sell' : '/buy'}>
-          <IconTransfer />
+          <IconTransfer className="text-black" />
         </Link>
       </Button>
     </div>
   )
 }
 
-const defaultInputStyle = `text-2xl border-none outline-0 focus-visible:border-none focus-visible:ring-0 px-1 bg-transparent`
+const defaultInputStyle = `md:text-4xl text-6xl border-none outline-0 focus-visible:border-none focus-visible:ring-0 px-2 focus:bg-white/30 darK:bg-transparent h-auto py-0`
 function FiatCard({ order }: { order: 'sell' | 'buy' }) {
   return (
     <Card
-      className={cn('bg-muted border border-gray-700', {
+      className={cn('', {
         'order-2': order === 'sell',
         'order-1': order === 'buy',
       })}
@@ -71,7 +75,7 @@ function FiatCard({ order }: { order: 'sell' | 'buy' }) {
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            {['SOL', 'BTC', 'USDC', 'USDT'].map((item) => (
+            {['NGN', 'USD', 'GHS', 'KSH'].map((item) => (
               <SelectItem value={item} key={item}>
                 {item}
               </SelectItem>
@@ -84,6 +88,24 @@ function FiatCard({ order }: { order: 'sell' | 'buy' }) {
 }
 
 function TokenCard({ order }: { order: 'sell' | 'buy' }) {
+  const getAssets = useServerFn(assets)
+  const {
+    data: assetsData,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ['assets'],
+    queryFn: () => getAssets(),
+  })
+
+  if (error) {
+    return (
+      <pre>
+        <code>{error.message}</code>
+      </pre>
+    )
+  }
+
   return (
     <Card
       className={cn({
@@ -105,18 +127,24 @@ function TokenCard({ order }: { order: 'sell' | 'buy' }) {
         />
       </CardContent>
       <CardFooter>
-        <Select defaultValue="NGN">
-          <SelectTrigger className="w-full">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {['NGN', 'KSH', 'GSH', 'GPT'].map((item) => (
-              <SelectItem value={item} key={item}>
-                {item}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        {isLoading ? (
+          <div>
+            <Spinner className="" />
+          </div>
+        ) : (
+          <Select defaultValue={assetsData?.data[0]?.id}>
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Pick asset" />
+            </SelectTrigger>
+            <SelectContent>
+              {assetsData?.data.map((asset) => (
+                <SelectItem value={asset.id} key={asset.id}>
+                  {asset.code} ({asset.blockchain.name})
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
       </CardFooter>
     </Card>
   )
