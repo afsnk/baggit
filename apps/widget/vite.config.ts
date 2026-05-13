@@ -25,6 +25,9 @@ const config = defineConfig({
       },
     }),
   ],
+  server: {
+    // allowedHosts: Boolean(import.meta.env.DEV ?? true)
+  }
 })
 
 export default config

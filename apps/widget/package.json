@@ -6,7 +6,7 @@
     "#/*": "./src/*"
   },
   "scripts": {
-    "dev": "bun --bun run vite dev --port 3011",
+    "dev": "portless widget.baggit --app-port 3000 bunx --bun vite dev",
     "build": "vite build",
     "preview": "vite preview",
     "test": "vitest run",
