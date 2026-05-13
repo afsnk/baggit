@@ -17,6 +17,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '#/components/ui/dropdown-menu'
+import { Container, Main, Section } from '#/components/craft'
 
 export const Route = createFileRoute('/_main')({
   component: RouteComponent,
@@ -24,12 +25,14 @@ export const Route = createFileRoute('/_main')({
 
 function RouteComponent() {
   return (
-    <main className="px-0 items-center">
-      <div className="max-w-xl md:max-w-lg w-full bg-muted min-h-[450px] h-screen md:h-auto rounded-lg mx-auto md:my-6 p-4">
-        <Navigation />
-        <Outlet />
-      </div>
-    </main>
+    <Main className="sm:w-sm mx-2 sm:mx-0 w-full">
+      <Section className="sm:-translate-y-12">
+        <Container className="bg-muted h-auto rounded-lg p-3 sm:p-3 md:relative">
+          <Navigation />
+          <Outlet />
+        </Container>
+      </Section>
+    </Main>
   )
 }
 
@@ -63,13 +66,13 @@ function MainMenu() {
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-40 text-xs" align="center">
         <DropdownMenuGroup>
-          <DropdownMenuItem>Payment history</DropdownMenuItem>
+          <DropdownMenuItem>History</DropdownMenuItem>
           <DropdownMenuItem>Saved addresses</DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuLabel>Settings</DropdownMenuLabel>
-          <DropdownMenuItem>Theme</DropdownMenuItem>
+          <DropdownMenuItem>Profile</DropdownMenuItem>
         </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>

@@ -14,10 +14,10 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as MainRouteRouteImport } from './routes/_main/route'
 import { Route as MainIndexRouteImport } from './routes/_main/index'
 import { Route as MicroRampRouteImport } from './routes/micro/ramp'
+import { Route as ApiReferralRouteImport } from './routes/api/referral'
 import { Route as MainSellRouteImport } from './routes/_main/sell'
 import { Route as MainBuyRouteImport } from './routes/_main/buy'
 import { Route as walletWalletRouteImport } from './routes/(wallet)/wallet'
-import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 
 const SpaRoute = SpaRouteImport.update({
   id: '/spa',
@@ -43,6 +43,11 @@ const MicroRampRoute = MicroRampRouteImport.update({
   path: '/micro/ramp',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiReferralRoute = ApiReferralRouteImport.update({
+  id: '/api/referral',
+  path: '/api/referral',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MainSellRoute = MainSellRouteImport.update({
   id: '/sell',
   path: '/sell',
@@ -58,11 +63,6 @@ const walletWalletRoute = walletWalletRouteImport.update({
   path: '/wallet',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
-  id: '/api/auth/$',
-  path: '/api/auth/$',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof MainIndexRoute
@@ -71,8 +71,8 @@ export interface FileRoutesByFullPath {
   '/wallet': typeof walletWalletRoute
   '/buy': typeof MainBuyRoute
   '/sell': typeof MainSellRoute
+  '/api/referral': typeof ApiReferralRoute
   '/micro/ramp': typeof MicroRampRoute
-  '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRoutesByTo {
   '/about': typeof AboutRoute
@@ -80,9 +80,9 @@ export interface FileRoutesByTo {
   '/wallet': typeof walletWalletRoute
   '/buy': typeof MainBuyRoute
   '/sell': typeof MainSellRoute
+  '/api/referral': typeof ApiReferralRoute
   '/micro/ramp': typeof MicroRampRoute
   '/': typeof MainIndexRoute
-  '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -92,9 +92,9 @@ export interface FileRoutesById {
   '/(wallet)/wallet': typeof walletWalletRoute
   '/_main/buy': typeof MainBuyRoute
   '/_main/sell': typeof MainSellRoute
+  '/api/referral': typeof ApiReferralRoute
   '/micro/ramp': typeof MicroRampRoute
   '/_main/': typeof MainIndexRoute
-  '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -105,8 +105,8 @@ export interface FileRouteTypes {
     | '/wallet'
     | '/buy'
     | '/sell'
+    | '/api/referral'
     | '/micro/ramp'
-    | '/api/auth/$'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/about'
@@ -114,9 +114,9 @@ export interface FileRouteTypes {
     | '/wallet'
     | '/buy'
     | '/sell'
+    | '/api/referral'
     | '/micro/ramp'
     | '/'
-    | '/api/auth/$'
   id:
     | '__root__'
     | '/_main'
@@ -125,9 +125,9 @@ export interface FileRouteTypes {
     | '/(wallet)/wallet'
     | '/_main/buy'
     | '/_main/sell'
+    | '/api/referral'
     | '/micro/ramp'
     | '/_main/'
-    | '/api/auth/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -135,8 +135,8 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   SpaRoute: typeof SpaRoute
   walletWalletRoute: typeof walletWalletRoute
+  ApiReferralRoute: typeof ApiReferralRoute
   MicroRampRoute: typeof MicroRampRoute
-  ApiAuthSplatRoute: typeof ApiAuthSplatRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -176,6 +176,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MicroRampRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/referral': {
+      id: '/api/referral'
+      path: '/api/referral'
+      fullPath: '/api/referral'
+      preLoaderRoute: typeof ApiReferralRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_main/sell': {
       id: '/_main/sell'
       path: '/sell'
@@ -195,13 +202,6 @@ declare module '@tanstack/react-router' {
       path: '/wallet'
       fullPath: '/wallet'
       preLoaderRoute: typeof walletWalletRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/auth/$': {
-      id: '/api/auth/$'
-      path: '/api/auth/$'
-      fullPath: '/api/auth/$'
-      preLoaderRoute: typeof ApiAuthSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -228,8 +228,8 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   SpaRoute: SpaRoute,
   walletWalletRoute: walletWalletRoute,
+  ApiReferralRoute: ApiReferralRoute,
   MicroRampRoute: MicroRampRoute,
-  ApiAuthSplatRoute: ApiAuthSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

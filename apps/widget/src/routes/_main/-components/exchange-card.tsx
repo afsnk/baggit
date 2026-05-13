@@ -5,21 +5,59 @@ import {
   CardDescription,
   CardFooter,
   CardHeader,
+  CardTitle,
 } from '#/components/ui/card'
+import { Drawer } from 'vaul'
 import { Input } from '#/components/ui/input'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '#/components/ui/select'
-import { Spinner } from '#/components/ui/spinner'
-import { assets } from '#/lib/switch-client'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '#/components/ui/tabs'
 import { cn } from '#/lib/utils'
-import { useQuery } from '@tanstack/react-query'
-import { Link } from '@tanstack/react-router'
-import { useServerFn } from '@tanstack/react-start'
+import { ChevronDown, ChevronUp, Settings } from 'lucide-react'
+import { DynamicVaulDrawer } from './dynamic-vaul-drawer'
+import { AnimatePresence, motion } from 'motion/react'
+import {
+  renderAsset,
+  type IAsset,
+  type IAssetsRender,
+  type INetwork,
+} from './asset-toggle'
+import { useReducer } from 'react'
+
+const assets: IAssetsRender[] = [
+  {
+    name: 'USD Tether',
+    symbol: 'usdt',
+    icon: `/assets/token/usdt.svg`,
+    networks: [
+      {
+        name: 'Binance Smart Chain',
+        symbol: 'BNB',
+        description: 'Layer 1 Chain for the Binance CEX',
+      },
+      {
+        name: 'Base',
+        symbol: 'BASE',
+        description: 'Layer 2 Ethereum chain for fast settlement times',
+      },
+    ],
+  },
+  {
+    name: 'USDC (Circle)',
+    symbol: 'usdc',
+    icon: `assets/token/usdc.png`,
+    networks: [
+      {
+        name: 'Binance Smart Chain',
+        symbol: 'BNB',
+        description: 'Layer 1 Chain for the Binance CEX',
+      },
+      {
+        name: 'Base',
+        symbol: 'BASE',
+        description: 'Layer 2 Ethereum chain for fast settlement times',
+      },
+    ],
+  },
+]
 
 export default function ExchangeCard({
   defaultMode = 'buy',
@@ -27,126 +65,236 @@ export default function ExchangeCard({
   defaultMode: 'buy' | 'sell'
 }) {
   return (
-    <div className="grid grid-cols-2 gap-1 relative items-center justify-center w-full">
-      <FiatCard order={defaultMode} />
-      <SwitchButton order={defaultMode} />
-      <TokenCard order={defaultMode} />
+    <div className="grid w-full">
+      <AssetConfig mode={defaultMode} />
     </div>
   )
 }
-
-function SwitchButton({ order }: { order: 'sell' | 'buy' }) {
+const defaultInputStyle = `md:text-4xl text-6xl border-none outline-0 focus-visible:border-none focus-visible:ring-0 p-2 focus:bg-white/30 darK:bg-transparent h-auto`
+function AssetConfig({ mode }: { mode: 'sell' | 'buy' }) {
   return (
-    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 size-8">
-      <Button size="icon-sm" asChild>
-        <Link to={order === 'buy' ? '/sell' : '/buy'}>
-          <IconTransfer className="text-black" />
-        </Link>
+    <Tabs defaultValue={mode} className="w-full">
+      <div className="flex items-center justify-between w-full">
+        <TabsList>
+          <TabsTrigger value="sell">Sell</TabsTrigger>
+          <TabsTrigger value="buy">Buy</TabsTrigger>
+        </TabsList>
+        <div>
+          <Button size="icon-sm" className="hidden">
+            <Settings className="size-4 text-primary-foreground" />
+          </Button>
+        </div>
+      </div>
+      <TabsContent value="sell">
+        <Card>
+          <CardHeader>
+            <CardTitle className="capitalize">{mode} token:</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="w-full flex gap-3">
+              <Input
+                type="number"
+                defaultValue={0.0}
+                className={cn(
+                  defaultInputStyle,
+                  '[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none',
+                )}
+              />
+              <AssetToggle mode={mode} />
+            </div>
+          </CardContent>
+        </Card>
+      </TabsContent>
+      <TabsContent value="buy">
+        <Card>
+          <CardHeader>
+            <CardTitle className="capitalize">{mode} token:</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="w-full flex gap-3">
+              <Input
+                type="number"
+                defaultValue={0.0}
+                className={cn(
+                  defaultInputStyle,
+                  '[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none',
+                )}
+              />
+              <AssetToggle mode={mode} />
+            </div>
+          </CardContent>
+        </Card>
+      </TabsContent>
+    </Tabs>
+  )
+}
+
+function AssetToggle({ mode }: { mode: 'buy' | 'sell' }) {
+  const [state, dispatch] = useReducer(
+    (
+      state,
+      action:
+        | { type: 'SELECT_ASSET'; payload: IAsset }
+        | { type: 'SELECT_NETWORK'; payload: INetwork },
+    ) => {
+      switch (action.type) {
+        case 'SELECT_ASSET':
+          return { ...state, asset: action.payload }
+        case 'SELECT_NETWORK':
+          return { ...state, network: action.payload }
+        default:
+          return state
+      }
+    },
+    {
+      asset: assets[0] as IAsset,
+      network: assets[0].networks[0] as INetwork,
+    },
+  )
+
+  return (
+    <DynamicVaulDrawer
+      renderContent={() => {
+        const containerVariants = {
+          initial: {},
+          animate: {
+            transition: {
+              staggerChildren: 0.02,
+              delayChildren: 0.06,
+            },
+          },
+        }
+
+        const EASE_OUT = [0.23, 1, 0.32, 1] as const
+        const itemVariants = {
+          initial: { opacity: 0, y: 6 },
+          animate: {
+            opacity: 1,
+            y: 0,
+            transition: { duration: 0.18, ease: EASE_OUT },
+          },
+          exit: {
+            opacity: 0,
+            y: 4,
+            transition: { duration: 0.14, ease: EASE_OUT },
+          },
+        }
+
+        return (
+          <>
+            {/* Animated title + description */}
+            <AnimatePresence mode="popLayout">
+              <motion.div
+                key={`${mode}`}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.16, ease: 'linear' }}
+                className="mt-2 space-y-1"
+              >
+                <Drawer.Title className="text-base font-semibold tracking-tight capitalize">
+                  {!state.asset && 'Pick asset'}
+                  {state.asset &&
+                    state.network &&
+                    `${mode} ${state.asset.name} on ${state.network.name}`}
+                </Drawer.Title>
+                <Drawer.Description className="text-xs leading-relaxed">
+                  Select asset and network to trade on
+                </Drawer.Description>
+              </motion.div>
+            </AnimatePresence>
+
+            {/* Height-animating content area */}
+            <AnimatePresence mode="popLayout">
+              <motion.div
+                key="menu"
+                layout
+                variants={containerVariants}
+                initial="initial"
+                animate="animate"
+                exit="initial"
+                className="flex flex-col gap-2.5"
+              >
+                {assets.map((asset) => renderAsset(asset, state, dispatch))}
+                {/*(
+                  <motion.button
+                    layout
+                    variants={itemVariants}
+                    type="button"
+                    onClick={() => handleSelect('profile')}
+                    className="group flex items-center gap-2 rounded-xl border border-border/70 bg-background px-3.5 py-3 text-left shadow-sm transition-colors hover:border-border hover:bg-muted/60"
+                    whileTap={{ scale: 0.97 }}
+                  >
+                    <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-muted text-[11px]">
+                      🔒
+                    </span>
+                    <div className="flex-1">
+                      <div className="text-sm font-medium">
+                        View private details
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        Profile, presence, and identity.
+                      </div>
+                    </div>
+                  </motion.button>
+
+                  <motion.button
+                    layout
+                    variants={itemVariants}
+                    type="button"
+                    onClick={() => handleSelect('billing')}
+                    className="group flex items-center gap-2 rounded-xl border border-border/70 bg-background px-3.5 py-3 text-left shadow-sm transition-colors hover:border-border hover:bg-muted/60"
+                    whileTap={{ scale: 0.97 }}
+                  >
+                    <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-muted text-[11px]">
+                      ☐
+                    </span>
+                    <div className="flex-1">
+                      <div className="text-sm font-medium">View billing</div>
+                      <div className="text-xs text-muted-foreground">
+                        Plan, usage, and invoices.
+                      </div>
+                    </div>
+                  </motion.button>
+              ))}*/}
+              </motion.div>
+            </AnimatePresence>
+            {/*</motion.div>*/}
+
+            {/* Footer actions */}
+            {/*<div className="flex items-center justify-between gap-2 py-4">
+          <button
+            type="button"
+            onClick={handleCancel}
+            className="text-xs text-muted-foreground hover:text-foreground"
+          >
+            Cancel
+          </button>
+          <Drawer.Close asChild>
+            <Button type="button" size="sm" className="text-xs">
+              Done
+            </Button>
+          </Drawer.Close>
+          </div>*/}
+          </>
+        )
+      }}
+    >
+      <Button
+        size="icon-lg"
+        className="aspect-square size-16 group"
+        variant="outline"
+      >
+        <div className="flex flex-col items-center justify-center relative w-full h-full">
+          <ChevronUp className="absolute rotate-45 right-0 top-0 text-gray-600 group-hover:text-white transition-colors" />
+          <img
+            src={state.asset.icon}
+            className="m-0! size-6 bg-cover object-contain rounded-full"
+          />
+          <ChevronDown className="absolute rotate-45 left-0 bottom-0 text-gray-600 group-hover:text-white transition-colors" />
+        </div>
       </Button>
-    </div>
-  )
-}
-
-const defaultInputStyle = `md:text-4xl text-6xl border-none outline-0 focus-visible:border-none focus-visible:ring-0 px-2 focus:bg-white/30 darK:bg-transparent h-auto py-0`
-function FiatCard({ order }: { order: 'sell' | 'buy' }) {
-  return (
-    <Card
-      className={cn('', {
-        'order-2': order === 'sell',
-        'order-1': order === 'buy',
-      })}
-    >
-      <CardHeader>
-        <CardDescription>You send</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Input
-          type="number"
-          defaultValue={0.0}
-          className={cn(
-            defaultInputStyle,
-            '[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none',
-          )}
-        />
-      </CardContent>
-      <CardFooter>
-        <Select defaultValue="SOL">
-          <SelectTrigger className="w-full border border-gray-700">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {['NGN', 'USD', 'GHS', 'KSH'].map((item) => (
-              <SelectItem value={item} key={item}>
-                {item}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </CardFooter>
-    </Card>
-  )
-}
-
-function TokenCard({ order }: { order: 'sell' | 'buy' }) {
-  const getAssets = useServerFn(assets)
-  const {
-    data: assetsData,
-    isLoading,
-    error,
-  } = useQuery({
-    queryKey: ['assets'],
-    queryFn: () => getAssets(),
-  })
-
-  if (error) {
-    return (
-      <pre>
-        <code>{error.message}</code>
-      </pre>
-    )
-  }
-
-  return (
-    <Card
-      className={cn({
-        'order-1': order === 'sell',
-        'order-2': order === 'buy',
-      })}
-    >
-      <CardHeader>
-        <CardDescription>You get</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Input
-          type="number"
-          defaultValue={0.0}
-          className={cn(
-            defaultInputStyle,
-            '[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none',
-          )}
-        />
-      </CardContent>
-      <CardFooter>
-        {isLoading ? (
-          <div>
-            <Spinner className="" />
-          </div>
-        ) : (
-          <Select defaultValue={assetsData?.data[0]?.id}>
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Pick asset" />
-            </SelectTrigger>
-            <SelectContent>
-              {assetsData?.data.map((asset) => (
-                <SelectItem value={asset.id} key={asset.id}>
-                  {asset.code} ({asset.blockchain.name})
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        )}
-      </CardFooter>
-    </Card>
+    </DynamicVaulDrawer>
   )
 }
 
