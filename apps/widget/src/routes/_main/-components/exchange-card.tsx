@@ -1,12 +1,5 @@
 import { Button } from '#/components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '#/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '#/components/ui/card'
 import { Drawer } from 'vaul'
 import { Input } from '#/components/ui/input'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '#/components/ui/tabs'
@@ -21,6 +14,7 @@ import {
   type INetwork,
 } from './asset-toggle'
 import { useReducer } from 'react'
+import { useNavigate } from '@tanstack/react-router'
 
 const assets: IAssetsRender[] = [
   {
@@ -72,8 +66,15 @@ export default function ExchangeCard({
 }
 const defaultInputStyle = `md:text-4xl text-6xl border-none outline-0 focus-visible:border-none focus-visible:ring-0 p-2 focus:bg-white/30 darK:bg-transparent h-auto`
 function AssetConfig({ mode }: { mode: 'sell' | 'buy' }) {
+  const navigate = useNavigate({ from: `/${mode}` })
   return (
-    <Tabs defaultValue={mode} className="w-full">
+    <Tabs
+      defaultValue={mode}
+      className="w-full"
+      onValueChange={(tab) => {
+        navigate({ to: `/${tab}` })
+      }}
+    >
       <div className="flex items-center justify-between w-full">
         <TabsList>
           <TabsTrigger value="sell">Sell</TabsTrigger>
@@ -198,7 +199,7 @@ function AssetToggle({ mode }: { mode: 'buy' | 'sell' }) {
                     state.network &&
                     `${mode} ${state.asset.name} on ${state.network.name}`}
                 </Drawer.Title>
-                <Drawer.Description className="text-xs leading-relaxed">
+                <Drawer.Description className="text-sm leading-relaxed mb-3 text-muted-foreground">
                   Select asset and network to trade on
                 </Drawer.Description>
               </motion.div>
@@ -282,7 +283,7 @@ function AssetToggle({ mode }: { mode: 'buy' | 'sell' }) {
     >
       <Button
         size="icon-lg"
-        className="aspect-square size-16 group"
+        className="aspect-square size-12 group"
         variant="outline"
       >
         <div className="flex flex-col items-center justify-center relative w-full h-full">
@@ -298,7 +299,7 @@ function AssetToggle({ mode }: { mode: 'buy' | 'sell' }) {
   )
 }
 
-const IconTransfer = ({ className }: any) => (
+export const IconTransfer = ({ className }: any) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width="24"

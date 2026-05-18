@@ -13,7 +13,6 @@ import {
   FieldTitle,
 } from '#/components/ui/field'
 import { RadioGroup, RadioGroupItem } from '#/components/ui/radio-group'
-import { ChevronRightIcon, FolderIcon } from 'lucide-react'
 
 export interface INetwork {
   name: string

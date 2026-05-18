@@ -71,7 +71,7 @@ export function DynamicVaulDrawer({ children, renderContent }: IDrawer) {
           <Drawer.Content asChild>
             {/* Outer positioner, not animated in height (just placement) */}
             <motion.div
-              className="fixed inset-x-4 bottom-0 z-50 flex justify-center max-w-md mx-auto outline-none md:w-full pointer-events-none"
+              className="fixed inset-x-4 bottom-0 z-50 flex justify-center max-w-md min-w-md mx-auto outline-none md:w-full pointer-events-none"
               // initial={{ y: '100%' }}
               animate={{ y: 0 }}
               exit={{ y: '100%' }}
@@ -88,7 +88,7 @@ export function DynamicVaulDrawer({ children, renderContent }: IDrawer) {
                 layoutAnchor={{ x: 0.5, y: 1 }}
                 layoutRoot
                 transition={{ layout: { duration: 2.12, ease: EASE_OUT } }}
-                className="pointer-events-auto h-full mb-4 rounded-2xl overflow-hidden border border-border/60 bg-background/95 shadow-lg shadow-black/40 backdrop-blur-md"
+                className="pointer-events-auto h-full min-w-md mb-4 rounded-2xl overflow-hidden border border-border/60 bg-background/95 shadow-lg shadow-black/40 backdrop-blur-md"
               >
                 <div className="px-4 pt-3 pb-4">
                   {/* Header */}
