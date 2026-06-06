@@ -18,6 +18,7 @@ import {
   DropdownMenuTrigger,
 } from '#/components/ui/dropdown-menu'
 import { Container, Main, Section } from '#/components/craft'
+import { TradeProvider } from './-hooks/use-trade'
 
 export const Route = createFileRoute('/_main')({
   component: RouteComponent,
@@ -28,8 +29,10 @@ function RouteComponent() {
     <Main className="sm:w-sm mx-2 sm:mx-0 w-full">
       <Section className="sm:-translate-y-12">
         <Container className="bg-muted h-auto rounded-lg p-3 sm:p-3 md:relative">
-          <Navigation />
-          <Outlet />
+          <TradeProvider>
+            <Navigation />
+            <Outlet />
+          </TradeProvider>
         </Container>
       </Section>
     </Main>
