@@ -1,5 +1,5 @@
 {
-  "name": "@afsnk/labs",
+  "name": "@baggit/labs",
   "version": "0.0.1",
   "description": "Minimal, modern stablecoin payment modal (npm + shadcn/ui)",
   "private": true,
@@ -48,12 +48,14 @@
     "@types/react-dom": "^19.2.0",
     "tsc-alias": "^1.8.16",
     "tsx": "^4.21.0",
+    "turbo": "^2.9.7",
     "typescript": "^5.7.2",
     "vitest": "^3.0.5"
   },
   "pnpm": {
     "onlyBuiltDependencies": []
   },
+  "packageManager": "bun@1.3.11",
   "workspaces": [
     "packages/*",
     "apps/*"

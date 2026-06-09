@@ -9,15 +9,20 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ReferralRouteImport } from './routes/referral'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as BillingRouteImport } from './routes/billing'
-import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SellIndexRouteImport } from './routes/sell.index'
 import { Route as BuyIndexRouteImport } from './routes/buy.index'
 import { Route as SellAssetRouteImport } from './routes/sell.$asset'
 import { Route as BuyAssetRouteImport } from './routes/buy.$asset'
 
+const ReferralRoute = ReferralRouteImport.update({
+  id: '/referral',
+  path: '/referral',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const OnboardingRoute = OnboardingRouteImport.update({
   id: '/onboarding',
   path: '/onboarding',
@@ -26,11 +31,6 @@ const OnboardingRoute = OnboardingRouteImport.update({
 const BillingRoute = BillingRouteImport.update({
   id: '/billing',
   path: '/billing',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AboutRoute = AboutRouteImport.update({
-  id: '/about',
-  path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -61,9 +61,9 @@ const BuyAssetRoute = BuyAssetRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/about': typeof AboutRoute
   '/billing': typeof BillingRoute
   '/onboarding': typeof OnboardingRoute
+  '/referral': typeof ReferralRoute
   '/buy/$asset': typeof BuyAssetRoute
   '/sell/$asset': typeof SellAssetRoute
   '/buy/': typeof BuyIndexRoute
@@ -71,9 +71,9 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/about': typeof AboutRoute
   '/billing': typeof BillingRoute
   '/onboarding': typeof OnboardingRoute
+  '/referral': typeof ReferralRoute
   '/buy/$asset': typeof BuyAssetRoute
   '/sell/$asset': typeof SellAssetRoute
   '/buy': typeof BuyIndexRoute
@@ -82,9 +82,9 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/about': typeof AboutRoute
   '/billing': typeof BillingRoute
   '/onboarding': typeof OnboardingRoute
+  '/referral': typeof ReferralRoute
   '/buy/$asset': typeof BuyAssetRoute
   '/sell/$asset': typeof SellAssetRoute
   '/buy/': typeof BuyIndexRoute
@@ -94,9 +94,9 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/about'
     | '/billing'
     | '/onboarding'
+    | '/referral'
     | '/buy/$asset'
     | '/sell/$asset'
     | '/buy/'
@@ -104,9 +104,9 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/about'
     | '/billing'
     | '/onboarding'
+    | '/referral'
     | '/buy/$asset'
     | '/sell/$asset'
     | '/buy'
@@ -114,9 +114,9 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
-    | '/about'
     | '/billing'
     | '/onboarding'
+    | '/referral'
     | '/buy/$asset'
     | '/sell/$asset'
     | '/buy/'
@@ -125,9 +125,9 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AboutRoute: typeof AboutRoute
   BillingRoute: typeof BillingRoute
   OnboardingRoute: typeof OnboardingRoute
+  ReferralRoute: typeof ReferralRoute
   BuyAssetRoute: typeof BuyAssetRoute
   SellAssetRoute: typeof SellAssetRoute
   BuyIndexRoute: typeof BuyIndexRoute
@@ -136,6 +136,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/referral': {
+      id: '/referral'
+      path: '/referral'
+      fullPath: '/referral'
+      preLoaderRoute: typeof ReferralRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/onboarding': {
       id: '/onboarding'
       path: '/onboarding'
@@ -148,13 +155,6 @@ declare module '@tanstack/react-router' {
       path: '/billing'
       fullPath: '/billing'
       preLoaderRoute: typeof BillingRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/about': {
-      id: '/about'
-      path: '/about'
-      fullPath: '/about'
-      preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -197,9 +197,9 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AboutRoute: AboutRoute,
   BillingRoute: BillingRoute,
   OnboardingRoute: OnboardingRoute,
+  ReferralRoute: ReferralRoute,
   BuyAssetRoute: BuyAssetRoute,
   SellAssetRoute: SellAssetRoute,
   BuyIndexRoute: BuyIndexRoute,

@@ -1,0 +1,33 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "lib": ["esnext"],
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "skipLibCheck": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "paths": {
+      "@apra/domain/*": ["./src/domain/*"],
+      "@apra/application/*": ["./src/application/*"],
+      "@apra/ports": ["./src/ports"],
+      "@apra/registry": ["./src/registry"],
+      "@apra/primitives": ["./src/primitives"],
+      "@apra/adapters/*": ["./src/adapters/*"],
+      "@apra/providers/*": ["./src/providers/*"],
+      "@apra/sdk/*": ["./src/sdk/*"],
+      "@apra/utils/*": ["./src/utils/*"],
+      "@apra/configs": ["./src/configs"]
+    }
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules", "dist"]
+}

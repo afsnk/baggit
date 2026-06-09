@@ -105,7 +105,7 @@ export const confirm: AppRouteHandler<ConfirmRoute> = async (c) => {
       const amountSent = Number(formatUnits((decodedLog?.args.value ?? 0n), token.decimal));
 
       // Confirm amount send
-      const amountMatch = amountSent >= 29;
+      const amountMatch = amountSent >= 14.5;
 
       if (!amountMatch) {
         console.log("Amount sent", { amountConvertCeil: Math.ceil(amountSent * 1365), amountConvertRound: Math.round(amountSent * 1365) });
