@@ -1,0 +1,31 @@
+{
+  "name": "@baggit/api",
+  "description": "Split API process to handle global auth and api requests",
+  "version": "1.0.50",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev:auth": "portless auth.baggit --app-port 8002 bun --bun run --watch src/auth.app.ts",
+    "dev:api": "bun run --watch src/api/index.ts",
+    "check-types": "bunx tsc --noEmit"
+  },
+  "dependencies": {
+    "@elysia/cors": "^1.4.2",
+    "@elysia/openapi": "^1.4.15",
+    "@libsql/client": "^0.17.3",
+    "@sinclair/typebox": "^0.34.49",
+    "better-auth": "^1.6.9",
+    "dotenv": "^17.4.2",
+    "dotenv-expand": "^13.0.0",
+    "drizzle-orm": "0.44.4",
+    "drizzle-zod": "^0.8.3",
+    "elysia": "latest",
+    "evlog": "^2.14.1",
+    "typebox": "^1.1.37",
+    "zod": "^4.4.1"
+  },
+  "devDependencies": {
+    "bun-types": "latest",
+    "drizzle-kit": "^0.31.10"
+  },
+  "module": "src/index.js"
+}
