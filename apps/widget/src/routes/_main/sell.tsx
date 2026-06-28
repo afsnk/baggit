@@ -5,16 +5,20 @@ import {
 import ExchangeCard from './-components/exchange-card'
 import { Button } from '#/components/ui/button'
 import { KYCModal } from './-components/kyc.modal'
+import { searchQuery } from './-entities/query'
 
 export const Route = createFileRoute('/_main/sell')({
   component: RouteComponent,
+  validateSearch: searchQuery,
   errorComponent: SellErrorFallback,
 })
 
 function RouteComponent() {
+  const { layout } = Route.useSearch()
+
   return (
     <div className="w-full grid gap-4">
-      <ExchangeCard defaultMode="sell" />
+      <ExchangeCard defaultMode="sell" layout={layout} />
       <KYCModal>
         <Button variant="default" size="lg" className="w-full my-6">
           Proceed to Sell

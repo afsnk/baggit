@@ -69,13 +69,19 @@ function MainMenu() {
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-40 text-xs" align="center">
         <DropdownMenuGroup>
-          <DropdownMenuItem>History</DropdownMenuItem>
+          <DropdownMenuLabel className="text-xs font-semibold text-muted-foreground">
+            General
+          </DropdownMenuLabel>
+          <DropdownMenuItem>Transactions</DropdownMenuItem>
           <DropdownMenuItem>Saved addresses</DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuLabel>Settings</DropdownMenuLabel>
+          <DropdownMenuLabel className="text-xs font-semibold text-muted-foreground">
+            Settings
+          </DropdownMenuLabel>
           <DropdownMenuItem>Profile</DropdownMenuItem>
+          <DropdownMenuItem>Link wallet</DropdownMenuItem>
         </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>

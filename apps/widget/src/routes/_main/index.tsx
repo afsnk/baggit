@@ -14,6 +14,7 @@ import { Button } from '#/components/ui/button'
 import { authClient } from '#/lib/auth-client'
 import { Spinner } from '#/components/ui/spinner'
 import { z } from 'zod'
+import { env } from '#/env'
 // import { DynamicVaulDrawer } from './-components/dynamic-vaul-drawer'
 
 export const Route = createFileRoute('/_main/')({
@@ -31,7 +32,7 @@ export const Route = createFileRoute('/_main/')({
 })
 
 function App() {
-  const { isPending, data } = authClient.useSession()
+  const { isPending, data: session } = authClient.useSession()
 
   if (isPending) {
     return (
@@ -53,31 +54,35 @@ function App() {
             Login to unlock the full experience
           </span>
         </>
-        {!data && (
-          <SigninModal>
-            <Button
-              variant="default"
-              className="w-2/3 px-2"
-              onClick={async () => {
-                const { data: loginData } = await authClient.signIn.social({
+        {!session && (
+          <Button
+            variant="default"
+            className="w-2/3 px-2"
+            onClick={async () => {
+              const { data: loginData, error } = await authClient.signIn.social(
+                {
                   provider: 'google',
                   disableRedirect: false,
-                  callbackURL: `http://localhost:3011/`,
-                })
-                console.log(`Data from google`, { loginData })
-              }}
-            >
-              Sign in with Google
-            </Button>
-          </SigninModal>
+                  callbackURL: `${env.VITE_CLIENT_URL}/wallet`,
+                },
+              )
+
+              if (error) {
+                console.log(`Error singning in`, { error })
+              }
+              console.log(`Data from google`, { loginData })
+            }}
+          >
+            Sign in with Google
+          </Button>
         )}
-        {data && (
+        {session && (
           <div className="flex items-center justify-start gap-3">
             <img
-              src={data.user.image as string | undefined}
+              src={session.user.image as string | undefined}
               className="size-8 aspect-square object-contain rounded-full"
             />
-            <span>{data.user.name}</span>
+            <span>{session.user.name}</span>
           </div>
         )}
       </div>

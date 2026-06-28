@@ -55,17 +55,26 @@ const assets: IAssetsRender[] = [
 
 export default function ExchangeCard({
   defaultMode = 'buy',
+  layout = 'compact',
 }: {
   defaultMode: 'buy' | 'sell'
+  layout: 'compact' | 'full'
 }) {
   return (
     <div className="grid w-full">
-      <AssetConfig mode={defaultMode} />
+      <AssetConfig mode={defaultMode} layout={layout} />
     </div>
   )
 }
 const defaultInputStyle = `md:text-4xl text-6xl border-none outline-0 focus-visible:border-none focus-visible:ring-0 p-2 focus:bg-white/30 darK:bg-transparent h-auto`
-function AssetConfig({ mode }: { mode: 'sell' | 'buy' }) {
+
+function AssetConfig({
+  mode,
+  layout,
+}: {
+  mode: 'sell' | 'buy'
+  layout: 'compact' | 'full'
+}) {
   const navigate = useNavigate({ from: `/${mode}` })
   return (
     <Tabs
@@ -76,11 +85,12 @@ function AssetConfig({ mode }: { mode: 'sell' | 'buy' }) {
       }}
     >
       <div className="flex items-center justify-between w-full">
-        <TabsList>
+        <TabsList className={cn({ hidden: layout === 'compact' })}>
           <TabsTrigger value="sell">Sell</TabsTrigger>
           <TabsTrigger value="buy">Buy</TabsTrigger>
         </TabsList>
         <div>
+          {/*Hidden settings button because of global menu button, replace with more relevant component*/}
           <Button size="icon-sm" className="hidden">
             <Settings className="size-4 text-primary-foreground" />
           </Button>
