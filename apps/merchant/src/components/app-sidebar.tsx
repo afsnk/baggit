@@ -1,0 +1,173 @@
+'use client'
+
+import * as React from 'react'
+import {
+  AudioWaveform,
+  BookOpen,
+  Bot,
+  Command,
+  ExternalLink,
+  Frame,
+  GalleryVerticalEnd,
+  Map,
+  Music2,
+  PieChart,
+  Settings2,
+  SquareTerminal,
+} from 'lucide-react'
+
+import { NavMain } from '#/components/nav-main.tsx'
+import { NavDocumentation } from '#/components/nav-documentation'
+import { NavUser } from '#/components/nav-user.tsx'
+import { OrgSwitcher } from '#/components/org-switcher'
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarHeader,
+  SidebarRail,
+} from '#/components/ui/sidebar.tsx'
+
+// This is sample data.
+const data = {
+  user: {
+    name: 'shadcn',
+    email: 'm@example.com',
+    avatar: '/avatars/shadcn.jpg',
+  },
+  teams: [
+    {
+      name: 'Acme Inc',
+      logo: GalleryVerticalEnd,
+      plan: 'Enterprise',
+    },
+    {
+      name: 'Acme Corp.',
+      logo: AudioWaveform,
+      plan: 'Startup',
+    },
+    {
+      name: 'Evil Corp.',
+      logo: Command,
+      plan: 'Free',
+    },
+  ],
+  navMain: [
+    {
+      title: 'Orchestra',
+      url: '#',
+      icon: Music2,
+      isActive: true,
+      items: [
+        {
+          title: 'Overview',
+          url: '/overview',
+        },
+        {
+          title: 'Analytics',
+          url: '/analytics',
+        },
+        {
+          title: 'Audit Logs',
+          url: '/audit-logs',
+        },
+      ],
+    },
+    // {
+    //   title: 'Models',
+    //   url: '#',
+    //   icon: Bot,
+    //   items: [
+    //     {
+    //       title: 'Genesis',
+    //       url: '#',
+    //     },
+    //     {
+    //       title: 'Explorer',
+    //       url: '#',
+    //     },
+    //     {
+    //       title: 'Quantum',
+    //       url: '#',
+    //     },
+    //   ],
+    // },
+    {
+      title: 'Developer',
+      url: '#',
+      icon: SquareTerminal,
+      items: [
+        {
+          title: 'API Keys',
+          url: '/developer/api-keys',
+        },
+        {
+          title: 'Permissions',
+          url: '/developer/permissions',
+        },
+        {
+          title: 'Observability',
+          url: '/developer/observability',
+        },
+        // {
+        //   title: 'Changelog',
+        //   url: '#',
+        // },
+      ],
+    },
+    {
+      title: 'Settings',
+      url: '#',
+      icon: Settings2,
+      items: [
+        {
+          title: 'General',
+          url: '/settings/general',
+        },
+        {
+          title: 'Team',
+          url: '/settings/team',
+        },
+        {
+          title: 'Limits',
+          url: '/settings/limits',
+        },
+      ],
+    },
+  ],
+  docs: [
+    {
+      name: 'Widget Docs',
+      url: 'https://docs.baggit.link/widget',
+      icon: ExternalLink,
+    },
+    {
+      name: 'Payment Docs',
+      url: 'https://docs.baggit.link/payment',
+      icon: ExternalLink,
+    },
+    {
+      name: 'Subscriptions Docs',
+      url: 'https://docs.baggit.link/subscriptions',
+      icon: ExternalLink,
+    },
+  ],
+}
+
+export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  return (
+    <Sidebar collapsible="icon" {...props}>
+      <SidebarHeader>
+        <OrgSwitcher teams={data.teams} />
+      </SidebarHeader>
+      <SidebarContent>
+        <NavMain items={data.navMain} />
+        <NavDocumentation projects={data.docs} />
+      </SidebarContent>
+      <SidebarFooter>
+        <NavUser user={data.user} />
+      </SidebarFooter>
+      <SidebarRail />
+    </Sidebar>
+  )
+}

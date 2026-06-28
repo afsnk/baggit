@@ -4,7 +4,7 @@ import { createServerFn } from '@tanstack/react-start'
 import type { Asset } from './types'
 
 export const getTokenData = createServerFn()
-  .inputValidator((data: Asset) => data)
+  .validator((data: Asset) => data)
   .handler(async ({ data: asset }) => {
     const { data, error } = await betterFetch<{
       data: Array<{
