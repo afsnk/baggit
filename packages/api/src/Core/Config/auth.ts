@@ -5,6 +5,8 @@ import db from "@/Core/DB"
 import * as schema from "@/Core/DB/schema"
 import { generateId } from "../DB/utils"
 import { createAuthMiddleware } from "better-auth/api"
+import { apiKey } from "@better-auth/api-key"
+import { organization } from "better-auth/plugins"
 
 console.log(`Verification table access inside of app process`, db.$client.protocol)
 
@@ -58,7 +60,7 @@ const defaultAuthConfig: BetterAuthOptions = {
   ],
   advanced: {
     cookiePrefix: env.NODE_ENV === "development"? "baggit-dev-auth" : "baggit-auth",
-    useSecureCookies: env.NODE_ENV !== "development",
+    useSecureCookies: true,
     crossSubDomainCookies: {
       enabled: true,
       domain: ".baggit.dev"
@@ -74,10 +76,14 @@ const defaultAuthConfig: BetterAuthOptions = {
   }
 }
 
-
-const defaultAuthPlugins: BetterAuthOptions['plugins'] = [
-]
 export const auth = betterAuth({
   ...defaultAuthConfig,
-  plugins: defaultAuthPlugins,
+  plugins: [
+    apiKey(),
+    organization({
+      allowUserToCreateOrganization: async (user) => {
+        return user.emailVerified
+      }
+    })
+  ],
 })

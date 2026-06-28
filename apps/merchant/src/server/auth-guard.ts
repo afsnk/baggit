@@ -8,17 +8,15 @@ import { redirect } from '@tanstack/react-router'
 export const authGuard = createServerFn()
   .validator(z.object().optional())
   .handler(async () => {
-    const request = getRequest()
-    console.log(`Headers`, { heeaders: request.headers })
+    const cookie = getRequest().headers.get('cookie') ?? ''
     const { data: session, error } = await authClient.getSession({
-      fetchOptions: { headers: request.headers },
+      fetchOptions: { headers: { cookie } },
     })
 
     if (error) {
       console.log(`Failed to fetch session`, { error })
     }
 
-    console.log(`Session in server function`, session)
     if (!session) {
       throw redirect({
         href: '/auth',
