@@ -44,7 +44,7 @@ export function DynamicVaulDrawer({
   children,
   renderContent,
   openChange,
-  open = false,
+  open,
 }: IDrawer) {
   // const [open, setOpen] = React.useState(false)
   const [view, setView] = React.useState<DrawerView>('menu')
