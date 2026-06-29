@@ -13,7 +13,7 @@ import {
   type IAssetsRender,
   type INetwork,
 } from './asset-toggle'
-import { useReducer } from 'react'
+import { useReducer, useState, type ChangeEvent } from 'react'
 import { useNavigate } from '@tanstack/react-router'
 
 const assets: IAssetsRender[] = [
@@ -76,6 +76,47 @@ function AssetConfig({
   layout: 'compact' | 'full'
 }) {
   const navigate = useNavigate({ from: `/${mode}` })
+  const [sellAmount, setSellAmount] = useState('')
+  const [buyAmount, setBuyAmount] = useState('')
+
+  const handleSellAmountChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const inputValue = e.target.value.replace(/,/g, '')
+
+    if (inputValue === '' || /^\d*\.?\d*$/.test(inputValue)) {
+      let formatted = inputValue
+
+      if (inputValue && inputValue !== '.') {
+        const [integerPart, decimalPart] = inputValue.split('.')
+        const formattedInteger = parseInt(integerPart || '0').toLocaleString()
+        formatted =
+          decimalPart !== undefined
+            ? `${formattedInteger}.${decimalPart}`
+            : formattedInteger
+      }
+
+      setSellAmount(formatted)
+    }
+  }
+
+  const handleBuyAmountChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const inputValue = e.target.value.replace(/,/g, '')
+
+    if (inputValue === '' || /^\d*\.?\d*$/.test(inputValue)) {
+      let formatted = inputValue
+
+      if (inputValue && inputValue !== '.') {
+        const [integerPart, decimalPart] = inputValue.split('.')
+        const formattedInteger = parseInt(integerPart || '0').toLocaleString()
+        formatted =
+          decimalPart !== undefined
+            ? `${formattedInteger}.${decimalPart}`
+            : formattedInteger
+      }
+
+      setBuyAmount(formatted)
+    }
+  }
+
   return (
     <Tabs
       defaultValue={mode}
@@ -100,14 +141,16 @@ function AssetConfig({
         <Card>
           <CardHeader>
             <CardTitle>
-              <span className="capitalize">{mode}</span> token:
+              <span className="capitalize">{mode}</span> token
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="w-full flex gap-3">
               <Input
-                type="number"
-                defaultValue={0.0}
+                type="text"
+                inputMode="numeric"
+                value={sellAmount}
+                onChange={handleSellAmountChange}
                 className={cn(
                   defaultInputStyle,
                   '[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none',
@@ -122,14 +165,16 @@ function AssetConfig({
         <Card>
           <CardHeader>
             <CardTitle>
-              <span className="capitalize">{mode}</span> token:
+              <span className="capitalize">{mode}</span> token
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="w-full flex gap-3">
               <Input
-                type="number"
-                defaultValue={0.0}
+                type="text"
+                inputMode="numeric"
+                value={buyAmount}
+                onChange={handleBuyAmountChange}
                 className={cn(
                   defaultInputStyle,
                   '[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none',
