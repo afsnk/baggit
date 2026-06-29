@@ -99,7 +99,9 @@ function AssetConfig({
       <TabsContent value="sell">
         <Card>
           <CardHeader>
-            <CardTitle className="capitalize">{mode} token:</CardTitle>
+            <CardTitle>
+              <span className="capitalize">{mode}</span> token:
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="w-full flex gap-3">
@@ -119,7 +121,9 @@ function AssetConfig({
       <TabsContent value="buy">
         <Card>
           <CardHeader>
-            <CardTitle className="capitalize">{mode} token:</CardTitle>
+            <CardTitle>
+              <span className="capitalize">{mode}</span> token:
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="w-full flex gap-3">

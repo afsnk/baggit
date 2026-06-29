@@ -37,13 +37,20 @@ const itemVariants = {
 interface IDrawer {
   children: React.ReactNode
   renderContent: () => React.ReactNode
+  open?: boolean
+  openChange?: (next: boolean) => void
 }
-export function DynamicVaulDrawer({ children, renderContent }: IDrawer) {
-  const [open, setOpen] = React.useState(false)
+export function DynamicVaulDrawer({
+  children,
+  renderContent,
+  openChange,
+  open = false,
+}: IDrawer) {
+  // const [open, setOpen] = React.useState(false)
   const [view, setView] = React.useState<DrawerView>('menu')
 
   const handleOpenChange = (next: boolean) => {
-    setOpen(next)
+    openChange?.(next)
     if (!next) {
       // Let Vaul close, then reset the internal view.
       window.setTimeout(() => setView('menu'), 180)
