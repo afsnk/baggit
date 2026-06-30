@@ -61,9 +61,9 @@ function MainMenu() {
         <Button
           size="sm"
           variant="outline"
-          className="max-w-sm flex items-center justify-between gap-6"
+          className="max-w-sm flex items-center justify-between"
         >
-          <span>Menu</span>
+          <span className="text-xs font-semibold">Menu</span>
           <IconBurger className="size-4" />
         </Button>
       </DropdownMenuTrigger>

@@ -6,6 +6,8 @@ import ExchangeCard from './-components/exchange-card'
 import { Button } from '#/components/ui/button'
 import { KYCModal } from './-components/kyc.modal'
 import { searchQuery } from './-entities/query'
+import { useTrade } from './-hooks/use-trade'
+import { useEffect } from 'react'
 
 export const Route = createFileRoute('/_main/sell')({
   component: RouteComponent,
@@ -15,6 +17,11 @@ export const Route = createFileRoute('/_main/sell')({
 
 function RouteComponent() {
   const { layout } = Route.useSearch()
+  const { tradeState, tradeError, setMode } = useTrade()
+
+  useEffect(() => {
+    setMode('sell')
+  }, [])
 
   return (
     <div className="w-full grid gap-4">
