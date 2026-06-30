@@ -19,17 +19,22 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '#/components/ui/tooltip'
+import { authClient } from '#/lib/auth-client'
 
 interface KYCModal {
-  children: React.ReactNode
+  children?: React.ReactNode
+  open?: boolean
+  openChange?: (next: boolean) => void
 }
 const steps = [0, 1, 2]
-export function KYCModal({ children }: KYCModal) {
+export function KYCModal({ children, open, openChange }: KYCModal) {
   // Global and all state management
-  const [step, setSteps] = useState(steps)
+  const [step, setSteps] = useState(steps[0])
 
   return (
     <DynamicVaulDrawer
+      open={open}
+      openChange={openChange}
       renderContent={() => {
         const containerVariants = {
           initial: {},
@@ -119,6 +124,10 @@ export function KYCModal({ children }: KYCModal) {
                 <Button
                   className="text-blue-500 w-full items-center my-3"
                   variant="link"
+                  onClick={async () => {
+                    const result = await authClient.signIn.anonymous()
+                    console.log(`Result of anonymous`, { result })
+                  }}
                 >
                   Continue as Anonymous
                 </Button>
