@@ -6,7 +6,7 @@ import * as schema from "@/Core/DB/schema"
 import { generateId } from "../DB/utils"
 import { createAuthMiddleware } from "better-auth/api"
 import { apiKey } from "@better-auth/api-key"
-import { organization } from "better-auth/plugins"
+import { organization, anonymous } from "better-auth/plugins"
 
 console.log(`Verification table access inside of app process`, db.$client.protocol)
 
@@ -83,6 +83,12 @@ export const auth = betterAuth({
     organization({
       allowUserToCreateOrganization: async (user) => {
         return user.emailVerified
+      }
+    }),
+    anonymous({
+      onLinkAccount: async ({ anonymousUser, newUser }) => {
+        // Hanle linking from anonymous to authed user
+        console.log(`Anon and New user`, {anonymousUser, newUser})
       }
     })
   ],
