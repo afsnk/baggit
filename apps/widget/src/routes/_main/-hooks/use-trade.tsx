@@ -8,6 +8,8 @@ import {
   DrawerTitle,
 } from '#/components/ui/drawer'
 import { Button } from '#/components/ui/button'
+import { KYCModal } from '../-components/kyc.modal'
+import { authClient } from '#/lib/auth-client'
 
 interface TradeContext {
   tradeState: TradeState
@@ -15,6 +17,7 @@ interface TradeContext {
   pickAssetOut: (asset: Asset) => void
   pickRoute: (route: Route) => void
   tradeError: Error | any
+  setMode: (mode: 'buy' | 'sell') => void
 }
 const TradeContext = createContext<TradeContext | null>(null)
 
@@ -74,6 +77,7 @@ export function TradeProvider({ children }: TradeProviderProps) {
     destination: null,
   })
   const debounceRef = useRef(null)
+  const { data: session, isPending: loadingUser } = authClient.useSession()
 
   const pickAssetIn = (asset: Asset) =>
     dispatch({ type: 'SELECT_ASSET_IN', payload: asset })
@@ -127,6 +131,12 @@ export function TradeProvider({ children }: TradeProviderProps) {
       }}
     >
       {children}
+      <KYCModal
+        open={session === null}
+        openChange={(open) => {
+          console.log(`KYC Modal open state`, { open })
+        }}
+      />
       <Drawer open={!!routeError}>
         <DrawerContent className="max-w-sm w-full p-4 items-center mx-auto mb-4">
           <DrawerHeader>
