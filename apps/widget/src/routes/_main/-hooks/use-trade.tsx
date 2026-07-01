@@ -10,6 +10,7 @@ import {
 import { Button } from '#/components/ui/button'
 import { KYCModal } from '../-components/kyc.modal'
 import { authClient } from '#/lib/auth-client'
+import { RoutesModal } from '../-components/routes-modal'
 
 interface TradeContext {
   tradeState: TradeState
@@ -131,12 +132,15 @@ export function TradeProvider({ children }: TradeProviderProps) {
       }}
     >
       {children}
+      {/* KYC modal controlled by users current KYC level */}
       <KYCModal
         open={session === null}
         openChange={(open) => {
           console.log(`KYC Modal open state`, { open })
         }}
       />
+      {/* Routes modal with route function and picker input options */}
+      <RoutesModal routes={state.routes} open={true} />
       <Drawer open={!!routeError}>
         <DrawerContent className="max-w-sm w-full p-4 items-center mx-auto mb-4">
           <DrawerHeader>
