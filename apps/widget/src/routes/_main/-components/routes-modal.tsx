@@ -1,15 +1,26 @@
 import { DrawerDescription, DrawerTitle } from '#/components/DynamicDrawer'
+import type { Route } from '../-hooks/trade.entities'
 import { DynamicVaulDrawer } from './dynamic-vaul-drawer'
 import { AnimatePresence, motion } from 'motion/react'
 import { Drawer } from 'vaul'
 
 interface ProviderModalProps {
-  children: React.ReactNode
+  children?: React.ReactNode
+  open?: boolean
+  openChange?: (open: boolean) => void
+  routes: Array<Route> | undefined
 }
 
-export function ProviderModal({ children }: ProviderModalProps) {
+export function RoutesModal({
+  children,
+  open,
+  openChange,
+  routes,
+}: ProviderModalProps) {
   return (
     <DynamicVaulDrawer
+      open={open}
+      openChange={openChange}
       renderContent={() => {
         const containerVariants = {
           initial: {},
