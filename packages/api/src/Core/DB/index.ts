@@ -1,4 +1,5 @@
 import { drizzle } from "drizzle-orm/libsql";
+import {migrate} from "drizzle-orm/libsql/migrator"
 
 import env from "@/Core/Config/env";
 
@@ -14,5 +15,13 @@ const db = drizzle({
   casing: "snake_case",
   schema: {...schema},
 });
+
+
+async function mainMigrator() {
+  await migrate(db, { migrationsFolder: env.NODE_ENV == "development" ? "./src/Core/DB/migrations" : "./dist/src/Core/DB/migrations" })
+  db.$client.close()
+}
+
+// mainMigrator().catch(console.log)
 
 export default db;
