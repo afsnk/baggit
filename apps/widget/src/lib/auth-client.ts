@@ -1,6 +1,7 @@
 import { env } from '#/env'
 import { createAuthClient } from 'better-auth/react'
 import { anonymousClient } from 'better-auth/client/plugins'
+import { apiKeyClient } from '@better-auth/api-key/client'
 
 export const authClient = createAuthClient({
   baseURL: env.VITE_BETTER_AUTH_URL,
@@ -8,5 +9,5 @@ export const authClient = createAuthClient({
   fetchOptions: {
     credentials: 'include',
   },
-  plugins: [anonymousClient()],
+  plugins: [apiKeyClient(), anonymousClient()],
 })
