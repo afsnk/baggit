@@ -5,7 +5,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev:auth": "portless auth.baggit --app-port 8002 bun --bun run --watch src/auth.app.ts",
-    "dev:api": "bun run --watch src/api/index.ts",
+    "dev:api": "portless api.baggit --app-port 8001 bun --bun run --watch src/api.app.ts",
     "check-types": "bunx tsc --noEmit"
   },
   "dependencies": {
@@ -13,6 +13,7 @@
     "@elysia/cors": "^1.4.2",
     "@elysia/openapi": "^1.4.15",
     "@libsql/client": "^0.17.3",
+    "@nats-io/transport-node": "^3.4.0",
     "@sinclair/typebox": "^0.34.49",
     "better-auth": "^1.6.9",
     "dotenv": "^17.4.2",
