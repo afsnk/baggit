@@ -1,5 +1,4 @@
-PRAGMA foreign_keys=OFF;
-CREATE TABLE `__new_account` (
+CREATE TABLE `account` (
 	`id` text PRIMARY KEY NOT NULL,
 	`account_id` text NOT NULL,
 	`provider_id` text NOT NULL,
@@ -16,12 +15,36 @@ CREATE TABLE `__new_account` (
 	FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE cascade
 );
 
-INSERT INTO `__new_account`("id", "account_id", "provider_id", "user_id", "access_token", "refresh_token", "id_token", "access_token_expires_at", "refresh_token_expires_at", "scope", "password", "created_at", "updated_at") SELECT "id", "account_id", "provider_id", "user_id", "access_token", "refresh_token", "id_token", "access_token_expires_at", "refresh_token_expires_at", "scope", "password", "created_at", "updated_at" FROM `account`;
-DROP TABLE `account`;
-ALTER TABLE `__new_account` RENAME TO `account`;
-PRAGMA foreign_keys=ON;
 CREATE INDEX `account_userId_idx` ON `account` (`user_id`);
-CREATE TABLE `__new_session` (
+CREATE TABLE `apikey` (
+	`id` text PRIMARY KEY NOT NULL,
+	`config_id` text DEFAULT 'default' NOT NULL,
+	`name` text,
+	`start` text,
+	`reference_id` text NOT NULL,
+	`prefix` text,
+	`key` text NOT NULL,
+	`refill_interval` integer,
+	`refill_amount` integer,
+	`last_refill_at` integer,
+	`enabled` integer DEFAULT true,
+	`rate_limit_enabled` integer DEFAULT true,
+	`rate_limit_time_window` integer DEFAULT 86400000,
+	`rate_limit_max` integer DEFAULT 10,
+	`request_count` integer DEFAULT 0,
+	`remaining` integer,
+	`last_request` integer,
+	`expires_at` integer,
+	`created_at` integer NOT NULL,
+	`updated_at` integer NOT NULL,
+	`permissions` text,
+	`metadata` text
+);
+
+CREATE INDEX `apikey_configId_idx` ON `apikey` (`config_id`);
+CREATE INDEX `apikey_referenceId_idx` ON `apikey` (`reference_id`);
+CREATE INDEX `apikey_key_idx` ON `apikey` (`key`);
+CREATE TABLE `session` (
 	`id` text PRIMARY KEY NOT NULL,
 	`expires_at` integer NOT NULL,
 	`token` text NOT NULL,
@@ -33,26 +56,21 @@ CREATE TABLE `__new_session` (
 	FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE cascade
 );
 
-INSERT INTO `__new_session`("id", "expires_at", "token", "created_at", "updated_at", "ip_address", "user_agent", "user_id") SELECT "id", "expires_at", "token", "created_at", "updated_at", "ip_address", "user_agent", "user_id" FROM `session`;
-DROP TABLE `session`;
-ALTER TABLE `__new_session` RENAME TO `session`;
 CREATE UNIQUE INDEX `session_token_unique` ON `session` (`token`);
 CREATE INDEX `session_userId_idx` ON `session` (`user_id`);
-CREATE TABLE `__new_user` (
+CREATE TABLE `user` (
 	`id` text PRIMARY KEY NOT NULL,
 	`name` text NOT NULL,
 	`email` text NOT NULL,
 	`email_verified` integer DEFAULT false NOT NULL,
+	`is_anonymous` integer DEFAULT false,
 	`image` text,
 	`created_at` integer DEFAULT (cast(unixepoch('subsecond') * 1000 as integer)) NOT NULL,
 	`updated_at` integer DEFAULT (cast(unixepoch('subsecond') * 1000 as integer)) NOT NULL
 );
 
-INSERT INTO `__new_user`("id", "name", "email", "email_verified", "image", "created_at", "updated_at") SELECT "id", "name", "email", "email_verified", "image", "created_at", "updated_at" FROM `user`;
-DROP TABLE `user`;
-ALTER TABLE `__new_user` RENAME TO `user`;
 CREATE UNIQUE INDEX `user_email_unique` ON `user` (`email`);
-CREATE TABLE `__new_verification` (
+CREATE TABLE `verification` (
 	`id` text PRIMARY KEY NOT NULL,
 	`identifier` text NOT NULL,
 	`value` text NOT NULL,
@@ -61,7 +79,28 @@ CREATE TABLE `__new_verification` (
 	`updated_at` integer DEFAULT (cast(unixepoch('subsecond') * 1000 as integer)) NOT NULL
 );
 
-INSERT INTO `__new_verification`("id", "identifier", "value", "expires_at", "created_at", "updated_at") SELECT "id", "identifier", "value", "expires_at", "created_at", "updated_at" FROM `verification`;
-DROP TABLE `verification`;
-ALTER TABLE `__new_verification` RENAME TO `verification`;
 CREATE INDEX `verification_identifier_idx` ON `verification` (`identifier`);
+CREATE TABLE `payments` (
+	`id` text PRIMARY KEY NOT NULL,
+	`reference` text NOT NULL
+);
+
+CREATE TABLE `ramps` (
+	`id` text PRIMARY KEY NOT NULL,
+	`reference` text NOT NULL,
+	`type` text
+);
+
+CREATE TABLE `transactions` (
+	`id` text PRIMARY KEY NOT NULL,
+	`reference` text NOT NULL,
+	`amount` real NOT NULL,
+	`callback_url` text DEFAULT 'https://webhook.site/a6428992-34ce-4b09-90c0-7fe778d762e4' NOT NULL,
+	`status` text DEFAULT 'pending',
+	`network` text DEFAULT 'base' NOT NULL,
+	`asset` text NOT NULL,
+	`metadata` text NOT NULL,
+	`merchant_metadata` text,
+	`created_at` integer,
+	`updated_at` integer
+);

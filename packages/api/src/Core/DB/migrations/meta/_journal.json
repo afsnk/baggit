@@ -5,15 +5,8 @@
     {
       "idx": 0,
       "version": "6",
-      "when": 1782547520749,
-      "tag": "0000_init",
-      "breakpoints": false
-    },
-    {
-      "idx": 1,
-      "version": "6",
-      "when": 1782549751798,
-      "tag": "0001_overjoyed_mac_gargan",
+      "when": 1783092333971,
+      "tag": "0000_new_init",
       "breakpoints": false
     }
   ]
