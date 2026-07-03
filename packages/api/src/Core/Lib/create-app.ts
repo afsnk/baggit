@@ -2,7 +2,7 @@ import { Elysia } from "elysia";
 // import env from "../Config/env";
 
 import { openapi } from "@elysia/openapi";
-import { initLogger, parseError } from "evlog";
+import { DrainContext, initLogger, parseError } from "evlog";
 import { evlog } from "evlog/elysia"
 // import { createAxiomDrain } from 'evlog/axiom'
 import { createUserAgentEnricher } from 'evlog/enrichers'
@@ -11,11 +11,39 @@ import type { AppElysia } from "./types";
 
 type ElysiaAppConfig = ConstructorParameters<typeof Elysia>[0]
 
+function prettyDrain({ event }: DrainContext) {
+  const ts = typeof event.timestamp === 'string' ? event.timestamp.slice(11, 23) : ''
+  const status = event.status ?? ''
+  console.log(`${ts} ${String(event.level).toUpperCase()} [${event.service}] ${event.method} ${event.path} ${status} in ${event.duration ?? '?'}`)
+
+  if (Array.isArray(event.requestLogs)) {
+    for (const l of event.requestLogs as Array<{ level: string; message: string; timestamp: string }>) {
+      console.log(`  ├─ ${l.timestamp.slice(11, 23)} ${l.level.toUpperCase()} ${l.message}`)
+    }
+  }
+
+  // dump everything else as real JSON
+  const { requestLogs, timestamp, level, service, method, path, status: _s, duration, ...rest } = event
+  if (Object.keys(rest).length) console.log(`  └─ ${JSON.stringify(rest)}`)
+}
+
 export function createRouter<
   BasePath extends string = "",
 >(config?: ElysiaAppConfig): AppElysia<string> {
   initLogger({
-    env: {service: config?.name ?? "auth", version: "0.0.1"}
+    env: { service: config?.name ?? "auth", version: "0.0.1" },
+    pretty: true,
+    stringify: true,
+    silent: true,   // suppress the broken pretty line
+    // drain: prettyDrain,
+    drain: ({ event }) => {
+      if (Array.isArray(event.requestLogs)) {
+        for (const l of event.requestLogs) {
+          console.log(`  ${l.timestamp.slice(11,23)} ${l.level.toUpperCase()} ${l.message}`)
+        }
+      }
+      console.log(JSON.stringify(event, null, 2))
+    },
   });
 
   const userAgent = createUserAgentEnricher()
@@ -68,13 +96,13 @@ export function createRouter<
  */
 export default function createApp(config?: ElysiaAppConfig) {
   return createRouter({ name: config?.name })
-    .onBeforeHandle(({ store, log, request }) => {
-      store.requestCount += 1;
-      log.info(`Before handle:`, {
-        method: request.method,
-        url: request.url,
-      });
-    })
+    // .onBeforeHandle(({ store, log, request }) => {
+    //   store.requestCount += 1;
+    //   log.info(`Before handle:`, {
+    //     method: request.method,
+    //     url: request.url,
+    //   });
+    // })
     .get(
       "/health",
       ({  }) => ({
