@@ -18,6 +18,8 @@ This guide walks you through setting up, developing, and deploying the stablecoi
 
 - **Node.js:** 18.x or higher
 - **pnpm:** 9.x or higher (required for workspace support)
+- **honker:** Add the honker bun package to run all apps as local VPS processes with access to the same local `main-storage.db` SQLite file,
+with sync to turso cloud
 
 ### Verification
 
