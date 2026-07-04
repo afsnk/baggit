@@ -8,6 +8,20 @@
       "when": 1783092333971,
       "tag": "0000_new_init",
       "breakpoints": false
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1783112893378,
+      "tag": "0001_next_living_lightning",
+      "breakpoints": false
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1783162698653,
+      "tag": "0002_flaky_galactus",
+      "breakpoints": false
     }
   ]
 }

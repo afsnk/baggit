@@ -18,7 +18,9 @@ const EnvSchema = z.object({
   DATABASE_URL: z.string().url().default('file:dev.db'),
   DATABASE_AUTH_TOKEN: z.string().optional(),
   TRUSTED_ORIGINS: z.string().default('https://dashboard.baggit.link,https://pay.baggit.link,https://widget.baggit.link'),
+
   MERCHANT_CLIENT_URL: z.string().default('https://merchant.baggit.localhost'),
+  PAY_CLIENT_URL: z.string(),
 
   // Better auth
   BETTER_AUTH_URL: z.string().url(),

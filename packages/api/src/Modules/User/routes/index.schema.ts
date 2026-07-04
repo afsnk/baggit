@@ -10,6 +10,7 @@ export const indexRouteSchema = {
   response: {
     200: indexResponseSchema
   },
+  body: t.Object({name: t.String()}),
   detail: {
     tags: ["Index"],
     summary: "Tasks API index",

@@ -8,8 +8,6 @@ import { createAuthMiddleware } from "better-auth/api"
 import { apiKey } from "@better-auth/api-key"
 import { organization, anonymous } from "better-auth/plugins"
 
-console.log(`Verification table access inside of app process`, db.$client.protocol)
-
 const defaultAuthConfig: BetterAuthOptions = {
   baseURL: {
     allowedHosts: ['https://auth.baggit.dev', "*.auth.baggit.link", "auth.baggit.link", "localhost:8001"],
@@ -76,10 +74,41 @@ const defaultAuthConfig: BetterAuthOptions = {
   }
 }
 
+const secondaryStorage: BetterAuthOptions['secondaryStorage'] = {
+  get: async (key) => {  },
+  set: async (key, value, ttl) => { },
+  delete: async (key) => { }
+}
+
 export const auth = betterAuth({
   ...defaultAuthConfig,
+  // secondaryStorage,
   plugins: [
-    apiKey(),
+    apiKey([
+      {
+        configId: "public",
+        defaultPrefix: "pk_",
+        storage: "database", // Update to use secondary-storage with nats jetstream cache
+        references: "organization",
+        rateLimit: {
+          enabled: true,
+          maxRequests: 100,
+          timeWindow: 1000 * 60 * 60, // 1 hour
+        },
+      },
+      {
+        configId: "secret",
+        defaultPrefix: "sk_",
+        enableMetadata: true,
+        storage: "database", // Update to use secondary-storage with nats jetstream cache
+        references: "organization",
+        rateLimit: {
+          enabled: true,
+          maxRequests: 1000,
+          timeWindow: 1000 * 60 * 60, // 1 hour
+        },
+      },
+    ]),
     organization({
       allowUserToCreateOrganization: async (user) => {
         return user.emailVerified

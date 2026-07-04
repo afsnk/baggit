@@ -5,7 +5,7 @@ import type { IndexRouteSchema } from "./index.schema";
 export const indexHandler: AppRouteHandler<IndexRouteSchema> = ({
   log,
   status,
-  set
+  set,
 }) => {
   log.info("index route handled");
 

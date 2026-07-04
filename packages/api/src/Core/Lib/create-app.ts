@@ -86,6 +86,7 @@ export function createRouter<
     // }))
     ;
 
+  // @ts-expect-error 'Return app'
   return app;
 }
 

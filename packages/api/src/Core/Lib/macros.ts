@@ -1,8 +1,11 @@
 import type { Context, ElysiaCustomStatusResponse } from "elysia"
 import { auth as betterAuth } from "../Config/auth"
 import { AppRouteHandler, AppRouteSchema } from "./types"
+// @ts-ignore
 import type { Prettify } from "elysia/dist/types"
 import { CreatePaymentRoute } from "@/Modules/Payment/routes/payment.schema"
+import db from "../DB"
+import { stat } from "node:fs/promises"
 
 
 export const appMacro = {
@@ -21,17 +24,33 @@ export const appMacro = {
   apiKey: {
     async resolve({status, request: {headers} }: Context) {
       // TODO: API key validation
-      const apiKey = headers.get('baggit-api-key') ?? ''
+      const publicKey = headers.get('baggit-public-key')
+      const secretKey = headers.get('baggit-secret-key')
+
+      if (!publicKey && !secretKey) {
+        return status(401, `No public or secret key passed`)
+      }
+
       const result = await betterAuth.api.verifyApiKey({
         body: {
-          key: apiKey
+          key: publicKey || secretKey || '',
+          configId: publicKey? "public" : "secret"
         }
       })
 
       if (result.valid) {
+        const organization = await db.query.organization.findFirst({
+          where: (fields, ops) => ops.eq(fields.id, result.key?.referenceId!)
+        })
+
+        if (!organization) {
+          return status(401, `Could not find organization that owns this key`)
+        }
+
         return {
           isValid: true,
-          key: result.key
+          key: result.key,
+          organization,
         }
       } else {
         return status(401, result.error?.message ?? `Unauthorized API key access`)
@@ -85,6 +104,6 @@ type T3 = Exclude<T2, ElysiaCustomStatusResponse<any, any, any>>
 // Expect T3 = { user; session }. If T3 = never or unknown → exclusion is over/under-matching.
 type S1 = Awaited<T1>                                             // union: {user,session} | ElysiaCustomStatusResponse<401,...>
 type S2 = Exclude<S1, ElysiaCustomStatusResponse<any, any, any>>  // should be { user, session }
-type S3 = ResolvedOfOne<'auth'>                                   // should be { user, session }
+type S3 = ResolvedOfOne<'apiKey'>                                   // should be { user, session }
 type S4 = ResolvedOf<'auth'>                                      // should be { user, session }
 type S5 = AppRouteHandler<CreatePaymentRoute, 'auth'>             // hover the ctx param

@@ -6,15 +6,26 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev:auth": "portless auth.baggit --app-port 8002 bun --bun run --watch src/auth.app.ts",
     "dev:api": "portless api.baggit --app-port 8001 bun --bun run --watch src/api.app.ts",
-    "check-types": "bunx tsc --noEmit"
+    "check-types": "bunx tsc --noEmit",
+    "build": "tsc && tsc-alias"
+  },
+  "exports": {
+    "./app": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
   },
   "dependencies": {
     "@better-auth/api-key": "^1.6.22",
     "@elysia/cors": "^1.4.2",
     "@elysia/openapi": "^1.4.15",
     "@libsql/client": "^0.17.3",
+    "@nats-io/jetstream": "^3.4.0",
+    "@nats-io/kv": "^3.4.0",
     "@nats-io/transport-node": "^3.4.0",
     "@sinclair/typebox": "^0.34.49",
+    "@zerodev/ecdsa-validator": "^5.4.9",
+    "@zerodev/sdk": "^5.5.10",
     "better-auth": "^1.6.9",
     "dotenv": "^17.4.2",
     "dotenv-expand": "^13.0.0",
@@ -23,11 +34,15 @@
     "elysia": "latest",
     "evlog": "^2.14.1",
     "typebox": "^1.1.37",
+    "viem": "^2.54.3",
     "zod": "^4.4.1"
   },
   "devDependencies": {
     "bun-types": "latest",
     "drizzle-kit": "0.31.6"
+  },
+  "resolutions": {
+    "drizzle-orm": "0.44.4"
   },
   "module": "src/index.js"
 }

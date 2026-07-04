@@ -1,4 +1,5 @@
 import { PaymentPage } from '#/components/payment-page'
+import { api } from '#/lib/api-client'
 import { createFileRoute } from '@tanstack/react-router'
 import { z } from 'zod'
 
@@ -13,13 +14,11 @@ type PaymentSearch = z.infer<typeof paymentSearchSchema>
 export const Route = createFileRoute('/r/$ref')({
   component: RouteComponent,
   validateSearch: paymentSearchSchema,
-  loader(props) {
+  async loader(props) {
     const reference = props.params.ref
     const search = props.location.search as PaymentSearch
     console.log(`props`, { reference, search })
     // Load default merchant data from transaction reference
-
-    return {}
   },
 })
 

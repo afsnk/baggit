@@ -1,16 +1,21 @@
-import { integer, real, sqliteTable, text } from "drizzle-orm/sqlite-core"
+import { index, integer, real, sqliteTable, text } from "drizzle-orm/sqlite-core"
 import { createInsertSchema, createSelectSchema } from "drizzle-zod"
 import { z } from "zod"
 import { toZodV4SchemaTyped } from "@/Core/Lib/zod-utils";
+import { payments } from "./payment";
+import { ramps } from "./ramp";
+import { generateId } from "../utils";
+import { relations } from "drizzle-orm";
+import { organization } from "./auth";
 
 export const transactions = sqliteTable("transactions", {
-  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
-  reference: text("reference").notNull(),
-  amount: real("amount").notNull(),
-  callbackUrl: text("callback_url").notNull().default("https://webhook.site/a6428992-34ce-4b09-90c0-7fe778d762e4"),
+  id: text("id").primaryKey().$defaultFn(() => generateId('trx_')),
   status: text("status", { enum: ["pending", "failed", "complete"] }).default("pending"),
   network: text("network", { enum: ["base", "bsc"] }).notNull().default("base"),
   asset: text("asset", { enum: ["usdc", "usdt", "cngn"] }).notNull(),
+  paymentId: text("payment_id").references(() => payments.id, {onDelete: "no action"}),
+  rampId: text("ramp_id").references(() => ramps.id, { onDelete: "no action" }),
+  orgId: text("org_id").references(() => organization.id),
   metadata: text("metadata", { mode: "json" }).$type<{
     address: `0x${string}`;
     pk: `0x${string}`;
@@ -19,15 +24,17 @@ export const transactions = sqliteTable("transactions", {
     fromBlock: number;
     [x: string]: any;
   }>().notNull(),
-  merchantMetadata: text("merchant_metadata", { mode: "json" }).$type<{
-    [x: string]: any;
-  }>(),
   createdAt: integer({ mode: "timestamp" })
     .$defaultFn(() => new Date()),
   updatedAt: integer({ mode: "timestamp" })
     .$defaultFn(() => new Date())
     .$onUpdate(() => new Date()),
-});
+}, (table) => [
+  index("transactions_paymentId_idx").on(table.paymentId),
+  index("transactions_rampId_idx").on(table.rampId),
+  index("transactions_status_idx").on(table.status),
+  index("transactions_network_idx").on(table.network),
+]);
 
 export const selectTransactions = toZodV4SchemaTyped(createSelectSchema(transactions));
 export const cleanedTransaction = createSelectSchema(transactions).omit({ metadata: true }).extend({
@@ -36,11 +43,8 @@ export const cleanedTransaction = createSelectSchema(transactions).omit({ metada
 export const insertTransactions = toZodV4SchemaTyped(createInsertSchema(
   transactions,
 ).required({
-  amount: true,
-  reference: true,
   network: true,
   asset: true,
-  callbackUrl: true,
 }).omit({
   metadata: true,
   id: true,
@@ -50,3 +54,23 @@ export const insertTransactions = toZodV4SchemaTyped(createInsertSchema(
 
 // @ts-expect-error partial exists on zod v4 type
 export const patchTransactions = insertTransactions.partial();
+
+
+// Ties payment and ramp to transaction shema
+export const transactionRelations = relations(transactions, ({ one }) => ({
+  payment: one(payments, {
+    fields: [transactions.paymentId],
+    references: [payments.id]
+  }),
+  ramp: one(ramps, {
+    fields: [transactions.rampId],
+    references: [ramps.id]
+  }),
+  organization: one(organization, {
+    fields: [transactions.orgId],
+    references: [organization.id]
+  })
+}))
+
+
+export type TTransaction = z.infer<typeof selectTransactions>

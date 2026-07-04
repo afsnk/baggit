@@ -1,8 +1,8 @@
 import createApp from "@/Core/Lib/create-app";
-import { auth } from "@/Core/Config/auth";
 import { cors } from "@elysia/cors"
 import env from "./Core/Config/env";
 import paymentRoute from "@/Modules/Payment/routes/payment.route";
+import transactionRoute from "@/Modules/Transaction/routes/transaction.route";
 import { appMacro } from "./Core/Lib/macros";
 
 
@@ -27,6 +27,10 @@ const apiApp = createApp({
 )
   .macro(appMacro)
   .use(paymentRoute)
+  .use(transactionRoute)
   .get(`/user`, ({ user }) => user, { auth: true })
   .listen(8001)
 console.log(`API server running at ${apiApp.server?.hostname}:${apiApp.server?.port}`)
+
+
+export default apiApp;

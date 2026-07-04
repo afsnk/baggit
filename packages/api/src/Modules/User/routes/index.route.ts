@@ -5,6 +5,6 @@ import { indexRouteSchema } from "./index.schema";
 
 const router = createRouter({
   name: "routes.index",
-}).get("/", indexHandler, indexRouteSchema);
+}).post("/", indexHandler, indexRouteSchema);
 
 export default router;

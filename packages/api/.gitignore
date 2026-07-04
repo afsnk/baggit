@@ -37,3 +37,5 @@ drizzle
 dev.db
 ./dev*.db
 dev*.db
+./auth-schema.ts
+auth-schema.ts
