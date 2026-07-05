@@ -20,6 +20,7 @@ import { getLocale } from '#/paraglide/runtime'
 import appCss from '../styles.css?url'
 
 import type { QueryClient } from '@tanstack/react-query'
+import { TooltipProvider } from '#/components/ui/tooltip'
 
 interface MyRouterContext {
   queryClient: QueryClient
@@ -47,7 +48,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
       },
       {
         title:
-          'Baggit Widget - Tools for your crypto assets. Buy, Sell, Wallet',
+          'Baggit Widget - Best tools for your crypto assets. Buy, Sell, Wallet',
       },
     ],
     links: [
@@ -77,7 +78,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body className="font-geist-mono antialiased h-screen wrap-anywhere selection:bg-[rgba(79,184,178,0.24)]">
         <PostHogProvider>
-          {children}
+          <TooltipProvider>{children}</TooltipProvider>
           <TanStackDevtools
             config={{
               position: 'bottom-right',

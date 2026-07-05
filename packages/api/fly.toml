@@ -1,0 +1,15 @@
+app = "baggit.app"
+
+[processes]
+  auth = "bun run start:auth" # Auth process groups
+  api = "bun run start:api" # API process groups
+
+[[services]]
+  processes = ["auth"] # Only 'auth' machines handle this service
+  internal_port = 8080
+  protocol = "tcp"
+
+[[services]]
+  processes = ["api"] # Only 'api' machines handle this service
+  internal_port = 8080
+  protocol = "tcp"

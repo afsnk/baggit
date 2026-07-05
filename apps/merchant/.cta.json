@@ -1,0 +1,28 @@
+{
+  "projectName": "merchant",
+  "mode": "file-router",
+  "typescript": true,
+  "packageManager": "bun",
+  "includeExamples": false,
+  "tailwind": true,
+  "addOnOptions": {},
+  "envVarValues": {},
+  "git": false,
+  "install": true,
+  "routerOnly": false,
+  "version": 1,
+  "framework": "react",
+  "chosenAddOns": [
+    "eslint",
+    "nitro",
+    "compiler",
+    "db",
+    "form",
+    "paraglide",
+    "shadcn",
+    "t3env",
+    "table",
+    "posthog",
+    "tanstack-query"
+  ]
+}

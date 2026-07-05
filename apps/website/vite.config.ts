@@ -5,10 +5,11 @@ import { paraglideVitePlugin } from '@inlang/paraglide-js'
 import { tanstackStart } from '@tanstack/react-start/plugin/vite'
 
 import viteReact, { reactCompilerPreset } from '@vitejs/plugin-react'
+import babel from "@rolldown/plugin-babel"
 import tailwindcss from '@tailwindcss/vite'
 import { nitro } from 'nitro/vite'
 
-const config = defineConfig({
+const config = defineConfig(({ command }) => ({
   resolve: { tsconfigPaths: true },
   plugins: [
     devtools(),
@@ -21,10 +22,10 @@ const config = defineConfig({
     tanstackStart(),
     viteReact(),
     nitro({
-      preset: import.meta.dev ? undefined : 'vercel',
+      preset: command === 'serve' ? undefined : 'vercel',
     }),
-    reactCompilerPreset(),
+    babel({ presets: [reactCompilerPreset(),] })
   ],
-})
+}))
 
 export default config

@@ -78,6 +78,30 @@ export const get = createRoute({
   },
 });
 
+export const sweep = createRoute({
+  tags,
+  hide: true,
+  method: "get",
+  path: "/payment/sweep/:reference",
+  request: {
+    params: z.object({
+      reference: z.string(),
+    }),
+  },
+  responses: {
+    [HttpStatusCodes.OK]: jsonContent(
+      z.any(),
+      "Sweeep response"
+    ),
+    [HttpStatusCodes.BAD_REQUEST]: jsonContent(z.any(), "Bad request"),
+    [HttpStatusCodes.INTERNAL_SERVER_ERROR]: jsonContent(
+      z.any(),
+      "Internal server error",
+    ),
+  }
+})
+
 export type PaymentInitRoute = typeof init;
 export type ConfirmRoute = typeof confirm;
 export type GetTransactionRoute = typeof get;
+export type SweepRoute = typeof sweep;

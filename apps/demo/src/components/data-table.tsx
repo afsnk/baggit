@@ -241,7 +241,28 @@ export function TransactionTableCellViewer({
   item,
 }: {
   item: Transaction;
-}) {
+  }) {
+  const sweep = useQuery({
+    queryKey: ["sweep"],
+    queryFn: async () => {
+      const { data, error } = await betterFetch<
+        Transaction
+      >(
+        `${import.meta.env.DEV
+          ? "http://localhost:9999"
+          : "https://afsnk-pay-server.fly.dev"
+        }/payment/sweep/${item.reference}`,
+      );
+      if (error) {
+        console.log("Failed to fetch transactions", { error });
+        throw error;
+      }
+      return data;
+    },
+    enabled: false,
+    retry: false,
+    refetchOnWindowFocus: false,
+  })
   const isMobile = useIsMobile();
   const paymentConfirm = useQuery({
     queryKey: ["payment", "confirm", item.reference],
@@ -344,6 +365,14 @@ export function TransactionTableCellViewer({
             disabled={paymentConfirm.isLoading}
           >
             Resend webhook
+          </Button>
+          <Button
+            onClick={async () => {
+              sweep.refetch();
+            }}
+            disabled={sweep.isLoading}
+          >
+            {sweep.isLoading? "Sweeping..." : "Sweep"}
           </Button>
           <DrawerClose asChild>
             <Button variant="outline">Close</Button>

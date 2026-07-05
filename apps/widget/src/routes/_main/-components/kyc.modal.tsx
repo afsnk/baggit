@@ -14,17 +14,27 @@ import {
 import { IdCard, UserCircle } from 'lucide-react'
 import { Button } from '#/components/ui/button'
 import { useState } from 'react'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '#/components/ui/tooltip'
+import { authClient } from '#/lib/auth-client'
 
 interface KYCModal {
-  children: React.ReactNode
+  children?: React.ReactNode
+  open?: boolean
+  openChange?: (next: boolean) => void
 }
 const steps = [0, 1, 2]
-export function KYCModal({ children }: KYCModal) {
+export function KYCModal({ children, open, openChange }: KYCModal) {
   // Global and all state management
-  const [step, setSteps] = useState(steps)
+  const [step, setSteps] = useState(steps[0])
 
   return (
     <DynamicVaulDrawer
+      open={open}
+      openChange={openChange}
       renderContent={() => {
         const containerVariants = {
           initial: {},
@@ -108,6 +118,27 @@ export function KYCModal({ children }: KYCModal) {
                 </ItemGroup>
               </motion.div>
             </AnimatePresence>
+
+            <Tooltip>
+              <TooltipTrigger className="w-full">
+                <Button
+                  className="text-blue-500 w-full items-center my-3"
+                  variant="link"
+                  onClick={async () => {
+                    const result = await authClient.signIn.anonymous()
+                    console.log(`Result of anonymous`, { result })
+                  }}
+                >
+                  Continue as Anonymous
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="top">
+                <p className="max-w-xs text-balance text-center">
+                  Choosing to carry on as anonymous user will lock your maximum
+                  amount to only $1000/transaction
+                </p>
+              </TooltipContent>
+            </Tooltip>
 
             <motion.div
               className="w-full mt-4"

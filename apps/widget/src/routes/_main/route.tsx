@@ -61,21 +61,27 @@ function MainMenu() {
         <Button
           size="sm"
           variant="outline"
-          className="max-w-sm flex items-center justify-between gap-6"
+          className="max-w-sm flex items-center justify-between"
         >
-          <span>Menu</span>
+          <span className="text-xs font-semibold">Menu</span>
           <IconBurger className="size-4" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-40 text-xs" align="center">
         <DropdownMenuGroup>
-          <DropdownMenuItem>History</DropdownMenuItem>
+          <DropdownMenuLabel className="text-xs font-semibold text-muted-foreground">
+            General
+          </DropdownMenuLabel>
+          <DropdownMenuItem>Transactions</DropdownMenuItem>
           <DropdownMenuItem>Saved addresses</DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuLabel>Settings</DropdownMenuLabel>
+          <DropdownMenuLabel className="text-xs font-semibold text-muted-foreground">
+            Settings
+          </DropdownMenuLabel>
           <DropdownMenuItem>Profile</DropdownMenuItem>
+          <DropdownMenuItem>Link wallet</DropdownMenuItem>
         </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>

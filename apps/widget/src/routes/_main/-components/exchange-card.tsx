@@ -13,7 +13,7 @@ import {
   type IAssetsRender,
   type INetwork,
 } from './asset-toggle'
-import { useReducer } from 'react'
+import { useReducer, useState, type ChangeEvent } from 'react'
 import { useNavigate } from '@tanstack/react-router'
 
 const assets: IAssetsRender[] = [
@@ -55,18 +55,68 @@ const assets: IAssetsRender[] = [
 
 export default function ExchangeCard({
   defaultMode = 'buy',
+  layout = 'compact',
 }: {
   defaultMode: 'buy' | 'sell'
+  layout: 'compact' | 'full'
 }) {
   return (
     <div className="grid w-full">
-      <AssetConfig mode={defaultMode} />
+      <AssetConfig mode={defaultMode} layout={layout} />
     </div>
   )
 }
 const defaultInputStyle = `md:text-4xl text-6xl border-none outline-0 focus-visible:border-none focus-visible:ring-0 p-2 focus:bg-white/30 darK:bg-transparent h-auto`
-function AssetConfig({ mode }: { mode: 'sell' | 'buy' }) {
+
+function AssetConfig({
+  mode,
+  layout,
+}: {
+  mode: 'sell' | 'buy'
+  layout: 'compact' | 'full'
+}) {
   const navigate = useNavigate({ from: `/${mode}` })
+  const [sellAmount, setSellAmount] = useState('')
+  const [buyAmount, setBuyAmount] = useState('')
+
+  const handleSellAmountChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const inputValue = e.target.value.replace(/,/g, '')
+
+    if (inputValue === '' || /^\d*\.?\d*$/.test(inputValue)) {
+      let formatted = inputValue
+
+      if (inputValue && inputValue !== '.') {
+        const [integerPart, decimalPart] = inputValue.split('.')
+        const formattedInteger = parseInt(integerPart || '0').toLocaleString()
+        formatted =
+          decimalPart !== undefined
+            ? `${formattedInteger}.${decimalPart}`
+            : formattedInteger
+      }
+
+      setSellAmount(formatted)
+    }
+  }
+
+  const handleBuyAmountChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const inputValue = e.target.value.replace(/,/g, '')
+
+    if (inputValue === '' || /^\d*\.?\d*$/.test(inputValue)) {
+      let formatted = inputValue
+
+      if (inputValue && inputValue !== '.') {
+        const [integerPart, decimalPart] = inputValue.split('.')
+        const formattedInteger = parseInt(integerPart || '0').toLocaleString()
+        formatted =
+          decimalPart !== undefined
+            ? `${formattedInteger}.${decimalPart}`
+            : formattedInteger
+      }
+
+      setBuyAmount(formatted)
+    }
+  }
+
   return (
     <Tabs
       defaultValue={mode}
@@ -76,11 +126,12 @@ function AssetConfig({ mode }: { mode: 'sell' | 'buy' }) {
       }}
     >
       <div className="flex items-center justify-between w-full">
-        <TabsList>
+        <TabsList className={cn({ hidden: layout === 'compact' })}>
           <TabsTrigger value="sell">Sell</TabsTrigger>
           <TabsTrigger value="buy">Buy</TabsTrigger>
         </TabsList>
         <div>
+          {/*Hidden settings button because of global menu button, replace with more relevant component*/}
           <Button size="icon-sm" className="hidden">
             <Settings className="size-4 text-primary-foreground" />
           </Button>
@@ -89,13 +140,17 @@ function AssetConfig({ mode }: { mode: 'sell' | 'buy' }) {
       <TabsContent value="sell">
         <Card>
           <CardHeader>
-            <CardTitle className="capitalize">{mode} token:</CardTitle>
+            <CardTitle>
+              <span className="capitalize">{mode}</span> token
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="w-full flex gap-3">
               <Input
-                type="number"
-                defaultValue={0.0}
+                type="text"
+                inputMode="numeric"
+                value={sellAmount}
+                onChange={handleSellAmountChange}
                 className={cn(
                   defaultInputStyle,
                   '[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none',
@@ -109,13 +164,17 @@ function AssetConfig({ mode }: { mode: 'sell' | 'buy' }) {
       <TabsContent value="buy">
         <Card>
           <CardHeader>
-            <CardTitle className="capitalize">{mode} token:</CardTitle>
+            <CardTitle>
+              <span className="capitalize">{mode}</span> token
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="w-full flex gap-3">
               <Input
-                type="number"
-                defaultValue={0.0}
+                type="text"
+                inputMode="numeric"
+                value={buyAmount}
+                onChange={handleBuyAmountChange}
                 className={cn(
                   defaultInputStyle,
                   '[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none',

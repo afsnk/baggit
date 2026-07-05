@@ -20,6 +20,7 @@
     "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
+    "@better-auth/api-key": "^1.6.23",
     "@faker-js/faker": "^10.3.0",
     "@posthog/react": "^1.7.0",
     "@react-three/fiber": "^9.6.1",

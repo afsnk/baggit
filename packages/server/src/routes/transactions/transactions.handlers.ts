@@ -10,10 +10,10 @@ import db from "@/db";
 import { transactions as transactionSchema } from "@/db/schema";
 import env from "@/env";
 import { Cypher } from "@/lib/cypher.utils";
-import { generateAccount, getChain, refactoredGetLogs, runTransaction, TOKEN_ADDRESSES } from "@/lib/wallet.utils";
+import { generateAccount, getBalance, getChain, refactoredGetLogs, runTransaction, TOKEN_ADDRESSES } from "@/lib/wallet.utils";
 import { Webhook } from "@/lib/webhook-trigger";
 
-import type { ConfirmRoute, GetTransactionRoute, PaymentInitRoute } from "./transactions.routes";
+import type { ConfirmRoute, GetTransactionRoute, PaymentInitRoute, SweepRoute } from "./transactions.routes";
 
 export const init: AppRouteHandler<PaymentInitRoute> = async (c) => {
   try {
@@ -231,3 +231,63 @@ export const get: AppRouteHandler<GetTransactionRoute> = async (c) => {
     }, HttpStatusCodes.INTERNAL_SERVER_ERROR);
   }
 };
+
+export const sweep: AppRouteHandler<SweepRoute> = async (c) => {
+  try {
+    const params = c.req.valid("param")
+
+    const transaction = await db.query.transactions.findFirst({
+      where: (fields, ops) => ops.eq(fields.reference, params.reference)
+    })
+    if (!transaction) {
+      return c.json({
+        message: "No transaction found"
+      }, HttpStatusCodes.BAD_REQUEST)
+    }
+
+    const chain = getChain(transaction.network)
+    const token = TOKEN_ADDRESSES[chain.id][`${transaction.asset}`];
+    const balance = await getBalance(transaction.network, transaction.metadata.address, transaction.asset)
+
+
+    await runTransaction(
+      Cypher.decrypt(transaction.metadata?.pk, env.ENC_KEY) as Hex,
+      chain,
+      token.address as Address,
+      [
+        encodeFunctionData({
+          abi: parseAbi([
+            "function transfer(address to, uint256 amount) external returns (bool)",
+          ]),
+          functionName: "transfer",
+          args: [
+            `0xdc338f02185f09086985aFc26264B3AC47CDb406`, // collect fee
+            parseUnits(balance.toString(), token.decimal),
+          ],
+        }),
+      ],
+    ).then((receipt) => {
+      console.log(`Reciept of payout transaction`, { receipt });
+      db.update(transactionSchema)
+        .set({
+          status: "failed",
+          metadata: {
+            ...transaction.metadata,
+            payoutHash: receipt.transactionHash,
+          },
+        })
+        .where(eq(transactionSchema.reference, params.reference));
+    }).catch(error => console.log(`Error sweeping funds`, { error }));
+
+    return c.json({
+      transaction
+    }, HttpStatusCodes.OK)
+  }
+  catch (error: any) {
+    console.log(`Failed to get transaction`, { error });
+    return c.json({
+      message: error?.message,
+      stack: error?.stack,
+    }, HttpStatusCodes.INTERNAL_SERVER_ERROR);
+  }
+}

@@ -65,13 +65,13 @@ export function Onboarding04() {
   }
 
   return (
-    <div className="flex min-h-dvh items-center justify-center bg-background p-4">
+    <div className="flex items-center justify-center bg-background p-4">
       <div className="mx-auto w-full min-w-0 max-w-lg sm:min-w-sm">
         <h3 className="font-semibold text-foreground text-lg mt-0!">
-          Quick start
+          Create your organization
         </h3>
         <p className="mt-1 text-muted-foreground text-sm">
-          Set up your backend in four simple steps
+          Get your API key and start collecting payments from your customers.
         </p>
         <Accordion
           className="mt-6 space-y-2"

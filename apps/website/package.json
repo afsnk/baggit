@@ -32,6 +32,7 @@
     "cobe": "^2.0.1",
     "framer-motion": "^12.38.0",
     "lucide-react": "^0.577.0",
+    "nitro": "^3.0.260610-beta",
     "posthog-js": "^1.358.1",
     "radix-ui": "^1.4.3",
     "react": "^19.2.0",
@@ -43,6 +44,7 @@
   },
   "devDependencies": {
     "@inlang/paraglide-js": "^2.13.1",
+    "@rolldown/plugin-babel": "^0.2.3",
     "@tailwindcss/typography": "^0.5.16",
     "@tanstack/devtools-event-client": "latest",
     "@tanstack/devtools-vite": "latest",

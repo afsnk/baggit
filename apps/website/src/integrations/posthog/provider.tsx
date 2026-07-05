@@ -4,8 +4,8 @@ import type { ReactNode } from 'react'
 import { env } from '#/env'
 
 if (
-  (typeof window !== 'undefined' && import.meta.env.VITE_POSTHOG_KEY) ||
-  env.VITE_POSTHOG_KEY
+  typeof window !== 'undefined' &&
+  (import.meta.env.VITE_POSTHOG_KEY || env.VITE_POSTHOG_KEY)
 ) {
   posthog.init(import.meta.env.VITE_POSTHOG_KEY || env.VITE_POSTHOG_KEY, {
     api_host: import.meta.env.VITE_POSTHOG_HOST || 'https://us.i.posthog.com',
