@@ -24,7 +24,7 @@ const config = defineConfig({
       output: {
         dir: '.output',
         serverDir: '.output/server',
-        publicDir: '.output/static',
+        // publicDir: '.output/static',
       },
     }),
     tailwindcss(),
