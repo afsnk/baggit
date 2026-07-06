@@ -1,3 +1,4 @@
+import { UnderConstruction } from '#/components/under-construction'
 import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/_platform/settings/general')({
@@ -5,5 +6,10 @@ export const Route = createFileRoute('/_platform/settings/general')({
 })
 
 function RouteComponent() {
-  return <div>Hello "/_platform/settings/general"!</div>
+  return (
+    <UnderConstruction
+      title="General settings page under construction"
+      description="Change the look and feel of your dashboard for improved productivity"
+    />
+  )
 }

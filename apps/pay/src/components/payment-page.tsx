@@ -9,6 +9,7 @@ import {
   ChevronLeftIcon,
   Copy,
   Grid2x2PlusIcon,
+  Loader2,
 } from 'lucide-react'
 import { PaymentFlowStepper } from './payment-flow-stepper'
 import type { StepProps } from './payment-flow-stepper'
@@ -21,11 +22,15 @@ import type { Chain } from './NetworkPicker'
 import { ToggleGroup, ToggleGroupItem } from './ui/toggle-group'
 import { BarVisualizer } from './bar-visualizer'
 import { Skeleton } from './ui/skeleton'
-import SolarLoader from './ui/solar-loader'
+import { useMutation, useQuery } from '@tanstack/react-query'
+import { confirmTransaction, initTransaction } from '#/lib/api-client'
 
 interface IPaymentPageProps {
   merchantCallbackUrl: string
   merchantName: string
+  amount: number
+  pk: string
+  paymentId: string
 }
 
 // Helper components for the demo content
@@ -130,12 +135,17 @@ const AddressQRCode = ({
   timer,
   onCancel,
   onComplete,
+  address,
 }: {
   timer: number | string
+  address: string
   onCancel: () => void
   onComplete: () => void
 }) => {
-  const address = '0x'.padEnd(32, '0')
+  // const address = '0x'.padEnd(32, '0')
+  const handleCopy = (text: string) => {
+    navigator.clipboard.writeText(text)
+  }
   return (
     <div className="flex flex-col items-center justify-center rounded-lg space-y-3">
       <div className="flex flex-row gap-2 w-full">
@@ -162,7 +172,12 @@ const AddressQRCode = ({
             <span className="flex-1 min-w-0 text-sm text-left text-wrap line-clamp-2 wrap-break-word">
               {address}
             </span>
-            <Button size="icon" variant="outline" className="w-6 h-6 shrink-0">
+            <Button
+              size="icon"
+              variant="outline"
+              className="w-6 h-6 shrink-0"
+              onClick={() => handleCopy(address)}
+            >
               <Copy className="size-3" />
             </Button>
           </div>
@@ -183,11 +198,11 @@ const AddressQRCode = ({
 
       <FlipButton
         frontText="I have made the transfer"
-        backText="Complete payment"
+        backText="Confirm payment"
         frontClassName="border border-gray-400"
         className="w-full"
         onClick={() => {
-          window.alert('Complete payment!')
+          // window.alert('Complete payment!')
           onComplete()
         }}
       />
@@ -202,9 +217,40 @@ export function PaymentPage(props: IPaymentPageProps) {
   const [currentStep, setCurrentStep] = useState(0)
   const [timer, setTimer] = useState(60)
 
-  const [selectedChain, setSelectChain] = useState(chains[0].chainId)
+  const [selectedChain, setSelectChain] = useState(chains[0].value)
   const [pickerOpen, setPickerOpen] = useState(false)
   const [currency, setCurrency] = useState('usdt')
+  const [confirm, setConfirm] = useState<boolean>(false)
+  const amount = props.amount / 1400
+
+  // Mutation/Query
+  const {
+    mutateAsync,
+    isPending,
+    data: trxData,
+  } = useMutation(initTransaction(props.pk))
+  const {
+    isLoading,
+    data: confirmData,
+    error,
+  } = useQuery(
+    confirmTransaction(
+      props.pk,
+      trxData?.id,
+      typeof trxData !== 'undefined' && confirm,
+    ),
+  )
+
+  useEffect(() => {
+    if (!isLoading && confirmData) {
+      setCurrentStep(2)
+    }
+
+    console.log(`Error`, { error })
+    if (error) {
+      window.location.href = props.merchantCallbackUrl
+    }
+  })
 
   // Timer logic
   useEffect(() => {
@@ -220,11 +266,17 @@ export function PaymentPage(props: IPaymentPageProps) {
     return () => clearInterval(interval)
   }, [currentStep, timer])
 
-  const handleCommit = () => {
+  const handleCommit = async () => {
+    await mutateAsync({
+      network: selectedChain,
+      asset: currency,
+      paymentId: props.paymentId,
+    })
     setCurrentStep(1) // Move to the timer step
   }
 
   const resetFlow = () => {
+    setConfirm(false)
     setCurrentStep(0)
     setTimer(60)
   }
@@ -244,7 +296,7 @@ export function PaymentPage(props: IPaymentPageProps) {
                 }
                 className="object-cover size-4 rounded-full"
               />
-              14.6
+              {amount.toFixed()}
             </p>
             <CurrencyToggle
               onCurrencyChange={setCurrency}
@@ -266,7 +318,7 @@ export function PaymentPage(props: IPaymentPageProps) {
           <div className="space-y-2 text-sm">
             <PriceDetail
               label="Lifetime platform access"
-              value={`14.6 ${currency.toUpperCase()}`}
+              value={`${amount.toFixed(2)} ${currency.toUpperCase()}`}
             />
             <PriceDetail
               label="Est. network fee"
@@ -276,11 +328,16 @@ export function PaymentPage(props: IPaymentPageProps) {
           <div className="border-t pt-2">
             <PriceDetail
               label="Estimated total"
-              value={`14.696 ${currency.toUpperCase()}`}
+              value={`${(amount + 0.096).toFixed(2)} ${currency.toUpperCase()}`}
             />
           </div>
-          <Button className="w-full" onClick={handleCommit}>
-            Continue
+          <Button
+            className="w-full"
+            onClick={handleCommit}
+            disabled={isPending}
+          >
+            {isPending && <Loader2 className="animate-spin" />}
+            {!isPending && 'Continue'}
           </Button>
         </div>
       ),
@@ -293,7 +350,10 @@ export function PaymentPage(props: IPaymentPageProps) {
         <AddressQRCode
           timer={timer}
           onCancel={resetFlow}
-          onComplete={() => setCurrentStep(2)}
+          onComplete={() => {
+            setConfirm(true)
+          }}
+          address={trxData?.address || ''}
         />
       ),
     },
@@ -303,7 +363,7 @@ export function PaymentPage(props: IPaymentPageProps) {
       description: 'Confirming your transaction',
       content: (
         <div className="flex flex-col space-y-2">
-          {true && (
+          {isLoading && (
             <>
               <h4 className="font-semibold text-xs text-center">
                 Making sure the stars align
@@ -311,7 +371,7 @@ export function PaymentPage(props: IPaymentPageProps) {
               <Skeleton className="h-28" />
             </>
           )}
-          {false && (
+          {!isLoading && confirmData && (
             <>
               <ReferralCTACard
                 title="Earnings on Subscriptions"
@@ -329,7 +389,7 @@ export function PaymentPage(props: IPaymentPageProps) {
                   { src: 'https://i.pravatar.cc/150?img=3', alt: 'User 3' },
                 ]}
               />
-              <ReceiptSheet>
+              <ReceiptSheet confirmData={confirmData}>
                 <Button className="w-full">View Receipt</Button>
               </ReceiptSheet>
             </>

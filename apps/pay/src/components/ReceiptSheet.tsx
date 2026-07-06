@@ -3,8 +3,10 @@ import { Sheet, SheetContent, SheetTrigger } from './ui/sheet'
 
 interface ReceiptSheetProps {
   children: React.ReactNode
+  confirmData: any
 }
 export const ReceiptSheet = (props: ReceiptSheetProps) => {
+  console.log(`Transaction data`, { data: props.confirmData })
   return (
     <Sheet>
       <SheetTrigger>{props.children}</SheetTrigger>
