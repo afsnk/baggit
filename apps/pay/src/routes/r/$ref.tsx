@@ -1,11 +1,12 @@
 import { PaymentPage } from '#/components/payment-page'
-import { api } from '#/lib/api-client'
+import { fetch } from '#/lib/api-client'
 import { createFileRoute } from '@tanstack/react-router'
 import { z } from 'zod'
 
 const paymentSearchSchema = z.object({
-  merchantName: z.string().default('Ugamy'),
-  merchantCallbackUrl: z.string().default('https://ugamy.io/pay'),
+  merchantName: z.string().optional().default('Ugamy'),
+  merchantCallbackUrl: z.string().optional().default('https://ugamy.io/pay'),
+  pk: z.string().optional(),
   mode: z.enum(['test', 'prod']).optional(),
 })
 
@@ -19,6 +20,26 @@ export const Route = createFileRoute('/r/$ref')({
     const search = props.location.search as PaymentSearch
     console.log(`props`, { reference, search })
     // Load default merchant data from transaction reference
+
+    const { data, error } = await fetch(`/payment/:id`, {
+      method: 'GET',
+      params: {
+        id: reference,
+      },
+      headers: {
+        'baggit-public-key': search.pk,
+      },
+    })
+
+    if (error) {
+      console.log(`Error fetching payment`, { error })
+      throw error
+    }
+
+    console.log(`Pay details`, { data })
+    const paymentData = data as any
+
+    return { ...paymentData, pk: search.pk }
   },
 })
 
@@ -31,8 +52,11 @@ function RouteComponent() {
 
   return (
     <PaymentPage
-      merchantCallbackUrl={merchantCallbackUrl}
-      merchantName={merchantName}
+      merchantCallbackUrl={data.callbackUrl || merchantCallbackUrl}
+      merchantName={data.metadata?.merchantName || merchantName}
+      amount={data.amount}
+      pk={data.pk}
+      paymentId={ref}
     />
   )
 }

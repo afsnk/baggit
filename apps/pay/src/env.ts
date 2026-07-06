@@ -3,7 +3,7 @@ import { z } from 'zod'
 
 export const env = createEnv({
   server: {
-    SERVER_URL: z.string().url(),
+    SERVER_URL: z.string().url().default('https://api.baggit.dev'),
   },
 
   /**
@@ -18,6 +18,7 @@ export const env = createEnv({
     VITE_BASE_RPC_URL: z.string().url().optional(),
     /** Optional custom RPC endpoint for BNB Smart Chain; falls back to the chain default. */
     VITE_BSC_RPC_URL: z.string().url().optional(),
+    VITE_API_URL: z.string().url(),
   },
 
   /**

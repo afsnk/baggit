@@ -59,7 +59,7 @@ function ChainPicker({
   const isOpen = isControlled ? open : internalOpen
   const setIsOpen = isControlled ? onOpenChange : setInternalOpen
 
-  const selectedChain = chains.find((c) => c.chainId === value)
+  const selectedChain = chains.find((c) => c.value === value)
 
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
@@ -97,9 +97,9 @@ function ChainPicker({
                 <ChainPickerItem
                   key={chain.chainId}
                   chain={chain}
-                  isSelected={value === chain.chainId}
+                  isSelected={value === chain.value}
                   onSelect={() => {
-                    onValueChange?.(chain.chainId)
+                    onValueChange?.(chain.value)
                     setIsOpen?.(false)
                   }}
                 />
