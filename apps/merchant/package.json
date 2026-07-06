@@ -8,7 +8,7 @@
   "scripts": {
     "dev": "portless merchant.baggit --app-port 3004 bunx --bun vite dev",
     "generate-routes": "tsr generate",
-    "build": "vite build --preset vercel",
+    "build": "vite build",
     "start": "node .output/server/index.mjs",
     "preview": "vite preview",
     "test": "vitest run",
