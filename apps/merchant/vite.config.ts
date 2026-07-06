@@ -18,7 +18,15 @@ const config = defineConfig({
       outdir: './src/paraglide',
       strategy: ['url', 'baseLocale'],
     }),
-    nitro({ rollupConfig: { external: [/^@sentry\//] }, preset: 'vercel' }),
+    nitro({
+      rollupConfig: { external: [/^@sentry\//] },
+      preset: 'vercel',
+      output: {
+        dir: '.output',
+        serverDir: '.output/server',
+        publicDir: '.output/static',
+      },
+    }),
     tailwindcss(),
     tanstackStart(),
     viteReact(),
