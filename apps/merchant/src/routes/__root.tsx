@@ -17,6 +17,7 @@ import appCss from '../styles.css?url'
 import type { QueryClient } from '@tanstack/react-query'
 import { TooltipProvider } from '#/components/ui/tooltip'
 import { Toaster } from '#/components/ui/sonner'
+import NiceModal from '@ebay/nice-modal-react'
 
 interface MyRouterContext {
   queryClient: QueryClient
@@ -56,29 +57,31 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
-    <html lang={getLocale()}>
-      <head>
-        <HeadContent />
-      </head>
-      <body>
-        <PostHogProvider>
-          <TooltipProvider>{children}</TooltipProvider>
-          <Toaster position="top-center" />
-          <TanStackDevtools
-            config={{
-              position: 'bottom-right',
-            }}
-            plugins={[
-              {
-                name: 'Tanstack Router',
-                render: <TanStackRouterDevtoolsPanel />,
-              },
-              TanStackQueryDevtools,
-            ]}
-          />
-        </PostHogProvider>
-        <Scripts />
-      </body>
-    </html>
+    <NiceModal.Provider>
+      <html lang={getLocale()}>
+        <head>
+          <HeadContent />
+        </head>
+        <body>
+          <PostHogProvider>
+            <TooltipProvider>{children}</TooltipProvider>
+            <Toaster position="top-center" />
+            <TanStackDevtools
+              config={{
+                position: 'bottom-right',
+              }}
+              plugins={[
+                {
+                  name: 'Tanstack Router',
+                  render: <TanStackRouterDevtoolsPanel />,
+                },
+                TanStackQueryDevtools,
+              ]}
+            />
+          </PostHogProvider>
+          <Scripts />
+        </body>
+      </html>
+    </NiceModal.Provider>
   )
 }

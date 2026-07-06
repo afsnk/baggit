@@ -1,3 +1,4 @@
+import { UnderConstruction } from '#/components/under-construction'
 import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/_platform/_orchestra/analytics')({
@@ -5,5 +6,10 @@ export const Route = createFileRoute('/_platform/_orchestra/analytics')({
 })
 
 function RouteComponent() {
-  return <div>Hello "/_platform/analytics"!</div>
+  return (
+    <UnderConstruction
+      title="Analytics page is still under construction"
+      description="Dive deeper with clear and precise analytics collected from user interaction with your integrations"
+    />
+  )
 }
