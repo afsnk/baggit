@@ -11,12 +11,16 @@
     "build:registry": "pnpm -C packages/registry build",
     "build:packages:server": "pnpm --filter @afsnk/pay-server build",
     "start:packages:server": "pnpm --filter @afsnk/pay-server start",
+    "build:packages:api": "bun run --filter @baggit/api build",
+    "start:packages:api": "bun run --filter @baggit/api start:api",
+    "start:packages:auth": "bun run --filter @baggit/api start:auth",
     "start": "pnpm -C packages/demo start",
     "lint": "pnpm -r lint",
     "publish:npm": "pnpm -C packages/npm publish --access public",
     "publish:registry": "pnpm -C packages/registry publish --access public",
     "deploy:server": "flyctl deploy --config ./packages/server/fly.toml --dockerfile ./packages/server/api.Dockerfile",
     "deploy:server:staging": "flyctl deploy --config ./packages/server/fly.staging.toml --dockerfile ./packages/server/staging.api.Dockerfile",
+    "deploy:api": "flyctl deploy --no-cache --config ./packages/api/fly.toml",
     "clean": "pnpm -r exec rm -rf dist node_modules"
   },
   "keywords": [

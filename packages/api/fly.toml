@@ -1,15 +1,47 @@
-app = "baggit.app"
+# fly.toml app configuration file generated for baggit on 2026-07-07T15:41:14+01:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'baggit'
+primary_region = 'lhr'
+
+[build]
+  dockerfile = './Dockerfile'
+
+[deploy]
+    release_command = "./packages/api/app-db-migrations.sh"
 
 [processes]
-  auth = "bun run start:auth" # Auth process groups
-  api = "bun run start:api" # API process groups
+  api = 'bun run start:packages:api'
+  auth = 'bun run start:packages:auth'
+  caddy = "caddy run --config /etc/caddy/Caddyfile"
 
-[[services]]
-  processes = ["auth"] # Only 'auth' machines handle this service
-  internal_port = 8080
-  protocol = "tcp"
+# [http_service]
+#   internal_port = 8080
+#   force_https = true
+#   auto_stop_machines = 'stop'
+#   auto_start_machines = true
+#   min_machines_running = 0
+#   processes = ['caddy']
 
+# Public service — attached ONLY to the caddy process group
 [[services]]
-  processes = ["api"] # Only 'api' machines handle this service
-  internal_port = 8080
-  protocol = "tcp"
+    processes    = ["caddy"]
+    protocol     = "tcp"
+    internal_port = 8080
+
+    [[services.ports]]
+        port        = 80
+        handlers    = ["http"]
+        force_https = true
+
+    [[services.ports]]
+        port        = 443
+        handlers    = ["tls", "http"]
+
+[[vm]]
+  memory = '256mb'
+  cpus = 1
+  memory_mb = 256
+  processes = ['auth', 'api']

@@ -24,7 +24,7 @@ export const createPayment: AppRouteHandler<CreatePaymentRoute, 'apiKey'> = asyn
 
     return status(200, {
       paymentId: newPayment.id,
-      paymentUrl: `${env.PAY_CLIENT_URL}/r/${newPayment.id}`
+      paymentUrl: `${env.CHECKOUT_CLIENT_URL}/r/${newPayment.id}`
     })
   }
   catch (error: any) {

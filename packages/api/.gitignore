@@ -39,3 +39,5 @@ dev.db
 dev*.db
 ./auth-schema.ts
 auth-schema.ts
+./scripts
+scripts
