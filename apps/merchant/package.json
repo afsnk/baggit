@@ -8,13 +8,14 @@
   "scripts": {
     "dev": "portless merchant.baggit --app-port 3004 bunx --bun vite dev",
     "generate-routes": "tsr generate",
-    "build": "vite build",
-    "start": "node .output/server/index.mjs",
+    "build": "vite build && tsc --noEmit",
     "preview": "vite preview",
     "test": "vitest run",
     "lint": "eslint",
     "format": "prettier --write . && eslint --fix",
-    "check": "prettier --check ."
+    "check": "prettier --check .",
+    "deploy": "npm run build && wrangler deploy",
+    "cf-typegen": "wrangler types"
   },
   "dependencies": {
     "@better-auth/api-key": "^1.6.22",
@@ -54,6 +55,7 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
+    "@cloudflare/vite-plugin": "^1.43.0",
     "@inlang/paraglide-js": "^2.13.1",
     "@rolldown/plugin-babel": "^0.2.3",
     "@tailwindcss/typography": "^0.5.16",
@@ -72,7 +74,8 @@
     "prettier": "^3.8.1",
     "typescript": "^6.0.2",
     "vite": "^8.0.0",
-    "vitest": "^4.1.5"
+    "vitest": "^4.1.5",
+    "wrangler": "^4.107.0"
   },
   "pnpm": {
     "onlyBuiltDependencies": [

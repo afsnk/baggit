@@ -3,15 +3,10 @@
 import * as React from 'react'
 import {
   AudioWaveform,
-  BookOpen,
-  Bot,
   Command,
   ExternalLink,
-  Frame,
   GalleryVerticalEnd,
-  Map,
   Music2,
-  PieChart,
   Settings2,
   SquareTerminal,
 } from 'lucide-react'

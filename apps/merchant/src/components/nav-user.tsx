@@ -1,11 +1,4 @@
-import {
-  BadgeCheck,
-  Bell,
-  ChevronsUpDown,
-  CreditCard,
-  LogOut,
-  Sparkles,
-} from 'lucide-react'
+import { Bell, ChevronsUpDown, LogOut } from 'lucide-react'
 
 import { Avatar, AvatarFallback, AvatarImage } from '#/components/ui/avatar.tsx'
 import {
@@ -96,7 +89,7 @@ export function NavUser() {
               onClick={async () => {
                 await authClient.signOut({
                   fetchOptions: {
-                    onSuccess(context) {
+                    onSuccess() {
                       toast.info(`Logged out`)
                       router.navigate({
                         href: '/',
