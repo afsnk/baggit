@@ -2,7 +2,7 @@ import { createFileRoute, redirect } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/')({
   loader: () => {
-    return redirect({
+    throw redirect({
       href: 'https://baggit.link',
     })
   },
