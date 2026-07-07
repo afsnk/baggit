@@ -1,0 +1,22 @@
+# Global: tell Caddy the HTTP port is 8080
+{
+  http_port 8080
+}
+
+# Auth and API reverse proxies for Baggit Production applications
+http://auth.baggit.link {
+  reverse_proxy http://auth.process.baggit.internal:8002
+}
+
+http://api.baggit.link {
+  reverse_proxy http://api.process.baggit.internal:8001
+}
+
+# Staging reverse proxies for Baggit Staging applications
+# staging.auth.baggit.link {
+#  reverse_proxy http://auth.process.baggit-staging.internal
+# }
+
+# staging.api.baggit.link {
+#  reverse_proxy http://api.process.baggit-staging.internal
+# }

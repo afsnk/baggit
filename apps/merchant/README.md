@@ -25,6 +25,12 @@ This project uses [Vitest](https://vitest.dev/) for testing. You can run the tes
 bun --bun run test
 ```
 
+## Deployment
+
+```bash
+bun run deploy
+```
+
 ## Styling
 
 This project uses [Tailwind CSS](https://tailwindcss.com/) for styling.

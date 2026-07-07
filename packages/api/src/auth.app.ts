@@ -27,6 +27,8 @@ const authApp = createApp({ name: "auth" })
   .mount(auth.handler)
   .macro(appMacro)
   .get(`/user`, async ({ user }) => user, { auth: true })
-  .listen(8002)
+  .listen({port: 8002, hostname: "::"})
 
 console.log(`Auth server running at ${authApp.server?.hostname}:${authApp.server?.port}`)
+
+export default authApp
