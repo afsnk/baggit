@@ -87,12 +87,14 @@ const defaultAuthConfig: BetterAuthOptions = {
     useSecureCookies: true,
     crossSubDomainCookies: {
       enabled: true,
-      domain: ".baggit.dev"
+      domain: env.NODE_ENV === "development"? ".baggit.dev" : ".baggit.link"
     },
     database: {
       generateId: (options) => {
         if (options.model === "user" || options.model === "users") {
           return generateId('usr')
+        } else if (options.model === "organization" || options.model === "organizations") {
+          return generateId('org')
         }
         return crypto.randomUUID()
       },

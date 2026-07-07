@@ -32,7 +32,8 @@ const apiApp = createApp({
   .use(paymentRoute)
   .use(transactionRoute)
   .get(`/user`, ({ user }) => user, { auth: true })
-  .listen(8001)
+  .listen({port: 8001, hostname: "::"});
+
 console.log(`API server running at ${apiApp.server?.hostname}:${apiApp.server?.port}`)
 
 
