@@ -7,13 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from '#/components/ui/card.tsx'
-import {
-  Field,
-  FieldDescription,
-  FieldGroup,
-  FieldLabel,
-  FieldSeparator,
-} from '#/components/ui/field.tsx'
+import { Field, FieldDescription, FieldGroup } from '#/components/ui/field.tsx'
 import { Github } from 'lucide-react'
 import { useState } from 'react'
 import { authClient } from '#/lib/auth-client'

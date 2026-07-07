@@ -1,4 +1,4 @@
-import { FolderOpen, RefreshCcwIcon } from 'lucide-react'
+import { FolderOpen } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import {

@@ -3,13 +3,10 @@
 import {
   Copy,
   ExternalLink,
-  Folder,
-  Forward,
   MessageCircleCode,
   MoreHorizontal,
-  Trash2,
-  type LucideIcon,
 } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
 
 import {
   DropdownMenu,
@@ -80,12 +77,6 @@ export function NavDocumentation({
             </DropdownMenu>
           </SidebarMenuItem>
         ))}
-        {/*<SidebarMenuItem>
-          <SidebarMenuButton className="text-sidebar-foreground/70">
-            <MoreHorizontal className="text-sidebar-foreground/70" />
-            <span>More</span>
-          </SidebarMenuButton>
-        </SidebarMenuItem>*/}
       </SidebarMenu>
     </SidebarGroup>
   )

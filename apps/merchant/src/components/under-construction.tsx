@@ -1,6 +1,5 @@
-import { Construction, FolderOpen, RefreshCcwIcon } from 'lucide-react'
+import { Construction } from 'lucide-react'
 
-import { Button } from '@/components/ui/button'
 import {
   Empty,
   EmptyContent,

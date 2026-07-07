@@ -6,7 +6,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/components/ui/dialog'
 import { Button } from './ui/button'
 import { Loader2 } from 'lucide-react'
@@ -34,7 +33,7 @@ const CreateOrgModal = NiceModal.create((_: ICreateOrgModal) => {
         throw error
       }
 
-      if (data && data.status) {
+      if (data.status) {
         // Create organization
         const { data: createOrgData, error: createOrgError } =
           await authClient.organization.create({
@@ -55,7 +54,7 @@ const CreateOrgModal = NiceModal.create((_: ICreateOrgModal) => {
       toast.success(`Organization created`)
       modal.hide()
     },
-    onError(error, variables, onMutateResult, context) {
+    onError(error) {
       toast.error(error.message, {
         description: error.stack,
       })
