@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { Check, ChevronsUpDown, Pause, Play } from 'lucide-react'
+import { Check, ChevronsUpDown } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
 
@@ -123,7 +123,7 @@ function ChainPickerItem({
   isSelected,
   onSelect,
 }: ChainPickerItemProps) {
-  const [isHovered, setIsHovered] = React.useState(false)
+  const [_isHovered, setIsHovered] = React.useState(false)
 
   const preview = chain.explorerUrl
   const audioItem = React.useMemo(

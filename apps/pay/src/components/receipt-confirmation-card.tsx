@@ -45,53 +45,53 @@ const DashedLine = () => (
   />
 )
 
-const Barcode = ({ value }: { value: string }) => {
-  const hashCode = (s: string) =>
-    s.split('').reduce((a, b) => {
-      a = (a << 5) - a + b.charCodeAt(0)
-      return a & a
-    }, 0)
-  const seed = hashCode(value)
-  const random = (s: number) => {
-    const x = Math.sin(s) * 10000
-    return x - Math.floor(x)
-  }
+// const Barcode = ({ value }: { value: string }) => {
+//   const hashCode = (s: string) =>
+//     s.split('').reduce((a, b) => {
+//       a = (a << 5) - a + b.charCodeAt(0)
+//       return a & a
+//     }, 0)
+//   const seed = hashCode(value)
+//   const random = (s: number) => {
+//     const x = Math.sin(s) * 10000
+//     return x - Math.floor(x)
+//   }
 
-  const bars = Array.from({ length: 60 }).map((_, index) => {
-    const rand = random(seed + index)
-    const width = rand > 0.7 ? 2.5 : 1.5
-    return { width }
-  })
+//   const bars = Array.from({ length: 60 }).map((_, index) => {
+//     const rand = random(seed + index)
+//     const width = rand > 0.7 ? 2.5 : 1.5
+//     return { width }
+//   })
 
-  const spacing = 1.5
-  const totalWidth =
-    bars.reduce((acc, bar) => acc + bar.width + spacing, 0) - spacing
-  const svgWidth = 250
-  const svgHeight = 70
-  let currentX = (svgWidth - totalWidth) / 2
+//   const spacing = 1.5
+//   const totalWidth =
+//     bars.reduce((acc, bar) => acc + bar.width + spacing, 0) - spacing
+//   const svgWidth = 250
+//   const svgHeight = 70
+//   let currentX = (svgWidth - totalWidth) / 2
 
-  return (
-    <div className="flex flex-col items-center py-2">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width={svgWidth}
-        height={svgHeight}
-        viewBox={`0 0 ${svgWidth} ${svgHeight}`}
-        aria-label={`Barcode for value ${value}`}
-        className="fill-current text-foreground"
-      >
-        {bars.map((bar, index) => {
-          const x = currentX
-          currentX += bar.width + spacing
-          return <rect key={index} x={x} y="10" width={bar.width} height="50" />
-        })}
-      </svg>
-      <p className="text-sm text-muted-foreground tracking-[0.3em] mt-2">
-        {value}
-      </p>
-    </div>
-  )
-}
+//   return (
+//     <div className="flex flex-col items-center py-2">
+//       <svg
+//         xmlns="http://www.w3.org/2000/svg"
+//         width={svgWidth}
+//         height={svgHeight}
+//         viewBox={`0 0 ${svgWidth} ${svgHeight}`}
+//         aria-label={`Barcode for value ${value}`}
+//         className="fill-current text-foreground"
+//       >
+//         {bars.map((bar, index) => {
+//           const x = currentX
+//           currentX += bar.width + spacing
+//           return <rect key={index} x={x} y="10" width={bar.width} height="50" />
+//         })}
+//       </svg>
+//       <p className="text-sm text-muted-foreground tracking-[0.3em] mt-2">
+//         {value}
+//       </p>
+//     </div>
+//   )
+// }
 
 const ConfettiExplosion = () => {
   const confettiCount = 100

@@ -21,13 +21,13 @@ export const Route = createFileRoute('/r/$ref')({
     console.log(`props`, { reference, search })
     // Load default merchant data from transaction reference
 
-    const { data, error } = await fetch(`/payment/:id`, {
+    const { data, error } = await fetch(`/v1/payment/:id`, {
       method: 'GET',
       params: {
         id: reference,
       },
       headers: {
-        'baggit-public-key': search.pk,
+        'baggit-public-key': search.pk || '',
       },
     })
 
