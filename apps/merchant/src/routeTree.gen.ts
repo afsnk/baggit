@@ -15,8 +15,8 @@ import { Route as AuthAuthRouteImport } from './routes/_auth/auth'
 import { Route as PlatformSettingsTeamRouteImport } from './routes/_platform/settings.team'
 import { Route as PlatformSettingsLimitsRouteImport } from './routes/_platform/settings.limits'
 import { Route as PlatformSettingsGeneralRouteImport } from './routes/_platform/settings.general'
-import { Route as PlatformDeveloperPermissionsRouteImport } from './routes/_platform/developer.permissions'
 import { Route as PlatformDeveloperObservabilityRouteImport } from './routes/_platform/developer.observability'
+import { Route as PlatformDeveloperConfigurationRouteImport } from './routes/_platform/developer.configuration'
 import { Route as PlatformDeveloperApiKeysRouteImport } from './routes/_platform/developer.api-keys'
 import { Route as PlatformOrchestraOverviewRouteImport } from './routes/_platform/_orchestra/overview'
 import { Route as PlatformOrchestraAuditLogsRouteImport } from './routes/_platform/_orchestra/audit-logs'
@@ -51,16 +51,16 @@ const PlatformSettingsGeneralRoute = PlatformSettingsGeneralRouteImport.update({
   path: '/settings/general',
   getParentRoute: () => PlatformRouteRoute,
 } as any)
-const PlatformDeveloperPermissionsRoute =
-  PlatformDeveloperPermissionsRouteImport.update({
-    id: '/developer/permissions',
-    path: '/developer/permissions',
-    getParentRoute: () => PlatformRouteRoute,
-  } as any)
 const PlatformDeveloperObservabilityRoute =
   PlatformDeveloperObservabilityRouteImport.update({
     id: '/developer/observability',
     path: '/developer/observability',
+    getParentRoute: () => PlatformRouteRoute,
+  } as any)
+const PlatformDeveloperConfigurationRoute =
+  PlatformDeveloperConfigurationRouteImport.update({
+    id: '/developer/configuration',
+    path: '/developer/configuration',
     getParentRoute: () => PlatformRouteRoute,
   } as any)
 const PlatformDeveloperApiKeysRoute =
@@ -95,8 +95,8 @@ export interface FileRoutesByFullPath {
   '/audit-logs': typeof PlatformOrchestraAuditLogsRoute
   '/overview': typeof PlatformOrchestraOverviewRoute
   '/developer/api-keys': typeof PlatformDeveloperApiKeysRoute
+  '/developer/configuration': typeof PlatformDeveloperConfigurationRoute
   '/developer/observability': typeof PlatformDeveloperObservabilityRoute
-  '/developer/permissions': typeof PlatformDeveloperPermissionsRoute
   '/settings/general': typeof PlatformSettingsGeneralRoute
   '/settings/limits': typeof PlatformSettingsLimitsRoute
   '/settings/team': typeof PlatformSettingsTeamRoute
@@ -108,8 +108,8 @@ export interface FileRoutesByTo {
   '/audit-logs': typeof PlatformOrchestraAuditLogsRoute
   '/overview': typeof PlatformOrchestraOverviewRoute
   '/developer/api-keys': typeof PlatformDeveloperApiKeysRoute
+  '/developer/configuration': typeof PlatformDeveloperConfigurationRoute
   '/developer/observability': typeof PlatformDeveloperObservabilityRoute
-  '/developer/permissions': typeof PlatformDeveloperPermissionsRoute
   '/settings/general': typeof PlatformSettingsGeneralRoute
   '/settings/limits': typeof PlatformSettingsLimitsRoute
   '/settings/team': typeof PlatformSettingsTeamRoute
@@ -123,8 +123,8 @@ export interface FileRoutesById {
   '/_platform/_orchestra/audit-logs': typeof PlatformOrchestraAuditLogsRoute
   '/_platform/_orchestra/overview': typeof PlatformOrchestraOverviewRoute
   '/_platform/developer/api-keys': typeof PlatformDeveloperApiKeysRoute
+  '/_platform/developer/configuration': typeof PlatformDeveloperConfigurationRoute
   '/_platform/developer/observability': typeof PlatformDeveloperObservabilityRoute
-  '/_platform/developer/permissions': typeof PlatformDeveloperPermissionsRoute
   '/_platform/settings/general': typeof PlatformSettingsGeneralRoute
   '/_platform/settings/limits': typeof PlatformSettingsLimitsRoute
   '/_platform/settings/team': typeof PlatformSettingsTeamRoute
@@ -138,8 +138,8 @@ export interface FileRouteTypes {
     | '/audit-logs'
     | '/overview'
     | '/developer/api-keys'
+    | '/developer/configuration'
     | '/developer/observability'
-    | '/developer/permissions'
     | '/settings/general'
     | '/settings/limits'
     | '/settings/team'
@@ -151,8 +151,8 @@ export interface FileRouteTypes {
     | '/audit-logs'
     | '/overview'
     | '/developer/api-keys'
+    | '/developer/configuration'
     | '/developer/observability'
-    | '/developer/permissions'
     | '/settings/general'
     | '/settings/limits'
     | '/settings/team'
@@ -165,8 +165,8 @@ export interface FileRouteTypes {
     | '/_platform/_orchestra/audit-logs'
     | '/_platform/_orchestra/overview'
     | '/_platform/developer/api-keys'
+    | '/_platform/developer/configuration'
     | '/_platform/developer/observability'
-    | '/_platform/developer/permissions'
     | '/_platform/settings/general'
     | '/_platform/settings/limits'
     | '/_platform/settings/team'
@@ -222,18 +222,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PlatformSettingsGeneralRouteImport
       parentRoute: typeof PlatformRouteRoute
     }
-    '/_platform/developer/permissions': {
-      id: '/_platform/developer/permissions'
-      path: '/developer/permissions'
-      fullPath: '/developer/permissions'
-      preLoaderRoute: typeof PlatformDeveloperPermissionsRouteImport
-      parentRoute: typeof PlatformRouteRoute
-    }
     '/_platform/developer/observability': {
       id: '/_platform/developer/observability'
       path: '/developer/observability'
       fullPath: '/developer/observability'
       preLoaderRoute: typeof PlatformDeveloperObservabilityRouteImport
+      parentRoute: typeof PlatformRouteRoute
+    }
+    '/_platform/developer/configuration': {
+      id: '/_platform/developer/configuration'
+      path: '/developer/configuration'
+      fullPath: '/developer/configuration'
+      preLoaderRoute: typeof PlatformDeveloperConfigurationRouteImport
       parentRoute: typeof PlatformRouteRoute
     }
     '/_platform/developer/api-keys': {
@@ -272,8 +272,8 @@ interface PlatformRouteRouteChildren {
   PlatformOrchestraAuditLogsRoute: typeof PlatformOrchestraAuditLogsRoute
   PlatformOrchestraOverviewRoute: typeof PlatformOrchestraOverviewRoute
   PlatformDeveloperApiKeysRoute: typeof PlatformDeveloperApiKeysRoute
+  PlatformDeveloperConfigurationRoute: typeof PlatformDeveloperConfigurationRoute
   PlatformDeveloperObservabilityRoute: typeof PlatformDeveloperObservabilityRoute
-  PlatformDeveloperPermissionsRoute: typeof PlatformDeveloperPermissionsRoute
   PlatformSettingsGeneralRoute: typeof PlatformSettingsGeneralRoute
   PlatformSettingsLimitsRoute: typeof PlatformSettingsLimitsRoute
   PlatformSettingsTeamRoute: typeof PlatformSettingsTeamRoute
@@ -284,8 +284,8 @@ const PlatformRouteRouteChildren: PlatformRouteRouteChildren = {
   PlatformOrchestraAuditLogsRoute: PlatformOrchestraAuditLogsRoute,
   PlatformOrchestraOverviewRoute: PlatformOrchestraOverviewRoute,
   PlatformDeveloperApiKeysRoute: PlatformDeveloperApiKeysRoute,
+  PlatformDeveloperConfigurationRoute: PlatformDeveloperConfigurationRoute,
   PlatformDeveloperObservabilityRoute: PlatformDeveloperObservabilityRoute,
-  PlatformDeveloperPermissionsRoute: PlatformDeveloperPermissionsRoute,
   PlatformSettingsGeneralRoute: PlatformSettingsGeneralRoute,
   PlatformSettingsLimitsRoute: PlatformSettingsLimitsRoute,
   PlatformSettingsTeamRoute: PlatformSettingsTeamRoute,

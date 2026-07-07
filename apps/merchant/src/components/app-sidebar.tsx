@@ -3,15 +3,10 @@
 import * as React from 'react'
 import {
   AudioWaveform,
-  BookOpen,
-  Bot,
   Command,
   ExternalLink,
-  Frame,
   GalleryVerticalEnd,
-  Map,
   Music2,
-  PieChart,
   Settings2,
   SquareTerminal,
 } from 'lucide-react'
@@ -73,25 +68,6 @@ const data = {
         },
       ],
     },
-    // {
-    //   title: 'Models',
-    //   url: '#',
-    //   icon: Bot,
-    //   items: [
-    //     {
-    //       title: 'Genesis',
-    //       url: '#',
-    //     },
-    //     {
-    //       title: 'Explorer',
-    //       url: '#',
-    //     },
-    //     {
-    //       title: 'Quantum',
-    //       url: '#',
-    //     },
-    //   ],
-    // },
     {
       title: 'Developer',
       url: '#',
@@ -102,17 +78,13 @@ const data = {
           url: '/developer/api-keys',
         },
         {
-          title: 'Permissions',
-          url: '/developer/permissions',
+          title: 'Configuration',
+          url: '/developer/configuration',
         },
         {
           title: 'Observability',
           url: '/developer/observability',
         },
-        // {
-        //   title: 'Changelog',
-        //   url: '#',
-        // },
       ],
     },
     {
@@ -128,10 +100,10 @@ const data = {
           title: 'Team',
           url: '/settings/team',
         },
-        {
-          title: 'Limits',
-          url: '/settings/limits',
-        },
+        // {
+        //   title: 'Limits',
+        //   url: '/settings/limits',
+        // },
       ],
     },
   ],
@@ -142,8 +114,8 @@ const data = {
       icon: ExternalLink,
     },
     {
-      name: 'Payment Docs',
-      url: 'https://docs.baggit.link/payment',
+      name: 'Checkout Docs',
+      url: 'https://docs.baggit.link/checkout',
       icon: ExternalLink,
     },
     {
@@ -158,14 +130,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <OrgSwitcher teams={data.teams} />
+        <OrgSwitcher />
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
         <NavDocumentation projects={data.docs} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

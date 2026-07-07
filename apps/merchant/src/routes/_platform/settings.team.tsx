@@ -1,3 +1,4 @@
+import { UnderConstruction } from '#/components/under-construction'
 import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/_platform/settings/team')({
@@ -5,5 +6,10 @@ export const Route = createFileRoute('/_platform/settings/team')({
 })
 
 function RouteComponent() {
-  return <div>Hello "/_platform/settings/team"!</div>
+  return (
+    <UnderConstruction
+      title="Teams page under construction"
+      description="Invite, remove and update roles for your team members."
+    />
+  )
 }

@@ -1,7 +1,4 @@
-'use client'
-
-import * as React from 'react'
-import { ChevronsUpDown, Plus } from 'lucide-react'
+import { ChevronsUpDown, FolderClosed, FolderOpen, Plus } from 'lucide-react'
 
 import {
   DropdownMenu,
@@ -18,21 +15,51 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from '#/components/ui/sidebar.tsx'
+import { authClient } from '#/lib/auth-client'
+import { useMutation } from '@tanstack/react-query'
+import { showCreateOrgModal } from './create-org-modal'
 
-export function OrgSwitcher({
-  teams,
-}: {
-  teams: {
-    name: string
-    logo: React.ElementType
-    plan: string
-  }[]
-}) {
+export function OrgSwitcher() {
   const { isMobile } = useSidebar()
-  const [activeTeam, setActiveTeam] = React.useState(teams[0])
+  const { data: orgList } = authClient.useListOrganizations()
+  const { data: activeOrg } = authClient.useActiveOrganization()
 
-  if (!activeTeam) {
-    return null
+  console.log(`Active org`, { activeOrg })
+
+  const setActiveOrg = useMutation({
+    mutationKey: ['setActive'],
+    mutationFn: async (values: { orgId: string; orgSlug: string }) => {
+      const { data, error } = await authClient.organization.setActive({
+        organizationId: values.orgId,
+        organizationSlug: values.orgSlug,
+      })
+
+      if (error) {
+        console.log(`Error setting active org`, { error })
+        throw error
+      }
+
+      return data
+    },
+  })
+
+  if (!activeOrg) {
+    return (
+      <SidebarMenu>
+        <SidebarMenuItem>
+          <SidebarMenuButton
+            size="lg"
+            className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+            onClick={showCreateOrgModal}
+          >
+            <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+              <Plus className="size-4" />
+            </div>
+            Create organization
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+      </SidebarMenu>
+    )
   }
 
   return (
@@ -45,11 +72,11 @@ export function OrgSwitcher({
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
               <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                <activeTeam.logo className="size-4" />
+                <FolderOpen className="size-4" />
               </div>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">{activeTeam.name}</span>
-                <span className="truncate text-xs">{activeTeam.plan}</span>
+                <span className="truncate font-medium">{activeOrg.name}</span>
+                <span className="truncate text-xs">{activeOrg.slug}</span>
               </div>
               <ChevronsUpDown className="ml-auto" />
             </SidebarMenuButton>
@@ -63,21 +90,30 @@ export function OrgSwitcher({
             <DropdownMenuLabel className="text-xs text-muted-foreground">
               Organizations
             </DropdownMenuLabel>
-            {teams.map((team, index) => (
-              <DropdownMenuItem
-                key={team.name}
-                onClick={() => setActiveTeam(team)}
-                className="gap-2 p-2"
-              >
-                <div className="flex size-6 items-center justify-center rounded-md border">
-                  <team.logo className="size-3.5 shrink-0" />
-                </div>
-                {team.name}
-                <DropdownMenuShortcut>⌘{index + 1}</DropdownMenuShortcut>
-              </DropdownMenuItem>
-            ))}
+            {orgList &&
+              orgList.map((org, index) => (
+                <DropdownMenuItem
+                  key={org.name}
+                  onClick={() =>
+                    setActiveOrg.mutate({
+                      orgId: org.id,
+                      orgSlug: org.slug,
+                    })
+                  }
+                  className="gap-2 p-2"
+                >
+                  <div className="flex size-6 items-center justify-center rounded-md border">
+                    <FolderClosed className="size-3.5 shrink-0" />
+                  </div>
+                  {org.name}
+                  <DropdownMenuShortcut>⌘{index + 1}</DropdownMenuShortcut>
+                </DropdownMenuItem>
+              ))}
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="gap-2 p-2">
+            <DropdownMenuItem
+              className="gap-2 p-2"
+              onClick={showCreateOrgModal}
+            >
               <div className="flex size-6 items-center justify-center rounded-md border bg-transparent">
                 <Plus className="size-4" />
               </div>
