@@ -7,10 +7,12 @@ import { appMacro } from "./Core/Lib/macros";
 
 
 const apiApp = createApp({
-  name: "api"
+  name: "api",
+  prefix: "/v1"
 }).use(
   cors({
     origin: [
+      "*",
       ...env.TRUSTED_ORIGINS.split(','),
       'http://localhost:3011',
       'http://localhost:3000',
@@ -19,10 +21,11 @@ const apiApp = createApp({
       'localhost:3000',
       'localhost:3001',
       'localhost:3011',
+      'http://localhost:4322'
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     credentials: true,
-    allowedHeaders: ['Content-Type', 'Authorization']
+    allowedHeaders: ['Content-Type', 'Authorization', 'baggit-api-key', 'baggit-public-key', 'baggit-secret-key']
   })
 )
   .macro(appMacro)

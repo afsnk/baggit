@@ -4,7 +4,7 @@ import type { AppRouteSchema } from "@/Core/Lib/types"
 import { insertPayments, selectPayments } from "@/Core/DB/schema/payment";
 
 const paymentResponseSchema = t.Object({
-  paymentId: t.String({ format: "uuid" }),
+  paymentId: t.String(),
   paymentUrl: t.String({ format: "uri" })
 })
 
@@ -45,7 +45,7 @@ export const getPaymentRoute = {
 } satisfies AppRouteSchema;
 
 export const centiiveWebhookRoute = {
-
+  apiKey: true,
 } satisfies AppRouteSchema;
 
 

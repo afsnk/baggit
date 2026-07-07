@@ -9,7 +9,7 @@ export const initTransaction = (pk: string) =>
   mutationOptions({
     mutationKey: ['init'],
     mutationFn: async (values: any) => {
-      const { data, error } = await fetch(`/transaction/init`, {
+      const { data, error } = await fetch(`/v1/transaction/init`, {
         method: 'POST',
         body: { ...values },
         headers: {
@@ -37,7 +37,7 @@ export const confirmTransaction = (pk: string, id: string, enabled: boolean) =>
     queryKey: ['confirm', { id }],
     queryFn: async () => {
       console.log(`Data for confirm`, { pk, id, enabled })
-      const { data, error } = await fetch(`/transaction/confirm`, {
+      const { data, error } = await fetch(`/v1/transaction/confirm`, {
         method: 'GET',
         query: {
           id,
