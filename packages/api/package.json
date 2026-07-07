@@ -10,6 +10,7 @@
     "start:api": "bun --bun run dist/src/api.app.js",
     "db:generate": "npx drizzle-kit generate --config ./dist/drizzle.config.js",
     "db:migrate": "npx drizzle-kit migrate --config ./dist/drizzle.config.js",
+    "db:push": "npx drizzle-kit push --config ./dist/drizzle.config.js",
     "check-types": "bunx tsc --noEmit",
     "build": "tsc && tsc-alias"
   },

@@ -8,7 +8,7 @@ echo "Migrating database..."
 : "${DATABASE_AUTH_TOKEN:?TURSO_AUTH_TOKEN is required}"
 
 bun run --filter @baggit/api db:generate
-bun run --filter @baggit/api db:migrate
+bun run --filter @baggit/api db:push
 
 echo "Migration done..."
 
