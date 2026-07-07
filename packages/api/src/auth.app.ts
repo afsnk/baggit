@@ -3,6 +3,7 @@ import { auth } from "@/Core/Config/auth";
 import { cors } from "@elysia/cors"
 import env from "./Core/Config/env";
 import { appMacro } from "./Core/Lib/macros";
+import { createOrgAndKeys } from "./scripts/init-org-keys";
 
 
 
@@ -26,7 +27,10 @@ const authApp = createApp({ name: "auth" })
   )
   .mount(auth.handler)
   .macro(appMacro)
-  .get(`/user`, ({ user }) => user, { auth: true })
+  .get(`/user`, async ({ user, headers }) => {
+    await createOrgAndKeys(headers)
+    return user
+  }, { auth: true })
   .listen(8002)
 
 console.log(`Auth server running at ${authApp.server?.hostname}:${authApp.server?.port}`)

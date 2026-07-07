@@ -96,7 +96,7 @@ export function createRouter<
  * Create default elysia app with default context and configuration loaded in
  */
 export default function createApp(config?: ElysiaAppConfig) {
-  return createRouter({ name: config?.name })
+  return createRouter({ name: config?.name, ...config })
     // .onBeforeHandle(({ store, log, request }) => {
     //   store.requestCount += 1;
     //   log.info(`Before handle:`, {

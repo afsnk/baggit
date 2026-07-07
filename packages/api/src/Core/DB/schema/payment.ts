@@ -8,7 +8,7 @@ import { relations } from "drizzle-orm"
 
 
 export const payments = sqliteTable("payments", {
-  id: text("id").primaryKey().$defaultFn(() => generateId('pay_')),
+  id: text("id").primaryKey().$defaultFn(() => generateId('pay')),
   reference: text("reference").notNull(),
   amount: real("amount").notNull(),
   callbackUrl: text("callback_url").notNull(),

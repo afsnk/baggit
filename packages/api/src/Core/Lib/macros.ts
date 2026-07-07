@@ -1,11 +1,11 @@
 import type { Context, ElysiaCustomStatusResponse } from "elysia"
 import { auth as betterAuth } from "../Config/auth"
-import { AppRouteHandler, AppRouteSchema } from "./types"
+import { AppRouteHandler } from "./types"
 // @ts-ignore
 import type { Prettify } from "elysia/dist/types"
 import { CreatePaymentRoute } from "@/Modules/Payment/routes/payment.schema"
 import db from "../DB"
-import { stat } from "node:fs/promises"
+
 
 
 export const appMacro = {
@@ -14,7 +14,7 @@ export const appMacro = {
       const session = await betterAuth.api.getSession({
         headers
       })
-      if(!session) return status(401, `Unauthorized access`)
+      if (!session) return status(401, `Unauthorized access`)
       return {
         user: session.user,
         session: session.session
@@ -27,6 +27,8 @@ export const appMacro = {
       const publicKey = headers.get('baggit-public-key')
       const secretKey = headers.get('baggit-secret-key')
 
+      console.log(`KEys`, {publicKey, secretKey})
+
       if (!publicKey && !secretKey) {
         return status(401, `No public or secret key passed`)
       }
@@ -37,6 +39,8 @@ export const appMacro = {
           configId: publicKey? "public" : "secret"
         }
       })
+
+      console.log(`Key validation result`, {result})
 
       if (result.valid) {
         const organization = await db.query.organization.findFirst({

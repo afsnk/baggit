@@ -22,6 +22,31 @@ const defaultAuthConfig: BetterAuthOptions = {
   emailAndPassword: {
     enabled: false
   },
+  databaseHooks: {
+    session: {
+      create: {
+        before: async (session) => {
+          // Get the first organization that the user is a member of
+          const member = await db.query.member.findFirst({
+            where: (fields, ops) => ops.eq(fields.userId, session.userId),
+          })
+
+          console.log(`Members`, {member})
+
+          if (!member) {
+            return {data: {...session}}
+          }
+
+          return {
+            data: {
+              ...session,
+              activeOrganizationId: member?.organizationId
+            }
+          }
+        }
+      }
+    }
+  },
   hooks: {
     after: createAuthMiddleware(async (ctx) => {
       if (ctx.path === "/callback/:id" && ctx.query?.error) {
@@ -54,6 +79,7 @@ const defaultAuthConfig: BetterAuthOptions = {
     'localhost:3000',
     'localhost:3001',
     'localhost:3011',
+    'http://localhost:4322',
     request?.headers.get('origin') ?? undefined,
   ],
   advanced: {
@@ -66,7 +92,7 @@ const defaultAuthConfig: BetterAuthOptions = {
     database: {
       generateId: (options) => {
         if (options.model === "user" || options.model === "users") {
-          return generateId('usr_')
+          return generateId('usr')
         }
         return crypto.randomUUID()
       },
@@ -110,8 +136,13 @@ export const auth = betterAuth({
       },
     ]),
     organization({
-      allowUserToCreateOrganization: async (user) => {
+      allowUserToCreateOrganization(user) {
         return user.emailVerified
+      },
+      organizationHooks: {
+        async afterCreateOrganization(data) {
+          // TODO: Initialise organization resources after creation
+        },
       }
     }),
     anonymous({

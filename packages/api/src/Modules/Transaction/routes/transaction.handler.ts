@@ -12,12 +12,12 @@ import transactionService from "../services/transaction.service"
 
 export const init: AppRouteHandler<InitTransactionRoute, 'apiKey'> = async ({ body, log, status, organization }) => {
   try {
-    log.set({transaction: {network: body.network}})
+    log.set({transaction: {network: body.network, body}})
     const chain = getChain(body.network)
     const keypair = await generateAccount(chain)
 
     const pendingPayment = await db.query.payments.findFirst({
-      where: (fields, ops) => ops.or(ops.eq(fields.id, body.paymentId), ops.eq(fields.reference, body.reference))
+      where: (fields, ops) => ops.eq(fields.id, body.paymentId)
     })
 
     if (!pendingPayment) {
@@ -43,7 +43,8 @@ export const init: AppRouteHandler<InitTransactionRoute, 'apiKey'> = async ({ bo
     return status(200, {
       address: newTransaction.metadata.address,
       status: newTransaction.status as any,
-      amount: pendingPayment.amount
+      amount: pendingPayment.amount,
+      id: newTransaction.id
     })
   }
   catch (error: any) {
@@ -58,11 +59,11 @@ export const init: AppRouteHandler<InitTransactionRoute, 'apiKey'> = async ({ bo
 }
 
 
-export const confirm: AppRouteHandler<ConfirmTransactionRoute, 'apiKey'> = async ({ log, status, params }) => {
+export const confirm: AppRouteHandler<ConfirmTransactionRoute, 'apiKey'> = async ({ log, status, query }) => {
   try {
-    log.set({ transactionId: params.id, reference: params.reference })
+    log.set({ transactionId: query.id, reference: query.reference })
     const transaction = await db.query.transactions.findFirst({
-      where: (fields, ops) => ops.eq(fields.id, params.id),
+      where: (fields, ops) => ops.eq(fields.id, query.id),
       with: {
         payment: true
       }
@@ -78,7 +79,7 @@ export const confirm: AppRouteHandler<ConfirmTransactionRoute, 'apiKey'> = async
 
     if (transaction.status === "complete") {
       Webhook.trigger(transaction.payment.callbackUrl, transaction.payment.reference, {
-        reference: params.reference,
+        reference: query.id,
         hash: transaction.metadata?.collectionHash,
         to: transaction.metadata.address,
         amountSent: transaction.payment.amount,
@@ -132,11 +133,11 @@ export const confirm: AppRouteHandler<ConfirmTransactionRoute, 'apiKey'> = async
             collectionHash: decodedLog?.transactionHash,
           },
         })
-        .where(eq(transactions.id, params.id))
+        .where(eq(transactions.id, query.id))
         .returning();
 
       Webhook.trigger(transaction.payment.callbackUrl, transaction.payment.reference, {
-        reference: params.reference,
+        reference: query.id,
         hash: decodedLog?.transactionHash,
         from: decodedLog?.args.from,
         to: decodedLog?.args.to,
