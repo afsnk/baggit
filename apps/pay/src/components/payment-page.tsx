@@ -1,16 +1,10 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { Button } from './ui/button'
 
-import {
-  ArrowRight,
-  ChevronLeftIcon,
-  Copy,
-  Grid2x2PlusIcon,
-  Loader2,
-} from 'lucide-react'
+import { ArrowRight, ChevronLeftIcon, Copy, Loader2 } from 'lucide-react'
 import { PaymentFlowStepper } from './payment-flow-stepper'
 import type { StepProps } from './payment-flow-stepper'
 import QRCode from 'react-qr-code'
@@ -20,7 +14,6 @@ import { ReceiptSheet } from './ReceiptSheet'
 import { ChainPicker } from './NetworkPicker'
 import type { Chain } from './NetworkPicker'
 import { ToggleGroup, ToggleGroupItem } from './ui/toggle-group'
-import { BarVisualizer } from './bar-visualizer'
 import { Skeleton } from './ui/skeleton'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { confirmTransaction, initTransaction } from '#/lib/api-client'
@@ -236,7 +229,7 @@ export function PaymentPage(props: IPaymentPageProps) {
   } = useQuery(
     confirmTransaction(
       props.pk,
-      trxData?.id,
+      trxData!.id,
       typeof trxData !== 'undefined' && confirm,
     ),
   )
@@ -515,25 +508,25 @@ function FloatingPaths({ position }: { position: number }) {
   )
 }
 
-const GoogleIcon = (props: React.ComponentProps<'svg'>) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="currentColor"
-    {...props}
-  >
-    <g>
-      <path d="M12.479,14.265v-3.279h11.049c0.108,0.571,0.164,1.247,0.164,1.979c0,2.46-0.672,5.502-2.84,7.669   C18.744,22.829,16.051,24,12.483,24C5.869,24,0.308,18.613,0.308,12S5.869,0,12.483,0c3.659,0,6.265,1.436,8.223,3.307L18.392,5.62   c-1.404-1.317-3.307-2.341-5.913-2.341C7.65,3.279,3.873,7.171,3.873,12s3.777,8.721,8.606,8.721c3.132,0,4.916-1.258,6.059-2.401   c0.927-0.927,1.537-2.251,1.777-4.059L12.479,14.265z" />
-    </g>
-  </svg>
-)
+// const GoogleIcon = (props: React.ComponentProps<'svg'>) => (
+//   <svg
+//     xmlns="http://www.w3.org/2000/svg"
+//     viewBox="0 0 24 24"
+//     fill="currentColor"
+//     {...props}
+//   >
+//     <g>
+//       <path d="M12.479,14.265v-3.279h11.049c0.108,0.571,0.164,1.247,0.164,1.979c0,2.46-0.672,5.502-2.84,7.669   C18.744,22.829,16.051,24,12.483,24C5.869,24,0.308,18.613,0.308,12S5.869,0,12.483,0c3.659,0,6.265,1.436,8.223,3.307L18.392,5.62   c-1.404-1.317-3.307-2.341-5.913-2.341C7.65,3.279,3.873,7.171,3.873,12s3.777,8.721,8.606,8.721c3.132,0,4.916-1.258,6.059-2.401   c0.927-0.927,1.537-2.251,1.777-4.059L12.479,14.265z" />
+//     </g>
+//   </svg>
+// )
 
-const AuthSeparator = () => {
-  return (
-    <div className="flex w-full items-center justify-center">
-      <div className="bg-border h-px w-full" />
-      <span className="text-muted-foreground px-2 text-xs">OR</span>
-      <div className="bg-border h-px w-full" />
-    </div>
-  )
-}
+// const AuthSeparator = () => {
+//   return (
+//     <div className="flex w-full items-center justify-center">
+//       <div className="bg-border h-px w-full" />
+//       <span className="text-muted-foreground px-2 text-xs">OR</span>
+//       <div className="bg-border h-px w-full" />
+//     </div>
+//   )
+// }

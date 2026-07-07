@@ -8,7 +8,8 @@ export const initTransactionSchema = {
     200: z.object({
       address: z.string(),
       status: z.enum(["pending", "failed", "complete"]),
-      amount: z.number()
+      amount: z.number(),
+      id: z.string()
     }),
     404: z.object({
       message: z.string()
@@ -35,7 +36,7 @@ export const confirmTransactionSchema = {
       message: z.string()
     })
   },
-  params: z.object({
+  query: z.object({
     id: z.string().optional(),
     reference: z.string().optional(),
   }),

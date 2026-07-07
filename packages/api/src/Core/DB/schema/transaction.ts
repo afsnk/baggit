@@ -9,7 +9,7 @@ import { relations } from "drizzle-orm";
 import { organization } from "./auth";
 
 export const transactions = sqliteTable("transactions", {
-  id: text("id").primaryKey().$defaultFn(() => generateId('trx_')),
+  id: text("id").primaryKey().$defaultFn(() => generateId('trx')),
   status: text("status", { enum: ["pending", "failed", "complete"] }).default("pending"),
   network: text("network", { enum: ["base", "bsc"] }).notNull().default("base"),
   asset: text("asset", { enum: ["usdc", "usdt", "cngn"] }).notNull(),

@@ -9,7 +9,7 @@ const router = createRouter({
 })
   .post("/init", handlers.init, schema.initTransactionSchema)
   .get("/confirm", handlers.confirm, schema.confirmTransactionSchema)
-  .get("/", handlers.getAll, schema.getAllSchema)
+  .get("/all", handlers.getAll, schema.getAllSchema)
 
 
 export default router;
