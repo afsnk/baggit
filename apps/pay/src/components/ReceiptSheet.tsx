@@ -1,9 +1,9 @@
 import { AnimatedTicket } from './receipt-confirmation-card'
 import { Sheet, SheetContent, SheetTrigger } from './ui/sheet'
 
-interface ReceiptSheetProps {
+interface ReceiptSheetProps<T extends any> {
   children: React.ReactNode
-  confirmData: any
+  confirmData: T
 }
 export const ReceiptSheet = (props: ReceiptSheetProps) => {
   console.log(`Transaction data`, { data: props.confirmData })
