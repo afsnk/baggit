@@ -3,8 +3,11 @@ on:
   push:
     branches:
       - main
-    paths:
-      - packages/api/**
+    # paths:
+    #   - packages/api/**
+    #   - ./*
+    paths-ignore:
+      - apps/**
   # pull_request:
   #   branches:
   #     - main

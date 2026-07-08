@@ -29,6 +29,6 @@ const authApp = createApp({ name: "auth" })
   .get(`/user`, async ({ user }) => user, { auth: true })
   .listen({port: 8002, hostname: "::"})
 
-console.log(`Auth server running at ${authApp.server?.hostname}:${authApp.server?.port}`)
+console.log(`Auth server running at [${authApp.server?.hostname}:${authApp.server?.port}]`)
 
 export default authApp
