@@ -17,6 +17,7 @@ import { ToggleGroup, ToggleGroupItem } from './ui/toggle-group'
 import { Skeleton } from './ui/skeleton'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { confirmTransaction, initTransaction } from '#/lib/api-client'
+import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
 
 interface IPaymentPageProps {
   merchantCallbackUrl: string
@@ -42,6 +43,7 @@ const CurrencyToggle = ({
     defaultValue={currency}
     onValueChange={onCurrencyChange}
   >
+    <ToggleGroupItem value="ngn">NGN</ToggleGroupItem>
     <ToggleGroupItem value="usdt">USDT</ToggleGroupItem>
     <ToggleGroupItem value="usdc">USDC</ToggleGroupItem>
   </ToggleGroup>
@@ -83,10 +85,11 @@ const chains: Chain[] = [
   },
 ]
 
+// TODO: Update props with total count
 const CircularTimer = ({ timeLeft }: { timeLeft: number }) => {
   const radius = 40
   const circumference = 2 * Math.PI * radius
-  const progress = ((60 - timeLeft) / 60) * circumference
+  const progress = ((90 - timeLeft) / 90) * circumference
 
   return (
     <div className="relative h-8 w-8">
@@ -208,13 +211,13 @@ const AddressQRCode = ({
 
 export function PaymentPage(props: IPaymentPageProps) {
   const [currentStep, setCurrentStep] = useState(0)
-  const [timer, setTimer] = useState(60)
+  const [timer, setTimer] = useState(90)
 
   const [selectedChain, setSelectChain] = useState(chains[0].value)
   const [pickerOpen, setPickerOpen] = useState(false)
-  const [currency, setCurrency] = useState('usdt')
+  const [currency, setCurrency] = useState('ngn')
   const [confirm, setConfirm] = useState<boolean>(false)
-  const amount = props.amount / 1400
+  const amount = currency === 'ngn' ? props.amount : props.amount / 1400
 
   // Mutation/Query
   const {
@@ -226,24 +229,13 @@ export function PaymentPage(props: IPaymentPageProps) {
     isLoading,
     data: confirmData,
     error,
-  } = useQuery(
-    confirmTransaction(
-      props.pk,
-      trxData!.id,
-      typeof trxData !== 'undefined' && confirm,
-    ),
-  )
+  } = useQuery(confirmTransaction(props.pk, confirm, trxData?.id))
 
   useEffect(() => {
     if (!isLoading && confirmData) {
       setCurrentStep(2)
     }
-
-    console.log(`Error`, { error })
-    if (error) {
-      window.location.href = props.merchantCallbackUrl
-    }
-  })
+  }, [isLoading, confirmData, error])
 
   // Timer logic
   useEffect(() => {
@@ -253,8 +245,7 @@ export function PaymentPage(props: IPaymentPageProps) {
         setTimer((prev) => prev - 1)
       }, 1000)
     } else if (timer === 0) {
-      setCurrentStep(0) // Auto-reverse to the previous step
-      setTimer(60)
+      resetFlow() // Auto-reverse to the previous step
     }
     return () => clearInterval(interval)
   }, [currentStep, timer])
@@ -271,7 +262,7 @@ export function PaymentPage(props: IPaymentPageProps) {
   const resetFlow = () => {
     setConfirm(false)
     setCurrentStep(0)
-    setTimer(60)
+    setTimer(90)
   }
 
   const steps: StepProps[] = [
@@ -283,12 +274,18 @@ export function PaymentPage(props: IPaymentPageProps) {
         <div className="space-y-2 mt-1">
           <div className="flex justify-between items-center p-2 border rounded-lg">
             <p className="font-mono font-medium flex items-center gap-1">
-              <img
-                src={
-                  currency === 'usdc' ? `/assets/usdc.png` : `/assets/usdt.svg`
-                }
-                className="object-cover size-4 rounded-full"
-              />
+              <Avatar className="size-4 rounded-md object-contain">
+                <AvatarImage
+                  src={
+                    currency === 'usdc'
+                      ? `/assets/usdc.png`
+                      : currency === 'usdt'
+                        ? `/assets/usdt.svg`
+                        : null
+                  }
+                />
+                <AvatarFallback>{'₦'}</AvatarFallback>
+              </Avatar>
               {amount.toFixed()}
             </p>
             <CurrencyToggle
@@ -296,18 +293,22 @@ export function PaymentPage(props: IPaymentPageProps) {
               currency={currency}
             />
           </div>
-          <ChainPicker
-            chains={chains}
-            value={selectedChain}
-            onValueChange={(value) => {
-              setSelectChain(value)
-              // Keep dropdown open after selection
-              setPickerOpen(true)
-            }}
-            open={pickerOpen}
-            onOpenChange={setPickerOpen}
-            placeholder="Select a chain..."
-          />
+          {currency === 'ngn' ? (
+            <span>Naira payment are currently in the works!</span>
+          ) : (
+            <ChainPicker
+              chains={chains}
+              value={selectedChain}
+              onValueChange={(value) => {
+                setSelectChain(value)
+                // Keep dropdown open after selection
+                setPickerOpen(true)
+              }}
+              open={pickerOpen}
+              onOpenChange={setPickerOpen}
+              placeholder="Select a chain..."
+            />
+          )}
           <div className="space-y-2 text-sm">
             <PriceDetail
               label="Lifetime platform access"
@@ -327,7 +328,7 @@ export function PaymentPage(props: IPaymentPageProps) {
           <Button
             className="w-full"
             onClick={handleCommit}
-            disabled={isPending}
+            disabled={currency === 'ngn' || isPending}
           >
             {isPending && <Loader2 className="animate-spin" />}
             {!isPending && 'Continue'}
@@ -338,7 +339,7 @@ export function PaymentPage(props: IPaymentPageProps) {
     {
       step: 2,
       title: 'Make transfer',
-      description: 'Send to generated address on chain',
+      description: `Send exactly ${amount.toFixed()} to generated address on chain`,
       content: (
         <AddressQRCode
           timer={timer}
@@ -424,10 +425,15 @@ export function PaymentPage(props: IPaymentPageProps) {
 
         <div className="space-y-2 w-full p-3 flex flex-col items-center justify-center">
           <div className="w-full flex items-center justify-start gap-2">
-            <img
-              src={'https://www.ugamy.io/favicon.ico'}
-              className="size-10 p-2 rounded-md object-contain border border-green-500"
-            />
+            <Avatar className="size-10 p-2 rounded-md object-contain border border-green-500">
+              <AvatarImage
+                src={`${new URL(props.merchantCallbackUrl).href}/favicon.ico`}
+              />
+              <AvatarFallback>
+                {props.merchantName.at(0)?.toUpperCase()}
+                {props.merchantName.at(1)?.toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
             <div className="flex flex-col space-y-1">
               <h1 className="font-heading text-lg font-bold tracking-wide m-0">
                 {props.merchantName} subscription
