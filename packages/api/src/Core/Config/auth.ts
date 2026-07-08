@@ -150,7 +150,7 @@ export const auth = betterAuth({
     anonymous({
       onLinkAccount: async ({ anonymousUser, newUser }) => {
         // Hanle linking from anonymous to authed user
-        console.log(`Anon and New user`, {anonymousUser, newUser})
+        console.log(`Anonymous and New user`, {anonymousUser, newUser})
       }
     })
   ],
