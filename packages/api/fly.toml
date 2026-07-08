@@ -45,7 +45,7 @@ primary_region = 'lhr'
   cpus = 2
   cpu_kind = 'shared'
   persist_rootfs = "never"
-  memory_mb = 2024
+  memory_mb = 2048
   processes = ['api']
 
 [[vm]]
