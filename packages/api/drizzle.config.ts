@@ -7,8 +7,8 @@ export default defineConfig({
   schema: env.NODE_ENV === "development"? "./src/Core/DB/schema/*.ts" : "./dist/src/Core/DB/schema/*.js",
   casing: "snake_case",
   breakpoints: env.NODE_ENV !== "development",
-  strict: true,
-  verbose: false,
+  strict: env.NODE_ENV === "development",
+  verbose: env.NODE_ENV === "development",
   dbCredentials: {
     url: env.DATABASE_URL,
     authToken: env.DATABASE_AUTH_TOKEN,
