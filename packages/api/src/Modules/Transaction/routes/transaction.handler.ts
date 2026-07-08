@@ -13,9 +13,6 @@ import transactionService from "../services/transaction.service"
 export const init: AppRouteHandler<InitTransactionRoute, 'apiKey'> = async ({ body, log, status, organization }) => {
   try {
     log.set({transaction: {network: body.network, body}})
-    const chain = getChain(body.network)
-    const keypair = await generateAccount(chain)
-
     const pendingPayment = await db.query.payments.findFirst({
       where: (fields, ops) => ops.eq(fields.id, body.paymentId)
     })
@@ -25,6 +22,10 @@ export const init: AppRouteHandler<InitTransactionRoute, 'apiKey'> = async ({ bo
         message: `Payment not found or not created yet`
       })
     }
+
+    const chain = getChain(body.network)
+    const keypair = await generateAccount(chain)
+
 
     const [newTransaction] = await db.insert(transactions)
       .values({
