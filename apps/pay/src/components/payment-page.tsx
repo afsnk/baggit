@@ -281,7 +281,7 @@ export function PaymentPage(props: IPaymentPageProps) {
                       ? `/assets/usdc.png`
                       : currency === 'usdt'
                         ? `/assets/usdt.svg`
-                        : null
+                        : undefined
                   }
                 />
                 <AvatarFallback>{'₦'}</AvatarFallback>

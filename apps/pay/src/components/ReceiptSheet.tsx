@@ -1,9 +1,10 @@
+import type { Transaction } from '@baggit/api/app'
 import { AnimatedTicket } from './receipt-confirmation-card'
 import { Sheet, SheetContent, SheetTrigger } from './ui/sheet'
 
-interface ReceiptSheetProps<T extends any> {
+interface ReceiptSheetProps {
   children: React.ReactNode
-  confirmData: T
+  confirmData: Transaction | null
 }
 export const ReceiptSheet = (props: ReceiptSheetProps) => {
   console.log(`Transaction data`, { data: props.confirmData })
