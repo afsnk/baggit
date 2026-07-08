@@ -41,7 +41,14 @@ const CurrencyToggle = ({
     type="single"
     size="sm"
     defaultValue={currency}
-    onValueChange={onCurrencyChange}
+    value={currency}
+    onValueChange={(value: string) => {
+      if (!value) {
+        onCurrencyChange(currency)
+      } else {
+        onCurrencyChange(value)
+      }
+    }}
   >
     <ToggleGroupItem value="ngn">NGN</ToggleGroupItem>
     <ToggleGroupItem value="usdt">USDT</ToggleGroupItem>
@@ -328,7 +335,7 @@ export function PaymentPage(props: IPaymentPageProps) {
           <Button
             className="w-full"
             onClick={handleCommit}
-            disabled={currency === 'ngn' || isPending}
+            disabled={!currency || currency === 'ngn' || isPending}
           >
             {isPending && <Loader2 className="animate-spin" />}
             {!isPending && 'Continue'}
