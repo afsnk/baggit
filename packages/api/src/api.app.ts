@@ -34,7 +34,7 @@ const apiApp = createApp({
   .get(`/user`, ({ user }) => user, { auth: true })
   .listen({port: 8001, hostname: "::"});
 
-console.log(`API server running at ${apiApp.server?.hostname}:${apiApp.server?.port}`)
+console.log(`API server running at [${apiApp.server?.hostname}:${apiApp.server?.port}]`)
 
 
 export default apiApp;
