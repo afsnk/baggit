@@ -41,7 +41,15 @@ primary_region = 'lhr'
         handlers    = ["tls", "http"]
 
 [[vm]]
+  memory = '2gb'
+  cpus = 2
+  cpu_kind = 'shared'
+  persist_rootfs = "never"
+  memory_mb = 2048
+  processes = ['api']
+
+[[vm]]
   memory = '256mb'
   cpus = 1
   memory_mb = 256
-  processes = ['auth', 'api']
+  processes = ['auth']
