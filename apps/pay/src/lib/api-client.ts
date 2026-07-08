@@ -18,25 +18,24 @@ export const initTransaction = (pk: string) =>
       })
 
       if (error) {
-        console.log(`Error`, { error })
+        console.log(`Error from init`, { error })
         throw error
       }
 
-      return data as {
-        address: string
-        status: string
-        amount: number
-        id: string
-      }
+      return data
     },
   })
 
-export const confirmTransaction = (pk: string, id: string, enabled: boolean) =>
+export const confirmTransaction = (pk: string, enabled: boolean, id?: string) =>
   queryOptions({
-    enabled,
-    queryKey: ['confirm', { id }],
+    enabled: !!id && enabled,
+    queryKey: ['confirm', { id: id ? id : '' }],
+    retry: false,
+    retryOnMount: false,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
     queryFn: async () => {
-      console.log(`Data for confirm`, { pk, id, enabled })
+      console.log(`Data for confirm`, { pk })
       const { data, error } = await fetch(`/v1/transaction/confirm`, {
         method: 'GET',
         query: {
@@ -48,10 +47,10 @@ export const confirmTransaction = (pk: string, id: string, enabled: boolean) =>
       })
 
       if (error) {
-        console.log(`Error`, { error })
+        console.log(`Error from confirm`, { error })
         throw new Error(error.message, { cause: error.cause })
       }
 
-      return data as any
+      return data
     },
   })
