@@ -5,11 +5,11 @@ on:
       - main
     paths:
       - packages/api/**
-  pull_request:
-    branches:
-      - main
-    paths:
-      - packages/api/**
+  # pull_request:
+  #   branches:
+  #     - main
+  #   paths:
+  #     - packages/api/**
 
 env:
   NODE_ENV: production

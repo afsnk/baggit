@@ -9,6 +9,7 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from '@/components/ui/empty'
+import { showCreateOrgModal } from './create-org-modal'
 
 export function EmptyOrg() {
   return (
@@ -23,7 +24,9 @@ export function EmptyOrg() {
         </EmptyDescription>
       </EmptyHeader>
       <EmptyContent>
-        <Button variant="outline">Create organization</Button>
+        <Button variant="outline" onClick={showCreateOrgModal}>
+          Create organization
+        </Button>
       </EmptyContent>
     </Empty>
   )
