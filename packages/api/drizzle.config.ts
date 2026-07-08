@@ -8,7 +8,7 @@ export default defineConfig({
   casing: "snake_case",
   breakpoints: env.NODE_ENV !== "development",
   strict: true,
-  verbose: true,
+  verbose: false,
   dbCredentials: {
     url: env.DATABASE_URL,
     authToken: env.DATABASE_AUTH_TOKEN,
