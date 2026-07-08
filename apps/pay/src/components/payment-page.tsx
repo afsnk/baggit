@@ -43,6 +43,7 @@ const CurrencyToggle = ({
     defaultValue={currency}
     onValueChange={onCurrencyChange}
   >
+    <ToggleGroupItem value="ngn">NGN</ToggleGroupItem>
     <ToggleGroupItem value="usdt">USDT</ToggleGroupItem>
     <ToggleGroupItem value="usdc">USDC</ToggleGroupItem>
   </ToggleGroup>
@@ -214,9 +215,9 @@ export function PaymentPage(props: IPaymentPageProps) {
 
   const [selectedChain, setSelectChain] = useState(chains[0].value)
   const [pickerOpen, setPickerOpen] = useState(false)
-  const [currency, setCurrency] = useState('usdt')
+  const [currency, setCurrency] = useState('ngn')
   const [confirm, setConfirm] = useState<boolean>(false)
-  const amount = props.amount / 1400
+  const amount = currency === 'ngn' ? props.amount : props.amount / 1400
 
   // Mutation/Query
   const {
@@ -273,12 +274,18 @@ export function PaymentPage(props: IPaymentPageProps) {
         <div className="space-y-2 mt-1">
           <div className="flex justify-between items-center p-2 border rounded-lg">
             <p className="font-mono font-medium flex items-center gap-1">
-              <img
-                src={
-                  currency === 'usdc' ? `/assets/usdc.png` : `/assets/usdt.svg`
-                }
-                className="object-cover size-4 rounded-full"
-              />
+              <Avatar className="size-4 rounded-md object-contain">
+                <AvatarImage
+                  src={
+                    currency === 'usdc'
+                      ? `/assets/usdc.png`
+                      : currency === 'usdt'
+                        ? `/assets/usdt.svg`
+                        : null
+                  }
+                />
+                <AvatarFallback>{'₦'}</AvatarFallback>
+              </Avatar>
               {amount.toFixed()}
             </p>
             <CurrencyToggle
@@ -286,18 +293,22 @@ export function PaymentPage(props: IPaymentPageProps) {
               currency={currency}
             />
           </div>
-          <ChainPicker
-            chains={chains}
-            value={selectedChain}
-            onValueChange={(value) => {
-              setSelectChain(value)
-              // Keep dropdown open after selection
-              setPickerOpen(true)
-            }}
-            open={pickerOpen}
-            onOpenChange={setPickerOpen}
-            placeholder="Select a chain..."
-          />
+          {currency === 'ngn' ? (
+            <span>Naira payment are currently in the works!</span>
+          ) : (
+            <ChainPicker
+              chains={chains}
+              value={selectedChain}
+              onValueChange={(value) => {
+                setSelectChain(value)
+                // Keep dropdown open after selection
+                setPickerOpen(true)
+              }}
+              open={pickerOpen}
+              onOpenChange={setPickerOpen}
+              placeholder="Select a chain..."
+            />
+          )}
           <div className="space-y-2 text-sm">
             <PriceDetail
               label="Lifetime platform access"
@@ -317,7 +328,7 @@ export function PaymentPage(props: IPaymentPageProps) {
           <Button
             className="w-full"
             onClick={handleCommit}
-            disabled={isPending}
+            disabled={currency === 'ngn' || isPending}
           >
             {isPending && <Loader2 className="animate-spin" />}
             {!isPending && 'Continue'}
