@@ -8,7 +8,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Button } from './ui/button'
-import { Copy, Key, Loader2, LockIcon, PlusIcon } from 'lucide-react'
+import { Copy, Key, Loader2, LockIcon } from 'lucide-react'
 import { Input } from './ui/input'
 import { useState } from 'react'
 import NiceModal, { useModal } from '@ebay/nice-modal-react'
@@ -89,7 +89,7 @@ const CreateKeysModal = NiceModal.create((_: ICreateKeysModal) => {
         </div>
         {createKeys.data && (
           <ItemGroup className="max-w-sm animate-in">
-            {createKeys.data.map((newKey, index) => (
+            {createKeys.data.map((newKey) => (
               <Item key={newKey.id} variant="outline">
                 <ItemMedia variant="icon">
                   {newKey.configId === 'public' ? <Key /> : <LockIcon />}
