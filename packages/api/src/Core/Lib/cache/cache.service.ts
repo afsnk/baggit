@@ -81,6 +81,13 @@ class Cache {
   }
 }
 
+process.on("unhandledRejection", (reason) => {
+  console.error("UNHANDLED REJECTION:", reason);
+});
+process.on("uncaughtException", (err) => {
+  console.error("UNCAUGHT EXCEPTION:", err);
+});
+
 const cache = await Cache.initKVM(await connect({
   servers: env.NATS_SERVER_URL || "nats://localhost:4222",
   authenticator: env.NODE_ENV === "production" ? jwtAuthenticator(
