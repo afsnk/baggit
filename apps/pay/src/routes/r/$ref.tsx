@@ -1,6 +1,5 @@
 import { PaymentPage } from '#/components/payment-page'
 import { fetch } from '#/lib/api-client'
-import { authGuard } from '#/lib/auth-guard'
 import { createFileRoute } from '@tanstack/react-router'
 import { z } from 'zod'
 

@@ -4,18 +4,17 @@ import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { Button } from './ui/button'
 
-import { ArrowRight, ChevronLeftIcon, Copy, Loader2 } from 'lucide-react'
+import { ChevronLeftIcon, Copy, Loader2 } from 'lucide-react'
 import { PaymentFlowStepper } from './payment-flow-stepper'
 import type { StepProps } from './payment-flow-stepper'
 import QRCode from 'react-qr-code'
-import { FlipButton } from './ui/flip-button'
 import { ReferralCTACard } from './referral-cta'
 import { ReceiptSheet } from './ReceiptSheet'
 import { ChainPicker } from './NetworkPicker'
 import type { Chain } from './NetworkPicker'
 import { ToggleGroup, ToggleGroupItem } from './ui/toggle-group'
 import { Skeleton } from './ui/skeleton'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation} from '@tanstack/react-query'
 import { initTransaction, updatePayment } from '#/lib/api-client'
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
 import {
@@ -40,12 +39,10 @@ const CurrencyToggle = ({
   onCurrencyChange,
   currency,
   method,
-  isLoadingMethod,
 }: {
   onCurrencyChange: (currency: string) => void
   currency: string
   method: string
-  isLoadingMethod: boolean
   }) => (
 
     <ToggleGroup
@@ -164,7 +161,7 @@ const CircularTimer = ({ timeLeft }: { timeLeft: number }) => {
 const AddressQRCode = ({
   timer,
   onCancel,
-  onComplete,
+  // onComplete,
   details,
   chain,
 }: {
@@ -178,7 +175,7 @@ const AddressQRCode = ({
     accountName: string;
   } | undefined
   onCancel: () => void
-  onComplete: () => void
+  // onComplete: () => void
 }) => {
   // const address = '0x'.padEnd(32, '0')
   const handleCopy = (text: string) => {

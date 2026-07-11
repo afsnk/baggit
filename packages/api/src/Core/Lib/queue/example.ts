@@ -1,5 +1,6 @@
-import { connect } from "@nats-io/transport-node";
+import { connect, credsAuthenticator } from "@nats-io/transport-node";
 import { Queue, Worker } from "./index";
+import env from "@/Core/Config/env";
 
 interface EmailJob {
   to: string;
@@ -7,7 +8,10 @@ interface EmailJob {
 }
 
 async function main() {
-  const nc = await connect({ servers: "localhost:4222" });
+  const nc = await connect({ servers: env.NATS_SERVER_URL || "nats://localhost:4222",
+  authenticator: env.NODE_ENV === "production" ? credsAuthenticator(
+    new TextEncoder().encode(env.NATS_CREDS)
+  ) : undefined });
 
   // 1. Open a queue. Creates a WorkQueue stream capturing `emails.>`.
   const queue = await Queue.open(nc, {
