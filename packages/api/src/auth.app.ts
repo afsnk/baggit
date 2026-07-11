@@ -14,7 +14,7 @@ const authApp = createApp({ name: "auth" })
       ],
       methods: ["POST", "OPTIONS", "POST", "HEAD", "PATCH", "OPTIONS"],
       credentials: true,
-      allowedHeaders: "*"
+      allowedHeaders: ["Content-type", "Authorization", "Baggit-Public-Key", "Baggit-Secret-Key"]
     })
   )
   .mount(auth.handler)
