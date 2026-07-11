@@ -31,7 +31,7 @@ class Cache {
       console.log(`Nats server`, nc.getServer())
       console.log(`NATS server closed: `, nc.isClosed())
       this.kvm = new Kvm(nc)
-      this.transactionKv = await this.kvm.create(this.transactionKvKey).catch(error => {
+      this.transactionKv = await this.kvm.create(this.transactionKvKey, {max_bytes: 500_000_000}).catch(error => {
         console.log(`No stream error, or failed to initialise kv`, { error })
         log.error(error)
         throw error
