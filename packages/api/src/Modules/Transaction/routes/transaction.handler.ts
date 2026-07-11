@@ -86,6 +86,7 @@ export const init: AppRouteHandler<InitTransactionRoute> = async ({ body, log, s
 
       const [newTransaction] = await db.insert(transactions)
         .values({
+          id: trxQuery?.id,
           ...body,
           paymentId: payment.id,
           orgId: payment.organization.id,
@@ -95,7 +96,15 @@ export const init: AppRouteHandler<InitTransactionRoute> = async ({ body, log, s
             bankName: bankDetails.deposit.bank_name,
             bankCode: bankDetails.deposit.bank_code,
           }
+        }).onConflictDoUpdate({
+          target: transactions.id,
+          set: {...body}
         }).returning();
+      log.set({ transaction: { id: newTransaction.id, rampId: newTransaction.rampId, paymentId: newTransaction.paymentId } });
+
+      transaction = newTransaction
+
+      await cache.transaction.set(`payment.method.${payment.method}.${transaction.metadata.accountNumber}`, payment.id, "10m");
 
       return status(200, {
         details: {
