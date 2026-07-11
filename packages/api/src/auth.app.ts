@@ -12,7 +12,7 @@ const authApp = createApp({ name: "auth" })
       origin: [
         ...env.TRUSTED_ORIGINS.split(',')
       ],
-      methods: "*",
+      methods: ["POST", "OPTIONS", "POST", "HEAD", "PATCH", "OPTIONS"],
       credentials: true,
       allowedHeaders: "*"
     })
