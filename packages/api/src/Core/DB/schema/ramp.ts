@@ -14,5 +14,5 @@ export const ramps = sqliteTable("ramps", {
     .$defaultFn(() => new Date())
     .$onUpdate(() => new Date()),
 }, (table) => [
-  index("rmap_reference_Idx").on(table.reference)
+  index("ramp_reference_Idx").on(table.reference)
 ])

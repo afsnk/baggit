@@ -1,11 +1,57 @@
 import type { Context, ElysiaCustomStatusResponse } from "elysia"
 import { auth as betterAuth } from "../Config/auth"
-import { AppRouteHandler } from "./types"
 // @ts-ignore
 import type { Prettify } from "elysia/dist/types"
-import { CreatePaymentRoute } from "@/Modules/Payment/routes/payment.schema"
+import { jwtVerify, createRemoteJWKSet } from 'jose'
 import db from "../DB"
+import env from "../Config/env"
 
+
+async function validateToken(token: string) {
+  try {
+     const JWKS = createRemoteJWKSet(
+       new URL(`${env.BETTER_AUTH_URL}/api/auth/jwks`)
+     )
+     const { payload } = await jwtVerify(token, JWKS, {
+       issuer: env.BETTER_AUTH_URL, // Should match your JWT issuer, which is the BASE_URL
+       audience: env.CHECKOUT_CLIENT_URL, // Should match your JWT audience, which is the BASE_URL by default
+     })
+
+     return payload
+   } catch (error) {
+     console.error('Token validation failed:', error)
+     throw error
+   }
+}
+
+// turn a scope pattern into a matcher: "/v1/payment/:invoiceRef" -> regex
+function scopeToRegex(pattern: string): RegExp {
+  const rx = pattern
+    .replace(/[.*+?^${}()|[\]\\]/g, "\\$&") // escape literals
+    .replace(/:[^/]+/g, "[^/]+");           // :param -> one path segment
+  return new RegExp(`^${rx}$`);
+}
+
+export async function authorize(req: Request, status: any): Promise<any> {
+  const auth = req.headers.get("authorization");
+  const token = auth?.startsWith("Bearer ") ? auth.slice(7) : null;
+  if (!token) return status(401, "Unauthorized");
+
+  let payload;
+  try {
+    ({ payload } = await validateToken(token)); // checks sig + exp
+  } catch {
+    return status(401, `Invalid token`);
+  }
+
+  const scopes = ((payload as {scope: string[]})?.scope) ?? [];
+  const path = new URL(req.url).pathname;
+
+  const allowed = scopes.some((p) => scopeToRegex(p).test(path));
+  if (!allowed) return status(401, `Not allowed to access resource`);
+
+  return payload; // authorized — continue to handler
+}
 
 
 export const appMacro = {
@@ -19,6 +65,12 @@ export const appMacro = {
         user: session.user,
         session: session.session
       }
+    }
+  },
+  jwt: {
+    async resolve({ status, request }: Context) {
+      // Validate and resolve jwt token/session
+      return authorize(request, status)
     }
   },
   apiKey: {
@@ -99,15 +151,9 @@ export type AppResolve = MacroResolved<typeof appMacro>
 export type AppMacroFlags = { [K in keyof typeof appMacro]?: boolean }
 
 
-type T1 = (typeof appMacro)['auth'] extends { resolve: (...a: any) => infer R } ? R : 'NO_RESOLVE'
+type T1 = (typeof appMacro)['jwt'] extends { resolve: (...a: any) => infer R } ? R : 'NO_RESOLVE'
 // Expect: Promise<{ user; session } | ElysiaCustomStatusResponse<401, ...>>
 // If T1 = 'NO_RESOLVE' → the `: Context` annotation broke the `resolve` shape match. ← most likely
 
 type T2 = Awaited<T1>
 type T3 = Exclude<T2, ElysiaCustomStatusResponse<any, any, any>>
-// Expect T3 = { user; session }. If T3 = never or unknown → exclusion is over/under-matching.
-type S1 = Awaited<T1>                                             // union: {user,session} | ElysiaCustomStatusResponse<401,...>
-type S2 = Exclude<S1, ElysiaCustomStatusResponse<any, any, any>>  // should be { user, session }
-type S3 = ResolvedOfOne<'apiKey'>                                   // should be { user, session }
-type S4 = ResolvedOf<'auth'>                                      // should be { user, session }
-type S5 = AppRouteHandler<CreatePaymentRoute, 'auth'>             // hover the ctx param

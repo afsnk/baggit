@@ -1,0 +1,76 @@
+import { NatsConnection, connect } from "@nats-io/transport-node";
+import {KV, Kvm} from "@nats-io/kv"
+import { useLogger } from "evlog/elysia";
+
+
+interface CacheFunctions {
+  get: (key: string) => Promise<unknown>;
+  set: (key: string, value: string, ttl: string) => Promise<void>;
+  update: (key: string, value: string) => Promise<void>;
+  delete: (key: string) => Promise<void>;
+}
+
+interface PlatformCache {
+  transaction: CacheFunctions;
+  [key: string]: CacheFunctions;
+}
+
+class Cache {
+  private static instance: Cache;
+  private static kvm: Kvm;
+  private static transactionKv: KV
+  private defaultKv = `baggit-kv`;
+  private static transactionKvKey = `baggit-transaction-kv`
+
+  constructor() { }
+
+  static async initKVM(nc: NatsConnection) {
+    const log = useLogger()
+    try {
+      this.kvm = new Kvm(nc)
+      this.transactionKv = await this.kvm.create(this.transactionKvKey)
+
+      log.set({kvState: `KV initialised successful`})
+      return this.getInstance()
+    }
+    catch {
+      log.set({ kvState: `Failed to initialise kv` })
+      throw new Error(`Failed to initialise kv`)
+    }
+
+  }
+
+  static getInstance() {
+    if (!this.instance) {
+      this.instance = new Cache()
+    }
+    return this.instance
+  }
+
+  get transaction(): CacheFunctions {
+    return {
+      async get(key) {
+        return await Cache.transactionKv?.get(key);
+      },
+      async set(key: string, value: string, ttl: string) {
+        console.log(`Cache TTL: `, ttl)
+
+        try {
+          await Cache.transactionKv.put(key, value)
+        } catch {
+          await Cache.transactionKv.create(key, value);
+        }
+      },
+      async update(key, value) {
+        await Cache.transactionKv.put(key, value)
+      },
+      async delete (key: string) {
+        return await Cache.transactionKv.delete(key);
+      }
+    }
+  }
+}
+
+const cache = await Cache.initKVM(await connect({ servers: "nats://localhost:4222" }));
+
+export default cache;

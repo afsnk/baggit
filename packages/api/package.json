@@ -5,7 +5,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev:auth": "portless auth.baggit --app-port 8002 bun --bun run --watch src/auth.app.ts",
-    "dev:api": "portless api.baggit --app-port 8001 bun --bun run --watch src/api.app.ts",
+    "dev:api": "PORTLESS_NGROK=1 portless api.baggit --app-port 8001 bun --bun run --watch src/api.app.ts",
     "start:auth": "bun --bun run dist/src/auth.app.js",
     "start:api": "bun --bun run dist/src/api.app.js",
     "db:generate": "npx drizzle-kit generate --config ./dist/drizzle.config.js",
@@ -38,6 +38,7 @@
     "drizzle-zod": "^0.8.3",
     "elysia": "latest",
     "evlog": "^2.14.1",
+    "jose": "^6.2.3",
     "tslib": "^2.8.1",
     "typebox": "^1.1.37",
     "viem": "^2.54.3",

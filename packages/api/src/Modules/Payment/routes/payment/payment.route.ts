@@ -8,8 +8,8 @@ const router = createRouter({
   name: "payment.routes",
   prefix: "/payment"
 })
-  .post("/create", handlers.createPayment, schema.createPaymentRoute)
-  .get("/:id", handlers.getPayment, schema.getPaymentRoute)
+  .post("/:id", handlers.updateMethod, schema.updateMethodRoute)
+  .get("/:invoiceRef", handlers.getPayment, schema.getPaymentRoute)
 
 
 export default router;

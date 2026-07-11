@@ -6,7 +6,8 @@ import * as schema from "@/Core/DB/schema"
 import { generateId } from "../DB/utils"
 import { createAuthMiddleware } from "better-auth/api"
 import { apiKey } from "@better-auth/api-key"
-import { organization, anonymous } from "better-auth/plugins"
+import { organization, anonymous, jwt, bearer, emailOTP } from "better-auth/plugins"
+import { sendEmail } from "../Lib/email"
 
 const defaultAuthConfig: BetterAuthOptions = {
   baseURL: {
@@ -152,6 +153,45 @@ export const auth = betterAuth({
         // Hanle linking from anonymous to authed user
         console.log(`Anonymous and New user`, {anonymousUser, newUser})
       }
-    })
+    }),
+    emailOTP({
+      async sendVerificationOTP({ email, otp, type }) {
+          if (type === "sign-in") {
+            // Send the OTP for sign in
+            await sendEmail({
+              to: email,
+              subject: `Confirm your signin`,
+              body: `Use the code: ${otp} to signin`,
+            })
+          } else if (type === "email-verification") {
+            // Send the OTP for email verification
+            await sendEmail({
+              to: email,
+              subject: `Verify your email`,
+              body: `Use the code: ${otp} to verify your email`,
+            })
+          } else {
+              // Send the OTP for password reset
+          }
+      },
+    }),
+    jwt({
+      jwt: {
+        issuer: env.BETTER_AUTH_URL,
+        audience: "https://pay.baggit.dev",
+        expirationTime: "3m",
+        definePayload: ({ user, session }) => ({
+          sub: session.id,
+          scope: [
+            "/v1/payment/:invoiceRef",
+            "/v1/transaction/init",
+            "/v1/transaction/confirm"
+          ]
+        }),
+        rotationInterval: 60 * 60 * 24 * 30, // 30 days
+        gracePeriod: 60 * 60 * 24 * 30 // 30 days
+      }
+    }),
+    bearer()
   ],
 })

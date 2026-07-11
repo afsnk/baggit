@@ -1,4 +1,4 @@
-import type { Address, Chain, Log } from "viem";
+import type { Address, Chain, Hex, Log } from "viem";
 
 import { signerToEcdsaValidator } from "@zerodev/ecdsa-validator";
 import { createKernelAccount, createKernelAccountClient, createZeroDevPaymasterClient } from "@zerodev/sdk";
@@ -46,7 +46,7 @@ export const TOKEN_ADDRESSES = {
   },
 };
 
-export function getChain(network: "base" | "bsc") {
+export function getChain(network: "base" | "bsc" | "stellar" | "solana") {
   const isProd = env.NODE_ENV === "production";
   let id = 8453;
   if (isProd && network === "base") {
@@ -69,10 +69,21 @@ export function getChain(network: "base" | "bsc") {
 
 const entryPoint = getEntryPoint("0.7");
 const kernelVersion = KERNEL_V3_3;
-export async function generateAccount(chain: Chain): Promise<{ pk: string; address: string; fromBlock: number }> {
+export async function generateAccount(chain: Chain, key?: string | null, pk?: string | null, address?: Address | null): Promise<{ pk: string; address: string; fromBlock: number }> {
   // Construct a signer
-  const privateKey = generatePrivateKey();
-  const signer = privateKeyToAccount(privateKey);
+  let privateKey: string;
+  if(key && pk) {
+    try {
+      privateKey = Cypher.decrypt(pk, key)
+    }
+    catch {
+      privateKey = generatePrivateKey()
+    }
+  } else {
+    privateKey = generatePrivateKey()
+  }
+  const signer = privateKeyToAccount(privateKey as Hex);
+
   const rpc = `${env.ZERODEV_RPC}/${chain.id}`;
 
   // Construct a public client
@@ -120,8 +131,13 @@ export async function generateAccount(chain: Chain): Promise<{ pk: string; addre
   const accountAddress = kernelClient.account.address;
   console.log("My account:", accountAddress);
 
+  if (address && account.address !== address) {
+    console.log(`Account`, account.address, `Address`, address)
+    throw new Error(`[Addr Generator] Address mismatch`)
+  }
+
   return {
-    pk: Cypher.encrypt(privateKey, env.ENC_KEY).encrypted,
+    pk: Cypher.encrypt(privateKey, key || env.ENC_KEY).encrypted,
     address: account.address,
     fromBlock: Number(await publicClient.getBlockNumber()),
   };

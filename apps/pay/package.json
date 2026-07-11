@@ -18,6 +18,7 @@
     "check": "prettier --check ."
   },
   "dependencies": {
+    "@baggit/api": "workspace:*",
     "@posthog/react": "^1.7.0",
     "@radix-ui/react-slot": "^1.2.5",
     "@t3-oss/env-core": "^0.13.10",
@@ -41,6 +42,7 @@
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
     "framer-motion": "^12.40.0",
+    "input-otp": "^1.4.2",
     "lucide-react": "^1.17.0",
     "motion": "^12.40.0",
     "nitro": "npm:nitro-nightly@latest",
@@ -54,8 +56,7 @@
     "tw-animate-css": "^1.3.6",
     "viem": "^2.52.2",
     "wagmi": "^3.6.16",
-    "zod": "^4.3.6",
-    "@baggit/api": "workspace:*"
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@cloudflare/vite-plugin": "^1.43.0",
