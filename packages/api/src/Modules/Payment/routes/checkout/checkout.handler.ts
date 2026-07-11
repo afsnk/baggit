@@ -2,13 +2,16 @@ import { AppRouteHandler } from "@/Core/Lib/types";
 import { CreateCheckoutOrderRoute, VerifyCheckoutStatusRoute } from "./checkout.schema";
 import { createError } from "evlog";
 import db from "@/Core/DB";
-import { invoice } from "@/Core/DB/schema";
+import { invoice, payments } from "@/Core/DB/schema";
+import env from "@/Core/Config/env";
 
 
 
 export const createCheckoutOrder: AppRouteHandler<CreateCheckoutOrderRoute, 'apiKey'> = async ({ log, body, status, organization }) => {
   try {
-    log.set({ checkout: { ...body } });
+    log.set({ checkout: { ...body }, organization });
+
+    // TODO: if checkout is recurring compute nextPayAt
 
     // Create invoice
     const [newInvoice] = await db.insert(invoice)
@@ -17,15 +20,32 @@ export const createCheckoutOrder: AppRouteHandler<CreateCheckoutOrderRoute, 'api
         from: organization.name,
         amount: body.amount,
         reference: body.reference,
+        currency: body.currency.toLowerCase(),
+        orgId: organization.id,
+        metadata: {
+          ...body.metadata,
+          type: body.types,
+          range: body.range,
+          ...(body.customer && {customer: body.customer}),
+          nextPayAt: undefined,
+        }
       }).returning();
     // Create default paymentMethod based on currency
+    const [defaultPayment] = await db.insert(payments)
+      .values({
+        currency: body.currency.toLowerCase(),
+        callbackUrl: body.callbackUrl || body.redirectUrl,
+        orgId: organization.id,
+        invoiceId: newInvoice.id,
+        metadata: {
+          url: `${env.CHECKOUT_CLIENT_URL}/r/${newInvoice.reference}`
+        }
+      }).returning()
     // Return checkout url
 
+    const combined = {invoice: newInvoice, defaultPayment}
 
-    return status(200, {
-      ...newInvoice,
-
-    })
+    return status(200, combined)
   }
   catch (error: any) {
     log.error(error)
@@ -40,7 +60,7 @@ export const createCheckoutOrder: AppRouteHandler<CreateCheckoutOrderRoute, 'api
 
 export const verifyCheckoutStatus: AppRouteHandler<VerifyCheckoutStatusRoute, 'apiKey'> = async ({ log, params, status }) => {
   try {
-    log.set({ order: { id: params.id } })
+    log.set({ order: { id: params.orderId } })
 
     // Get invoice order and check the payment status
     const order = await db.query.invoice.findFirst({

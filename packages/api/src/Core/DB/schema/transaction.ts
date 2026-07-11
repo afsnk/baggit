@@ -50,6 +50,8 @@ export const insertTransactions = toZodV4SchemaTyped(createInsertSchema(
 ).required({
   network: true,
   asset: true,
+  paymentId: true,
+  orgId: true,
 }).omit({
   metadata: true,
   id: true,

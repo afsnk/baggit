@@ -8,7 +8,8 @@ const router = createRouter({
   prefix: "/transaction"
 })
   .post("/init", handlers.init, schema.initTransactionSchema)
-  .get("/confirm", handlers.confirm, schema.confirmTransactionSchema)
+  .post("/confirm/:network", handlers.confirm, schema.confirmTransactionSchema)
+  .post("/webhook/switch/:paymentId", handlers.switchWebhook, schema.switchSchema)
   .get("/all", handlers.getAll, schema.getAllSchema)
 
 

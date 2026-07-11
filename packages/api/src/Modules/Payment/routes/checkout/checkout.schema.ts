@@ -11,10 +11,10 @@ const DETAILS = {
 
 export const createCheckoutOrder = {
   response: {
-    200: z.union([
-      selectInvoice,
-      selectPayments
-    ]),
+    200: z.object({
+      invoice: selectInvoice,
+      defaultPayment: selectPayments
+    }),
     500: z.object({
       message: z.string(),
       code: z.string()
@@ -22,10 +22,14 @@ export const createCheckoutOrder = {
   },
   body: z.object({
     amount: z.number(),
-    currency: z.enum(['ngn', 'usd', 'gbp']),
+    currency: z.enum(['NGN', 'USD', 'GBP']),
     reference: z.string().min(6),
+    type: z.enum(['onetime', 'recurring']).default('onetime'),
+    range: z.enum(["monthly", "yearly"]).optional(),
     callbackUrl: z.url(),
+    memo: z.string().optional(),
     redirectUrl: z.url().optional(),
+    metadata: z.any().optional(),
     customer: z.object({
       email: z.string().optional(),
       name: z.string().optional(),

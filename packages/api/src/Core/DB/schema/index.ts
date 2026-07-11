@@ -12,7 +12,8 @@ export {
   sessionRelations,
   accountRelations,
   memberRelations,
-  invitationRelations
+  invitationRelations,
+  jwks,
 } from "./auth"
 export {
   transactions,

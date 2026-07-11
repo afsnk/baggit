@@ -11,7 +11,9 @@ export const invoice = sqliteTable("invoice", {
   to: text("to").notNull(),
   from: text("from").notNull(),
   amount: real("amount").notNull(),
+  currency: text("currency", { enum: ["ngn", "usd", "gbp"] }).notNull(),
   reference: text("reference").notNull(),
+  orgId: text("org_id").notNull().references(() => organization.id),
   memo: text("memo"),
   metadata: text("metadata", { mode: "json" }).$type<{
     type: "recurring" | "onetime", // required
@@ -31,13 +33,16 @@ export const invoice = sqliteTable("invoice", {
 
 export const payments = sqliteTable("payments", {
   id: text("id").primaryKey().$defaultFn(() => generateId('pay')),
-  currency: text("currency", { enum: ["ngn", "usd", "gbp"] }).notNull(), // Lock in a currency
-  method: text("method", {enum: ['bank-transfer', 'ussd', 'crypto', 'applepay', 'googlepay']}).notNull(), // Lock in a method — when method is bank transfer on-ramp is triggered
+  currency: text("currency", { enum: ["ngn", "usd", "gbp", "cngn", "usdt", "usdc"] }).notNull(), // Lock in a currency
+  method: text("method", {enum: ['bank-transfer', 'ussd', 'crypto', 'applepay', 'googlepay']}).default("crypto").notNull(), // Lock in a method — when method is bank transfer on-ramp is triggered
   callbackUrl: text("callback_url").notNull(),
+  amount: real("amount").notNull().default(0),
+  rate: real("currency_rate").default(1395),
   orgId: text("org_id").notNull().references(() => organization.id),
   invoiceId: text("invoice_id").notNull().references(() => invoice.id, {onDelete: "restrict"}),
   metadata: text("metadata", { mode: "json" }).$type<{
-    [key: string]: any
+    [key: string]: any;
+    url: string;
   }>(),
   createdAt: integer({ mode: "timestamp" })
     .$defaultFn(() => new Date()),
@@ -65,7 +70,7 @@ export const insertPayments = toZodV4SchemaTyped(createInsertSchema(payments)
 export const patchPayments = insertPayments.partial()
 
 export const selectInvoice = toZodV4SchemaTyped(createSelectSchema(invoice));
-export const selectInvoiceWithPayment = createSelectSchema(invoice).extend({payments: selectPayments})
+export const selectInvoiceWithPayment = createSelectSchema(invoice).extend({payments: z.array(selectPayments)})
 export const insertInvoice = toZodV4SchemaTyped(createInsertSchema(invoice)
   .required({
     to: true,
@@ -82,8 +87,12 @@ export const insertInvoice = toZodV4SchemaTyped(createInsertSchema(invoice)
 // @ts-expect-error partial exists on zod v4 type
 export const patchInvoice = insertInvoice.partial()
 
-export const invoiceRelations = relations(invoice, ({ many }) => ({
-  payments: many(payments)
+export const invoiceRelations = relations(invoice, ({ many, one }) => ({
+  payments: many(payments),
+  organization: one(organization, {
+    fields: [invoice.orgId],
+    references: [organization.id]
+  })
 }))
 
 export const paymentRelations = relations(payments, ({ one }) => ({

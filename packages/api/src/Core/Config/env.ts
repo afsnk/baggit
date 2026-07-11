@@ -18,6 +18,8 @@ const EnvSchema = z.object({
   DATABASE_URL: z.string().url().default('file:dev.db'),
   DATABASE_AUTH_TOKEN: z.string().optional(),
   TRUSTED_ORIGINS: z.string().default('https://dashboard.baggit.link,https://pay.baggit.link,https://widget.baggit.link'),
+  PLUNK_API_KEY: z.string(),
+  PLUNK_API_URL: z.url().default('https://next-api.useplunk.com'),
 
   MERCHANT_CLIENT_URL: z.string().default('https://merchant.baggit.localhost'),
   CHECKOUT_CLIENT_URL: z.string(),
@@ -29,8 +31,17 @@ const EnvSchema = z.object({
   ZERODEV_RPC: z.string().url().optional().default('https://zero-rpc.dev'),
   FEE_COLLECTION_ADDRESS: z.string().startsWith("0x").optional().default('0xfffeee'),
 
+  ALCHEMY_API_URL: z.url(`https://dashboard.alchemy.com`),
+  ALCHEMY_API_KEY: z.string(),
+
   // Rates API key
   MONIERATE_API_KEY: z.string().optional().default('naosdbvobodba'),
+
+  // Switch keys
+  SWITCH_API_URL: z.url(),
+  SWITCH_API_KEY: z.string(),
+
+  API_URL: z.string(),
 
   // Encryption key
   ENC_KEY: z.string().min(16).optional().default('sdonsdovbd'),
