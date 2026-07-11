@@ -75,6 +75,7 @@ const defaultAuthConfig: BetterAuthOptions = {
     }
   },
   trustedOrigins: async (request) => [
+    "*",
     ...env.TRUSTED_ORIGINS.split(','),
     'https://baggit.link',
     'localhost:3000',
