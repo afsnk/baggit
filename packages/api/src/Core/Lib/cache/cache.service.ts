@@ -29,6 +29,7 @@ class Cache {
     const log = useLogger()
     try {
       console.log(`Nats server`, nc.getServer())
+      console.log(`NATS server closed: `, nc.isClosed())
       this.kvm = new Kvm(nc)
       this.transactionKv = await this.kvm.create(this.transactionKvKey).catch(error => {
         console.log(`error`, { error })
