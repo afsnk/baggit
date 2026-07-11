@@ -52,16 +52,15 @@ export const Route = createFileRoute('/r/$ref')({
     catch (error: any) {
       console.log(`[checkout] Error getting payments`, { error })
       if (error?.name === 'HTTPError') {
-          const res = error.response;
-          const body = await res.text().catch(() => '<no body>');
-          console.error('upstream failed', {
-            url: `${env.VITE_API_URL}/v1/payment/${props.params.ref}`,
-            status: res.status,
-            body,
-          });
-        }
-        throw error;
+        const res = error.response;
+        const body = await res.text().catch(() => '<no body>');
+        console.error('upstream failed', {
+          url: `${env.VITE_API_URL}/v1/payment/${props.params.ref}`,
+          status: res.status,
+          body,
+        });
       }
+      throw error;
     }
   },
 })
