@@ -28,6 +28,7 @@ class Cache {
   static async initKVM(nc: NatsConnection) {
     const log = useLogger()
     try {
+      console.log(`Nats server`, nc.getServer())
       this.kvm = new Kvm(nc)
       this.transactionKv = await this.kvm.create(this.transactionKvKey)
 
