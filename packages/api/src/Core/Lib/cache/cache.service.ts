@@ -35,9 +35,12 @@ class Cache {
       log.set({kvState: `KV initialised successful`})
       return this.getInstance()
     }
-    catch {
-      log.set({ kvState: `Failed to initialise kv` })
-      throw new Error(`Failed to initialise kv`)
+    catch (error: any) {
+      log.error(error)
+      log.set({
+        kvState: `Failed to initialise kv`, error
+      })
+      throw new Error(`Failed to initialise kv`, {cause: error?.cause})
     }
 
   }
