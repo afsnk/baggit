@@ -12,6 +12,7 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty"
 import { Cloud } from 'lucide-react'
+import { env } from '#/env'
 
 const paymentSearchSchema = z.object({
   merchantName: z.string().optional().default('Ugamy'),
@@ -26,14 +27,6 @@ type PaymentSearch = z.infer<typeof paymentSearchSchema>
 export const Route = createFileRoute('/r/$ref')({
   component: RouteComponent,
   validateSearch: paymentSearchSchema,
-  // async beforeLoad({search, params}) {
-  //   await authGuard({
-  //     data: {
-  //       ...search,
-  //       invoiceRef: params.ref,
-  //     }
-  //   })
-  // },
   async loader(props) {
     try {
       const reference = props.params.ref
@@ -57,7 +50,18 @@ export const Route = createFileRoute('/r/$ref')({
       return { ...data}
     }
     catch (error: any) {
-      console.log(`[checkout] Error getting payments`, {error})
+      console.log(`[checkout] Error getting payments`, { error })
+      if (error?.name === 'HTTPError') {
+          const res = error.response;
+          const body = await res.text().catch(() => '<no body>');
+          console.error('upstream failed', {
+            url: `${env.VITE_API_URL}/v1/payment/${props.params.ref}`,
+            status: res.status,
+            body,
+          });
+        }
+        throw error;
+      }
     }
   },
 })
