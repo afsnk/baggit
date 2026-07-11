@@ -44,6 +44,44 @@ CREATE TABLE `apikey` (
 CREATE INDEX `apikey_configId_idx` ON `apikey` (`config_id`);
 CREATE INDEX `apikey_referenceId_idx` ON `apikey` (`reference_id`);
 CREATE INDEX `apikey_key_idx` ON `apikey` (`key`);
+CREATE TABLE `invitation` (
+	`id` text PRIMARY KEY NOT NULL,
+	`organization_id` text NOT NULL,
+	`email` text NOT NULL,
+	`role` text,
+	`status` text DEFAULT 'pending' NOT NULL,
+	`expires_at` integer NOT NULL,
+	`created_at` integer DEFAULT (cast(unixepoch('subsecond') * 1000 as integer)) NOT NULL,
+	`inviter_id` text NOT NULL,
+	FOREIGN KEY (`organization_id`) REFERENCES `organization`(`id`) ON UPDATE no action ON DELETE cascade,
+	FOREIGN KEY (`inviter_id`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE cascade
+);
+
+CREATE INDEX `invitation_organizationId_idx` ON `invitation` (`organization_id`);
+CREATE INDEX `invitation_email_idx` ON `invitation` (`email`);
+CREATE TABLE `member` (
+	`id` text PRIMARY KEY NOT NULL,
+	`organization_id` text NOT NULL,
+	`user_id` text NOT NULL,
+	`role` text DEFAULT 'member' NOT NULL,
+	`created_at` integer NOT NULL,
+	FOREIGN KEY (`organization_id`) REFERENCES `organization`(`id`) ON UPDATE no action ON DELETE cascade,
+	FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE cascade
+);
+
+CREATE INDEX `member_organizationId_idx` ON `member` (`organization_id`);
+CREATE INDEX `member_userId_idx` ON `member` (`user_id`);
+CREATE TABLE `organization` (
+	`id` text PRIMARY KEY NOT NULL,
+	`name` text NOT NULL,
+	`slug` text NOT NULL,
+	`logo` text,
+	`created_at` integer NOT NULL,
+	`metadata` text
+);
+
+CREATE UNIQUE INDEX `organization_slug_unique` ON `organization` (`slug`);
+CREATE UNIQUE INDEX `organization_slug_uidx` ON `organization` (`slug`);
 CREATE TABLE `session` (
 	`id` text PRIMARY KEY NOT NULL,
 	`expires_at` integer NOT NULL,
@@ -53,6 +91,7 @@ CREATE TABLE `session` (
 	`ip_address` text,
 	`user_agent` text,
 	`user_id` text NOT NULL,
+	`active_organization_id` text,
 	FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE cascade
 );
 
@@ -80,27 +119,61 @@ CREATE TABLE `verification` (
 );
 
 CREATE INDEX `verification_identifier_idx` ON `verification` (`identifier`);
-CREATE TABLE `payments` (
+CREATE TABLE `invoice` (
 	`id` text PRIMARY KEY NOT NULL,
-	`reference` text NOT NULL
-);
-
-CREATE TABLE `ramps` (
-	`id` text PRIMARY KEY NOT NULL,
-	`reference` text NOT NULL,
-	`type` text
-);
-
-CREATE TABLE `transactions` (
-	`id` text PRIMARY KEY NOT NULL,
-	`reference` text NOT NULL,
+	`to` text NOT NULL,
+	`from` text NOT NULL,
 	`amount` real NOT NULL,
-	`callback_url` text DEFAULT 'https://webhook.site/a6428992-34ce-4b09-90c0-7fe778d762e4' NOT NULL,
-	`status` text DEFAULT 'pending',
-	`network` text DEFAULT 'base' NOT NULL,
-	`asset` text NOT NULL,
-	`metadata` text NOT NULL,
-	`merchant_metadata` text,
+	`reference` text NOT NULL,
+	`memo` text,
+	`metadata` text,
 	`created_at` integer,
 	`updated_at` integer
 );
+
+CREATE INDEX `invoice_reference_idx` ON `invoice` (`reference`);
+CREATE TABLE `payments` (
+	`id` text PRIMARY KEY NOT NULL,
+	`currency` text NOT NULL,
+	`method` text NOT NULL,
+	`callback_url` text NOT NULL,
+	`org_id` text NOT NULL,
+	`invoice_id` text NOT NULL,
+	`metadata` text,
+	`created_at` integer,
+	`updated_at` integer,
+	FOREIGN KEY (`org_id`) REFERENCES `organization`(`id`) ON UPDATE no action ON DELETE no action,
+	FOREIGN KEY (`invoice_id`) REFERENCES `invoice`(`id`) ON UPDATE no action ON DELETE restrict
+);
+
+CREATE INDEX `invoice_idx` ON `payments` (`invoice_id`);
+CREATE INDEX `currency_idx` ON `payments` (`currency`);
+CREATE INDEX `method_idx` ON `payments` (`method`);
+CREATE TABLE `ramps` (
+	`id` text PRIMARY KEY NOT NULL,
+	`reference` text NOT NULL,
+	`type` text,
+	`created_at` integer,
+	`updated_at` integer
+);
+
+CREATE INDEX `ramp_reference_Idx` ON `ramps` (`reference`);
+CREATE TABLE `transactions` (
+	`id` text PRIMARY KEY NOT NULL,
+	`status` text DEFAULT 'pending',
+	`network` text DEFAULT 'base' NOT NULL,
+	`asset` text NOT NULL,
+	`payment_id` text,
+	`ramp_id` text,
+	`org_id` text,
+	`metadata` text NOT NULL,
+	`created_at` integer,
+	`updated_at` integer,
+	FOREIGN KEY (`payment_id`) REFERENCES `payments`(`id`) ON UPDATE no action ON DELETE no action,
+	FOREIGN KEY (`ramp_id`) REFERENCES `ramps`(`id`) ON UPDATE no action ON DELETE no action,
+	FOREIGN KEY (`org_id`) REFERENCES `organization`(`id`) ON UPDATE no action ON DELETE no action
+);
+
+CREATE INDEX `transactions_status_idx` ON `transactions` (`status`);
+CREATE INDEX `transactions_network_idx` ON `transactions` (`network`);
+CREATE INDEX `transactions_asset_idx` ON `transactions` (`asset`);

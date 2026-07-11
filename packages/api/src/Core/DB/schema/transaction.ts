@@ -8,20 +8,25 @@ import { generateId } from "../utils";
 import { relations } from "drizzle-orm";
 import { organization } from "./auth";
 
+// Carries the actual values for processing the payment like provider details
 export const transactions = sqliteTable("transactions", {
   id: text("id").primaryKey().$defaultFn(() => generateId('trx')),
-  status: text("status", { enum: ["pending", "failed", "complete"] }).default("pending"),
-  network: text("network", { enum: ["base", "bsc"] }).notNull().default("base"),
+  status: text("status", { enum: ["failed", "canceled", "expired", "pending", "complete"] }).default("pending"),
+  network: text("network", { enum: ["base", "bsc", "solana", "stellar"] }).notNull().default("base"), // Base is still crypto
   asset: text("asset", { enum: ["usdc", "usdt", "cngn"] }).notNull(),
   paymentId: text("payment_id").references(() => payments.id, {onDelete: "no action"}),
   rampId: text("ramp_id").references(() => ramps.id, { onDelete: "no action" }),
   orgId: text("org_id").references(() => organization.id),
   metadata: text("metadata", { mode: "json" }).$type<{
-    address: `0x${string}`;
-    pk: `0x${string}`;
+    address?: `0x${string}`;
+    pk?: `0x${string}`;
     collectionHash?: `0x${string}`;
     payoutHash?: `0x${string}`;
-    fromBlock: number;
+    fromBlock?: number;
+    accountNumber?: string;
+    accountName?: string;
+    bankName?: string;
+    bankCode?: string;
     [x: string]: any;
   }>().notNull(),
   createdAt: integer({ mode: "timestamp" })
@@ -30,10 +35,10 @@ export const transactions = sqliteTable("transactions", {
     .$defaultFn(() => new Date())
     .$onUpdate(() => new Date()),
 }, (table) => [
-  index("transactions_paymentId_idx").on(table.paymentId),
-  index("transactions_rampId_idx").on(table.rampId),
   index("transactions_status_idx").on(table.status),
   index("transactions_network_idx").on(table.network),
+  index("transactions_asset_idx").on(table.asset),
+  index("transactions_paymentId_idx").on(table.paymentId)
 ]);
 
 export const selectTransactions = toZodV4SchemaTyped(createSelectSchema(transactions));
@@ -45,6 +50,8 @@ export const insertTransactions = toZodV4SchemaTyped(createInsertSchema(
 ).required({
   network: true,
   asset: true,
+  paymentId: true,
+  orgId: true,
 }).omit({
   metadata: true,
   id: true,

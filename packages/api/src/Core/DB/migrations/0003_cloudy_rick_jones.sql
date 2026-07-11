@@ -1,1 +1,0 @@
-ALTER TABLE `session` ADD `active_organization_id` text;

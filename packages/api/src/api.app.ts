@@ -1,8 +1,9 @@
 import createApp from "@/Core/Lib/create-app";
 import { cors } from "@elysia/cors"
 import env from "./Core/Config/env";
-import paymentRoute from "@/Modules/Payment/routes/payment.route";
+import paymentRoute from "@/Modules/Payment/routes/payment/payment.route";
 import transactionRoute from "@/Modules/Transaction/routes/transaction.route";
+import checkoutRoute from "@/Modules/Payment/routes/checkout/checkout.route";
 import { appMacro } from "./Core/Lib/macros";
 
 
@@ -31,7 +32,8 @@ const apiApp = createApp({
   .macro(appMacro)
   .use(paymentRoute)
   .use(transactionRoute)
-  .get(`/user`, ({ user }) => user, { auth: true })
+  .use(checkoutRoute)
+  .get(`/user`, ({ user }) => user, { auth: true }) // TODO: remove when sure everything works
   .listen({port: 8001, hostname: "::"});
 
 console.log(`API server running at [${apiApp.server?.hostname}:${apiApp.server?.port}]`)
