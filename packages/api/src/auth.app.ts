@@ -19,13 +19,9 @@ const authApp = createApp({ name: "auth" })
         'localhost:3001',
         'localhost:3011',
       ],
-      methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+      methods: "*",
       credentials: true,
-      // allowedHeaders: [
-      //   'Content-Type',
-      //   'Authorization',
-      //   'Access-Control-Allow-Origin'
-      // ]
+      allowedHeaders: "*"
     })
   )
   .mount(auth.handler)

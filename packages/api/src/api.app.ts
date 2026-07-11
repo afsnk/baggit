@@ -12,7 +12,7 @@ const apiApp = createApp({
   prefix: "/v1"
 }).use(
   cors({
-    origin: true,
+    origin: "*",
     methods: "*",
     credentials: true,
     allowedHeaders: "*"
