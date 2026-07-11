@@ -50,7 +50,7 @@ import { mutationOptions } from '@tanstack/react-query'
 // }
 
 
-export const fetch = edenFetch<APIApp>(env.VITE_API_URL)
+export const fetch = edenFetch<APIApp>(env.SERVER_URL || env.VITE_API_URL)
 
 export const initTransaction = () =>
   mutationOptions({
