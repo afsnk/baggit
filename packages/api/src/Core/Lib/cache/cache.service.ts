@@ -64,7 +64,7 @@ class Cache {
         return await Cache.transactionKv?.get(key);
       },
       async set(key: string, value: string, ttl: string) {
-        console.log(`Cache TTL: `, ttl)
+        console.log(`Cache TTL: unused might remove`, ttl)
 
         try {
           await Cache.transactionKv.put(key, value)
