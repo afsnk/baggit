@@ -77,6 +77,9 @@ const cache = await Cache.initKVM(await connect({
   authenticator: env.NODE_ENV === "production" ? credsAuthenticator(
     new TextEncoder().encode(env.NATS_CREDS)
   ) : undefined
+}).catch(error => {
+  console.log(`[nats] Failed to connect to nats`, { error })
+  throw error
 }));
 
 export default cache;

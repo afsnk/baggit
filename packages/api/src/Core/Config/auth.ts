@@ -76,13 +76,14 @@ const defaultAuthConfig: BetterAuthOptions = {
   },
   trustedOrigins: async (request) => [
     "*",
+    'https://*.baggit.link',
     ...env.TRUSTED_ORIGINS.split(','),
     'https://baggit.link',
     'localhost:3000',
     'localhost:3001',
     'localhost:3011',
     'http://localhost:4322',
-    request?.headers.get('origin') ?? undefined,
+    request?.headers.get('origin'),
   ],
   advanced: {
     cookiePrefix: env.NODE_ENV === "development"? "baggit-dev-auth" : "baggit-auth",
