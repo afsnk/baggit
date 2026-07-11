@@ -2,6 +2,16 @@ import { PaymentPage } from '#/components/payment-page'
 import { fetch } from '#/lib/api-client'
 import { createFileRoute } from '@tanstack/react-router'
 import { z } from 'zod'
+import { Button } from "@/components/ui/button"
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty"
+import { Cloud } from 'lucide-react'
 
 const paymentSearchSchema = z.object({
   merchantName: z.string().optional().default('Ugamy'),
@@ -43,9 +53,8 @@ export const Route = createFileRoute('/r/$ref')({
       }
 
       console.log(`Pay details`, { data })
-      const paymentData = data
 
-      return { ...paymentData}
+      return { ...data}
     }
     catch (error: any) {
       console.log(`[checkout] Error getting payments`, {error})
@@ -59,6 +68,27 @@ function RouteComponent() {
 
   const { merchantCallbackUrl, merchantName } = Route.useSearch()
   console.log(`Payment Reference`, { ref, merchantCallbackUrl, merchantName })
+
+  if (!data) {
+    return (
+      <Empty className="border border-dashed">
+        <EmptyHeader>
+          <EmptyMedia variant="icon">
+            <Cloud className='size-4' />
+          </EmptyMedia>
+          <EmptyTitle>Could not get invoice</EmptyTitle>
+          <EmptyDescription>
+            Refresh the page to try again, or contact support
+          </EmptyDescription>
+        </EmptyHeader>
+        <EmptyContent>
+          <Button variant="outline" size="sm">
+            Contact support
+          </Button>
+        </EmptyContent>
+      </Empty>
+    )
+  }
 
   return (
     <PaymentPage
