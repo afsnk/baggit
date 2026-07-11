@@ -368,7 +368,7 @@ export function PaymentPage(props: IPaymentPageProps) {
               onCurrencyChange={setCurrency}
               currency={currency}
               method={paymentMethod}
-              isLoadingMethod={payment.isPending}
+              // isLoadingMethod={payment.isPending}
             />
           </div>
           {!(currency === 'ngn') && (
@@ -410,9 +410,9 @@ export function PaymentPage(props: IPaymentPageProps) {
         <AddressQRCode
           timer={timer}
           onCancel={resetFlow}
-          onComplete={() => {
-            // Killers — Junks
-          }}
+          // onComplete={() => {
+          //   // Killers — Junks
+          // }}
           chain={selectedChain}
           details={trxData?.details}
         />
