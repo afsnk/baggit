@@ -25,26 +25,31 @@ export const Route = createFileRoute('/r/$ref')({
   //   })
   // },
   async loader(props) {
-    const reference = props.params.ref
-    const search = props.location.search as PaymentSearch
-    console.log(`props`, { reference, search })
+    try {
+      const reference = props.params.ref
+      const search = props.location.search as PaymentSearch
+      console.log(`props`, { reference, search })
 
-    const { data, error } = await fetch(`/v1/payment/:invoiceRef`, {
-      method: 'GET',
-      params: {
-        invoiceRef: reference,
+      const { data, error } = await fetch(`/v1/payment/:invoiceRef`, {
+        method: 'GET',
+        params: {
+          invoiceRef: reference,
+        }
+      })
+
+      if (error) {
+        console.log(`Error fetching payment`, { error })
+        throw error
       }
-    })
 
-    if (error) {
-      console.log(`Error fetching payment`, { error })
-      throw error
+      console.log(`Pay details`, { data })
+      const paymentData = data
+
+      return { ...paymentData}
     }
-
-    console.log(`Pay details`, { data })
-    const paymentData = data
-
-    return { ...paymentData}
+    catch (error: any) {
+      console.log(`[checkout] Error getting payments`, {error})
+    }
   },
 })
 
