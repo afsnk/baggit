@@ -13,7 +13,7 @@ const apiApp = createApp({
 }).use(
   cors({
     origin: "*",
-    methods: "*",
+    methods: ["POST", "OPTIONS", "POST", "HEAD", "PATCH", "OPTIONS"],
     credentials: true,
     allowedHeaders: "*"
   })
