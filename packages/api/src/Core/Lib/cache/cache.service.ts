@@ -30,12 +30,16 @@ class Cache {
     try {
       console.log(`Nats server`, nc.getServer())
       this.kvm = new Kvm(nc)
-      this.transactionKv = await this.kvm.create(this.transactionKvKey)
+      this.transactionKv = await this.kvm.create(this.transactionKvKey).catch(error => {
+        console.log(`error`, { error })
+        throw error
+      })
 
       log.set({kvState: `KV initialised successful`})
       return this.getInstance()
     }
     catch (error: any) {
+      console.log(`Nats server`, nc.getServer())
       log.error(error)
       log.set({
         kvState: `Failed to initialise kv`, error
