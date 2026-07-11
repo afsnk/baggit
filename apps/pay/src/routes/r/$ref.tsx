@@ -38,6 +38,9 @@ export const Route = createFileRoute('/r/$ref')({
         params: {
           invoiceRef: reference,
         }
+      }).catch((error: any) => {
+        console.log(`Failed to fetch invoice`, { error })
+        throw error;
       })
 
       if (error) {
