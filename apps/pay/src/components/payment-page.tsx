@@ -223,30 +223,8 @@ const AddressQRCode = ({
             </>
           )}
           <span className="text-sm font-semibold">Expires in: {timer}</span>
-          {/*<a
-            href="#"
-            onClick={(e) => {
-              e.preventDefault()
-              e.stopPropagation()
-            }}
-            className="underline-offset-1 text-blue-600 text-xs flex gap-1 items-center mt-1"
-          >
-            Other Options
-            <ArrowRight className="size-3" />
-          </a>*/}
         </div>
       </div>
-
-      {/*<FlipButton
-        frontText="I have made the transfer"
-        backText="Confirm payment"
-        frontClassName="border border-gray-400"
-        className="w-full"
-        onClick={() => {
-          // window.alert('Complete payment!')
-          onComplete()
-        }}
-      />*/}
       <Button variant="ghost" size="sm" className="w-full" onClick={onCancel}>
         Cancel
       </Button>
