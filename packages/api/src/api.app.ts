@@ -26,7 +26,15 @@ const apiApp = createApp({
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     credentials: true,
-    allowedHeaders: ['*', 'Content-Type', 'Authorization', 'baggit-api-key', 'baggit-public-key', 'baggit-secret-key']
+    allowedHeaders: [
+      '*',
+      'Content-Type',
+      'Authorization',
+      'Access-Control-Allow-Origin',
+      'baggit-api-key',
+      'baggit-public-key',
+      'baggit-secret-key'
+    ]
   })
 )
   .macro(appMacro)
