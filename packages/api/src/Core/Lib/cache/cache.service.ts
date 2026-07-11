@@ -1,6 +1,7 @@
-import { NatsConnection, connect } from "@nats-io/transport-node";
+import { NatsConnection, connect, credsAuthenticator, jwtAuthenticator } from "@nats-io/transport-node";
 import {KV, Kvm} from "@nats-io/kv"
 import { useLogger } from "evlog/elysia";
+import env from "@/Core/Config/env";
 
 
 interface CacheFunctions {
@@ -71,6 +72,11 @@ class Cache {
   }
 }
 
-const cache = await Cache.initKVM(await connect({ servers: "nats://localhost:4222" }));
+const cache = await Cache.initKVM(await connect({
+  servers: env.NATS_SERVER_URL || "nats://localhost:4222",
+  authenticator: env.NODE_ENV === "production" ? credsAuthenticator(
+    new TextEncoder().encode(env.NATS_CREDS)
+  ) : undefined
+}));
 
 export default cache;
