@@ -16,44 +16,71 @@ import type { Chain } from './NetworkPicker'
 import { ToggleGroup, ToggleGroupItem } from './ui/toggle-group'
 import { Skeleton } from './ui/skeleton'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { confirmTransaction, initTransaction } from '#/lib/api-client'
+import { initTransaction, updatePayment } from '#/lib/api-client'
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 interface IPaymentPageProps {
   merchantCallbackUrl: string
   merchantName: string
   amount: number
-  pk: string
   paymentId: string
+  orgId: string
 }
 
 // Helper components for the demo content
 const CurrencyToggle = ({
   onCurrencyChange,
   currency,
+  method,
+  isLoadingMethod,
 }: {
   onCurrencyChange: (currency: string) => void
   currency: string
-}) => (
-  <ToggleGroup
-    // className="flex items-center text-sm border rounded-md p-1 bg-muted"
-    variant="default"
-    type="single"
-    size="sm"
-    defaultValue={currency}
-    value={currency}
-    onValueChange={(value: string) => {
-      if (!value) {
-        onCurrencyChange(currency)
-      } else {
-        onCurrencyChange(value)
+  method: string
+  isLoadingMethod: boolean
+  }) => (
+
+    <ToggleGroup
+      // className="flex items-center text-sm border rounded-md p-1 bg-muted"
+      variant="default"
+      type="single"
+      size="sm"
+      defaultValue={currency}
+      value={currency}
+      onValueChange={async (value: string) => {
+        if (!value) {
+          onCurrencyChange(currency)
+        } else {
+          onCurrencyChange(value)
+        }
+      }}
+    >
+      {
+        method === "bank-transfer" && (
+          <>
+            <ToggleGroupItem value="ngn">NGN</ToggleGroupItem>
+            <ToggleGroupItem value="ngn" disabled>USD</ToggleGroupItem>
+          </>
+        )
       }
-    }}
-  >
-    <ToggleGroupItem value="ngn">NGN</ToggleGroupItem>
-    <ToggleGroupItem value="usdt">USDT</ToggleGroupItem>
-    <ToggleGroupItem value="usdc">USDC</ToggleGroupItem>
-  </ToggleGroup>
+      {
+        method === "crypto" && (
+          <>
+            <ToggleGroupItem value="usdt">USDT</ToggleGroupItem>
+            <ToggleGroupItem value="usdc">USDC</ToggleGroupItem>
+          </>
+        )
+      }
+
+    </ToggleGroup>
 )
 
 const PriceDetail = ({ label, value }: { label: string; value: string }) => (
@@ -138,10 +165,18 @@ const AddressQRCode = ({
   timer,
   onCancel,
   onComplete,
-  address,
+  details,
+  chain,
 }: {
-  timer: number | string
-  address: string
+    timer: number | string;
+    chain: string;
+  details: {
+    address: string
+  } | {
+    bankName: string;
+    accountNumber: string;
+    accountName: string;
+  } | undefined
   onCancel: () => void
   onComplete: () => void
 }) => {
@@ -153,39 +188,45 @@ const AddressQRCode = ({
     <div className="flex flex-col items-center justify-center rounded-lg space-y-3">
       <div className="flex flex-row gap-2 w-full">
         <div className="flex flex-col items-center justify-center">
-          <div className="flex w-14 lg:w-28 aspect-square border border-border p-1 rounded-sm">
-            <QRCode
-              size={256}
-              style={{
-                height: 'auto',
-                maxWidth: '100%',
-                width: '100%',
-                borderRadius: 4,
-              }}
-              viewBox="0 0 256 256"
-              value={address}
-            />
-          </div>
+          {typeof details !== "undefined" && 'address' in details && (
+            <div className="flex w-14 lg:w-28 aspect-square border border-border p-1 rounded-sm">
+              <QRCode
+                size={256}
+                style={{
+                  height: 'auto',
+                  maxWidth: '100%',
+                  width: '100%',
+                  borderRadius: 4,
+                }}
+                viewBox="0 0 256 256"
+                value={details.address}
+              />
+            </div>
+          )}
         </div>
         <div className="flex flex-col">
-          <span className="text-xs text-foreground-muted">
-            BSC (BEP 20) address
-          </span>
-          <div className="flex flex-row items-start justify-start max-w-[200px]">
-            <span className="flex-1 min-w-0 text-sm text-left text-wrap line-clamp-2 wrap-break-word">
-              {address}
-            </span>
-            <Button
-              size="icon"
-              variant="outline"
-              className="w-6 h-6 shrink-0"
-              onClick={() => handleCopy(address)}
-            >
-              <Copy className="size-3" />
-            </Button>
-          </div>
+          {typeof details !== "undefined" && 'address' in details && (
+            <>
+              <span className="text-xs text-foreground-muted">
+                {chain.toUpperCase()} {chain === "bsc"? '(BEP-20)' : '(ERC-20)'} address
+              </span>
+              <div className="flex flex-row items-start justify-start max-w-[200px]">
+                <span className="flex-1 min-w-0 text-sm text-left text-wrap line-clamp-2 wrap-break-word">
+                  {details.address}
+                </span>
+                <Button
+                  size="icon"
+                  variant="outline"
+                  className="w-6 h-6 shrink-0"
+                  onClick={() => handleCopy(details.address)}
+                >
+                  <Copy className="size-3" />
+                </Button>
+              </div>
+            </>
+          )}
           <span className="text-sm font-semibold">Expires in: {timer}</span>
-          <a
+          {/*<a
             href="#"
             onClick={(e) => {
               e.preventDefault()
@@ -195,11 +236,11 @@ const AddressQRCode = ({
           >
             Other Options
             <ArrowRight className="size-3" />
-          </a>
+          </a>*/}
         </div>
       </div>
 
-      <FlipButton
+      {/*<FlipButton
         frontText="I have made the transfer"
         backText="Confirm payment"
         frontClassName="border border-gray-400"
@@ -208,13 +249,21 @@ const AddressQRCode = ({
           // window.alert('Complete payment!')
           onComplete()
         }}
-      />
+      />*/}
       <Button variant="ghost" size="sm" className="w-full" onClick={onCancel}>
         Cancel
       </Button>
     </div>
   )
 }
+
+const paymentMethods = [
+  {value: "bank-transfer", label: "Bank Transfer", enabled: true},
+  {value: "crypto", label: "Crypto", enabled: true},
+  {value: "ussd", label: "USSD", enabled: false},
+  { value: "applepay", label: "Apple pay", enabled: false },
+  {value: "googlepay", label: "Google pay", enabled: false}
+]
 
 export function PaymentPage(props: IPaymentPageProps) {
   const [currentStep, setCurrentStep] = useState(0)
@@ -223,7 +272,8 @@ export function PaymentPage(props: IPaymentPageProps) {
   const [selectedChain, setSelectChain] = useState(chains[0].value)
   const [pickerOpen, setPickerOpen] = useState(false)
   const [currency, setCurrency] = useState('ngn')
-  const [confirm, setConfirm] = useState<boolean>(false)
+  const [paymentMethod, setPaymentMethod] = useState<string>(paymentMethods[0].value)
+  // const [confirm, setConfirm] = useState<boolean>(false)
   const amount = currency === 'ngn' ? props.amount : props.amount / 1400
 
   // Mutation/Query
@@ -231,18 +281,21 @@ export function PaymentPage(props: IPaymentPageProps) {
     mutateAsync,
     isPending,
     data: trxData,
-  } = useMutation(initTransaction(props.pk))
-  const {
-    isLoading,
-    data: confirmData,
-    error,
-  } = useQuery(confirmTransaction(props.pk, confirm, trxData?.id))
+  } = useMutation(initTransaction())
+
+  const payment = useMutation(updatePayment(props.paymentId))
 
   useEffect(() => {
-    if (!isLoading && confirmData) {
-      setCurrentStep(2)
+    console.log(`Distribution`, { currency });
+    if (paymentMethod === "bank-transfer") {
+      payment.mutate({method: "bank-transfer", amount: props.amount, currency: "ngn"})
+      setCurrency("ngn")
     }
-  }, [isLoading, confirmData, error])
+    if (paymentMethod === "crypto" && currency === "usdt" || currency === "usdc") {
+      payment.mutate({method: "crypto", amount: Number((props.amount / 1400).toFixed(2)), currency: currency})
+      setCurrency(currency)
+    }
+  }, [paymentMethod, currency])
 
   // Timer logic
   useEffect(() => {
@@ -262,12 +315,13 @@ export function PaymentPage(props: IPaymentPageProps) {
       network: selectedChain,
       asset: currency,
       paymentId: props.paymentId,
+      orgId: props.orgId
     })
     setCurrentStep(1) // Move to the timer step
   }
 
   const resetFlow = () => {
-    setConfirm(false)
+    // setConfirm(false)
     setCurrentStep(0)
     setTimer(90)
   }
@@ -275,12 +329,30 @@ export function PaymentPage(props: IPaymentPageProps) {
   const steps: StepProps[] = [
     {
       step: 1,
-      title: 'Review details',
-      description: 'Click continue to generate address for payment',
+      title: 'Pick a payment method',
+      description: 'Click continue to generate payment details',
       content: (
         <div className="space-y-2 mt-1">
-          <div className="flex justify-between items-center p-2 border rounded-lg">
-            <p className="font-mono font-medium flex items-center gap-1">
+          <div className='w-full'>
+            <Select onValueChange={(value) => {
+              setPaymentMethod(value)
+            }}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Pick payment method" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  {paymentMethods.map(({value, label, enabled}) => (
+                    <SelectItem key={value} value={value} className='capitalize' isLoading={payment.isPending} disabled={!enabled}>
+                      {label}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex justify-between items-center p-1 border rounded-lg">
+            {payment.isPending? <Loader2 className='size-4 animate-spin' /> : (<p className="font-mono font-medium flex items-center gap-1">
               <Avatar className="size-4 rounded-md object-contain">
                 <AvatarImage
                   src={
@@ -293,16 +365,16 @@ export function PaymentPage(props: IPaymentPageProps) {
                 />
                 <AvatarFallback>{'₦'}</AvatarFallback>
               </Avatar>
-              {amount.toFixed()}
-            </p>
+              {amount.toLocaleString('en-US', {maximumFractionDigits: 2, minimumFractionDigits: 2})}
+            </p>)}
             <CurrencyToggle
               onCurrencyChange={setCurrency}
               currency={currency}
+              method={paymentMethod}
+              isLoadingMethod={payment.isPending}
             />
           </div>
-          {currency === 'ngn' ? (
-            <span>Naira payment are currently in the works!</span>
-          ) : (
+          {!(currency === 'ngn') && (
             <ChainPicker
               chains={chains}
               value={selectedChain}
@@ -318,24 +390,14 @@ export function PaymentPage(props: IPaymentPageProps) {
           )}
           <div className="space-y-2 text-sm">
             <PriceDetail
-              label="Lifetime platform access"
-              value={`${amount.toFixed(2)} ${currency.toUpperCase()}`}
-            />
-            <PriceDetail
-              label="Est. network fee"
-              value={`0.096 ${currency.toUpperCase()}`}
-            />
-          </div>
-          <div className="border-t pt-2">
-            <PriceDetail
-              label="Estimated total"
-              value={`${(amount + 0.096).toFixed(2)} ${currency.toUpperCase()}`}
+              label="Total due"
+              value={`${amount.toLocaleString('en-US', {maximumFractionDigits: 2, minimumFractionDigits: 2})} ${currency.toUpperCase()}`}
             />
           </div>
           <Button
             className="w-full"
             onClick={handleCommit}
-            disabled={!currency || currency === 'ngn' || isPending}
+            disabled={!currency || isPending}
           >
             {isPending && <Loader2 className="animate-spin" />}
             {!isPending && 'Continue'}
@@ -352,9 +414,10 @@ export function PaymentPage(props: IPaymentPageProps) {
           timer={timer}
           onCancel={resetFlow}
           onComplete={() => {
-            setConfirm(true)
+            // Killers — Junks
           }}
-          address={trxData?.address || ''}
+          chain={selectedChain}
+          details={trxData?.details}
         />
       ),
     },
@@ -364,7 +427,7 @@ export function PaymentPage(props: IPaymentPageProps) {
       description: 'Confirming your transaction',
       content: (
         <div className="flex flex-col space-y-2">
-          {isLoading && (
+          {true && (
             <>
               <h4 className="font-semibold text-xs text-center">
                 Making sure the stars align
@@ -372,7 +435,7 @@ export function PaymentPage(props: IPaymentPageProps) {
               <Skeleton className="h-28" />
             </>
           )}
-          {!isLoading && confirmData && (
+          {false && (
             <>
               <ReferralCTACard
                 title="Earnings on Subscriptions"
@@ -390,7 +453,7 @@ export function PaymentPage(props: IPaymentPageProps) {
                   { src: 'https://i.pravatar.cc/150?img=3', alt: 'User 3' },
                 ]}
               />
-              <ReceiptSheet confirmData={confirmData}>
+              <ReceiptSheet confirmData={{} as any}>
                 <Button className="w-full">View Receipt</Button>
               </ReceiptSheet>
             </>
@@ -420,7 +483,7 @@ export function PaymentPage(props: IPaymentPageProps) {
           <FloatingPaths position={-1} />
         </div>
       </div>
-      <div className="relative w-full h-screen grid items-start lg:items-center justify-center">
+      <div className="relative w-full h-screen grid items-center justify-center">
         <div
           aria-hidden
           className="absolute inset-0 isolate contain-strict -z-10 opacity-60"

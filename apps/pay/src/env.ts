@@ -19,6 +19,7 @@ export const env = createEnv({
     /** Optional custom RPC endpoint for BNB Smart Chain; falls back to the chain default. */
     VITE_BSC_RPC_URL: z.string().url().optional(),
     VITE_API_URL: z.string().url(),
+    VITE_BETTER_AUTH_URL: z.url(),
   },
 
   /**
