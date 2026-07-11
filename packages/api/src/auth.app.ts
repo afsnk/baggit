@@ -21,11 +21,11 @@ const authApp = createApp({ name: "auth" })
       ],
       methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
       credentials: true,
-      allowedHeaders: [
-        'Content-Type',
-        'Authorization',
-        'Access-Control-Allow-Origin'
-      ]
+      // allowedHeaders: [
+      //   'Content-Type',
+      //   'Authorization',
+      //   'Access-Control-Allow-Origin'
+      // ]
     })
   )
   .mount(auth.handler)

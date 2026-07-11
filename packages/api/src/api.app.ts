@@ -12,29 +12,10 @@ const apiApp = createApp({
   prefix: "/v1"
 }).use(
   cors({
-    origin: [
-      "*",
-      ...env.TRUSTED_ORIGINS.split(','),
-      'http://localhost:3011',
-      'http://localhost:3000',
-      'https://widget.baggit.link',
-      'https://baggit.link',
-      'localhost:3000',
-      'localhost:3001',
-      'localhost:3011',
-      'http://localhost:4322'
-    ],
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    origin: true,
+    methods: "*",
     credentials: true,
-    allowedHeaders: [
-      '*',
-      'Content-Type',
-      'Authorization',
-      'Access-Control-Allow-Origin',
-      'baggit-api-key',
-      'baggit-public-key',
-      'baggit-secret-key'
-    ]
+    allowedHeaders: "*"
   })
 )
   .macro(appMacro)
