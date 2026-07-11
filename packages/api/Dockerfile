@@ -18,7 +18,7 @@ ENV NODE_ENV=production
 
 RUN bun run build:packages:api
 
-FROM oven/bun:1 as runner
+FROM oven/bun:canary as runner
 
 WORKDIR /app
 
