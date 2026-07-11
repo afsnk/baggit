@@ -7,7 +7,7 @@
     "dev:auth": "portless auth.baggit --app-port 8002 bun --bun run --watch src/auth.app.ts",
     "dev:api": "PORTLESS_NGROK=1 portless api.baggit --app-port 8001 bun --bun run --watch src/api.app.ts",
     "start:auth": "bun --bun run dist/src/auth.app.js",
-    "start:api": "bun --bun run dist/src/api.app.js",
+    "start:api": "node ./dist/src/api.app.js",
     "db:generate": "npx drizzle-kit generate --config ./dist/drizzle.config.js",
     "db:migrate": "npx drizzle-kit migrate --config ./dist/drizzle.config.js",
     "db:push": "npx drizzle-kit push --config ./dist/drizzle.config.js",
