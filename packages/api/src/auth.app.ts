@@ -10,14 +10,7 @@ const authApp = createApp({ name: "auth" })
   .use(
     cors({
       origin: [
-        ...env.TRUSTED_ORIGINS.split(','),
-        'http://localhost:3011',
-        'http://localhost:3000',
-        'https://widget.baggit.link',
-        'https://baggit.link',
-        'localhost:3000',
-        'localhost:3001',
-        'localhost:3011',
+        ...env.TRUSTED_ORIGINS.split(',')
       ],
       methods: "*",
       credentials: true,
