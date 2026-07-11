@@ -45,7 +45,8 @@ const EnvSchema = z.object({
 
   // nats server
   NATS_SERVER_URL: z.url(),
-  NATS_CREDS: z.string(),
+  NATS_USER_NKEY: z.string(),
+  NATS_USER_JWT: z.string(),
   // Encryption key
   ENC_KEY: z.string().min(16).optional().default('sdonsdovbd'),
 

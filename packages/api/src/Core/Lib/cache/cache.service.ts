@@ -1,4 +1,4 @@
-import { NatsConnection, connect, credsAuthenticator, jwtAuthenticator } from "@nats-io/transport-node";
+import { NatsConnection, connect, jwtAuthenticator } from "@nats-io/transport-node";
 import {KV, Kvm} from "@nats-io/kv"
 import { useLogger } from "evlog/elysia";
 import env from "@/Core/Config/env";
@@ -74,9 +74,10 @@ class Cache {
 
 const cache = await Cache.initKVM(await connect({
   servers: env.NATS_SERVER_URL || "nats://localhost:4222",
-  authenticator: env.NODE_ENV === "production" ? credsAuthenticator(
-    new TextEncoder().encode(env.NATS_CREDS)
-  ) : undefined
+  authenticator: env.NODE_ENV === "production" ? jwtAuthenticator(
+      env.NATS_USER_JWT,
+      new TextEncoder().encode(env.NATS_USER_NKEY),
+    ) : undefined
 }).catch(error => {
   console.log(`[nats] Failed to connect to nats`, { error })
   throw error
