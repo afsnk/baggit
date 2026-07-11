@@ -1,4 +1,4 @@
-import { connect, credsAuthenticator, deferred, nuid } from "@nats-io/transport-node"
+import { connect, credsAuthenticator, deferred, jwtAuthenticator, nuid, tokenAuthenticator } from "@nats-io/transport-node"
 import env from "./env";
 
 type TPayload = {
@@ -8,9 +8,10 @@ type TPayload = {
 
 async function main() {
   const nc = await connect({ servers: env.NATS_SERVER_URL || "nats://localhost:4222",
-  authenticator: env.NODE_ENV === "production" ? credsAuthenticator(
-    new TextEncoder().encode(env.NATS_CREDS)
-  ) : undefined })
+  authenticator: env.NODE_ENV === "production" ? jwtAuthenticator(
+      env.NATS_USER_JWT,
+      new TextEncoder().encode(env.NATS_USER_NKEY),
+    ) : undefined })
 
   console.log(`connected`, nc.getServer());
 
