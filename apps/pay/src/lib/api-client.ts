@@ -1,18 +1,18 @@
 import { env } from '#/env'
 import type { APIApp } from '@baggit/api/app'
 import { edenFetch } from '@elysia/eden'
-import { mutationOptions, queryOptions, useMutation } from '@tanstack/react-query'
+import { mutationOptions } from '@tanstack/react-query'
 
 // jwtClient.ts  (browser)
 // let cached: { token: string; expMs: number } | null = null;
 
-const SKEW_MS = 15_000; // re-mint 15s early
+// const SKEW_MS = 15_000; // re-mint 15s early
 
-function decodeExp(jwt: string): number {
-  const [, payload] = jwt.split(".");
-  const { exp } = JSON.parse(atob(payload.replace(/-/g, "+").replace(/_/g, "/")));
-  return exp * 1000;
-}
+// function decodeExp(jwt: string): number {
+//   const [, payload] = jwt.split(".");
+//   const { exp } = JSON.parse(atob(payload.replace(/-/g, "+").replace(/_/g, "/")));
+//   return exp * 1000;
+// }
 
 // async function mint(): Promise<{ token: string; expMs: number }> {
   // cookie-based session is sent automatically with credentials: "include"

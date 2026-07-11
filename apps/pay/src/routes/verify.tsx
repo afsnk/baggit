@@ -61,7 +61,7 @@ function RouteComponent() {
 
       return data;
     },
-    onSuccess(data, variables, onMutateResult, context) {
+    onSuccess() {
       router.navigate({
         to: `/r/${search.invoiceRef}`,
         replace: true,
