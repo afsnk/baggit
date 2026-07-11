@@ -29,6 +29,7 @@ class Cache {
     const log = useLogger()
     try {
       console.log(`Nats server`, nc.getServer())
+      console.log(`NATS server closed: `, nc.isClosed())
       this.kvm = new Kvm(nc)
       this.transactionKv = await this.kvm.create(this.transactionKvKey).catch(error => {
         console.log(`error`, { error })
@@ -79,6 +80,13 @@ class Cache {
     }
   }
 }
+
+process.on("unhandledRejection", (reason) => {
+  console.error("UNHANDLED REJECTION:", reason);
+});
+process.on("uncaughtException", (err) => {
+  console.error("UNCAUGHT EXCEPTION:", err);
+});
 
 const cache = await Cache.initKVM(await connect({
   servers: env.NATS_SERVER_URL || "nats://localhost:4222",
