@@ -92,7 +92,7 @@ const PriceDetail = ({ label, value }: { label: string; value: string }) => (
 
 const chains: Chain[] = [
   {
-    chainId: crypto.randomUUID(),
+    chainId: `bsc`,
     logoUrl: 'https://www.bnbchain.org/favicon.ico',
     description: 'Binance Smart Chain for the Binance Exchange',
     name: 'Binace Smart Chain',
@@ -105,7 +105,7 @@ const chains: Chain[] = [
     },
   },
   {
-    chainId: crypto.randomUUID(),
+    chainId: `base`,
     logoUrl: 'https://www.base.org/favicon.ico',
     description: 'Base, ETH Layer 2 chain',
     name: 'Base Blockchain',
