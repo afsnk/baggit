@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { Button } from './ui/button'
 
-import { ChevronLeftIcon, Copy, Loader2 } from 'lucide-react'
+import { BanknoteArrowUp, ChevronLeftIcon, Copy, Loader2 } from 'lucide-react'
 import { PaymentFlowStepper } from './payment-flow-stepper'
 import type { StepProps } from './payment-flow-stepper'
 import QRCode from 'react-qr-code'
@@ -16,7 +16,7 @@ import { ToggleGroup, ToggleGroupItem } from './ui/toggle-group'
 import { Skeleton } from './ui/skeleton'
 import { useMutation} from '@tanstack/react-query'
 import { initTransaction, updatePayment } from '#/lib/api-client'
-import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
+import { Avatar, AvatarFallback, AvatarImage } from '#/components/ui/avatar'
 import {
   Select,
   SelectContent,
@@ -25,6 +25,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { Badge } from '#/components/ui/badge'
 
 interface IPaymentPageProps {
   merchantCallbackUrl: string
@@ -203,6 +204,12 @@ const AddressQRCode = ({
               />
             </div>
           )}
+
+          {typeof details !== "undefined" && ('bankName' in details || 'accountNumber' in details || 'accountName' in details)  && (
+            <div className="flex w-8 lg:w-14 aspect-square items-center justify-center border border-border p-1 rounded-sm">
+              <BanknoteArrowUp className='size-4' />
+            </div>
+          )}
         </div>
         <div className="flex flex-col">
           {typeof details !== "undefined" && 'address' in details && (
@@ -211,7 +218,7 @@ const AddressQRCode = ({
                 {chain.toUpperCase()} {chain === "bsc"? '(BEP-20)' : '(ERC-20)'} address
               </span>
               <div className="flex flex-row items-start justify-start max-w-[200px]">
-                <span className="flex-1 min-w-0 text-sm text-left text-wrap line-clamp-2 wrap-break-word">
+                <span className="flex-1 min-w-0 text-sm font-semibold text-left text-wrap line-clamp-2 wrap-break-word">
                   {details.address}
                 </span>
                 <Button
@@ -225,7 +232,28 @@ const AddressQRCode = ({
               </div>
             </>
           )}
-          <span className="text-sm font-semibold">Expires in: {timer}</span>
+          {typeof details !== "undefined" && ('bankName' in details) && (
+            <div className='grid space-y-2'>
+              <Badge variant="secondary" className="text-xs text-foreground-muted">{details.bankName}</Badge>
+              <div className="flex flex-row items-start justify-start max-w-[200px]">
+                <span className="flex-1 min-w-0 text-sm font-semibold text-left text-wrap line-clamp-2 wrap-break-word">
+                  {details.accountNumber}
+                </span>
+                <Button
+                  size="icon"
+                  variant="outline"
+                  className="w-6 h-6 shrink-0"
+                  onClick={() => handleCopy(details.accountNumber)}
+                >
+                  <Copy className="size-3" />
+                </Button>
+              </div>
+              <span className="flex-1 min-w-0 text-sm text-left text-wrap line-clamp-2 wrap-break-word">
+                {details.accountName}
+              </span>
+            </div>
+          )}
+          <span className="text-sm font-light mt-3">Expires in: {timer}</span>
         </div>
       </div>
       <Button variant="ghost" size="sm" className="w-full" onClick={onCancel}>
@@ -397,7 +425,7 @@ export function PaymentPage(props: IPaymentPageProps) {
     {
       step: 2,
       title: 'Make transfer',
-      description: `Send exactly ${amount.toFixed()} to generated address on chain`,
+      description: <b>Send exactly {currency.toUpperCase()}{(trxData?.amount || amount).toFixed()} to the {paymentMethod === "crypto"? 'address on chain' : 'account details'}</b>,
       content: (
         <AddressQRCode
           timer={timer}
