@@ -82,7 +82,14 @@ export const init: AppRouteHandler<InitTransactionRoute> = async ({ body, log, s
 
       const rate = await transactionService.getSwitchRate()
       const usdAmount = transactionService.convertToUSD(payment.amount, rate)
-      const bankDetails = await transactionService.getBankTransferDetails(usdAmount, payment.invoice.reference, keypair.address as Address, payment.id)
+
+      const bankDetails = await transactionService.getExistingBankDetails(payment.invoice.reference)
+        .catch(async (error) => {
+          log.error(error, {message: `failed to get existing bank details trying new set`})
+          return await transactionService.getBankTransferDetails(usdAmount, payment.invoice.reference, keypair.address as Address, payment.id)
+        });
+
+      log.set({bankDetails})
 
       const [newTransaction] = await db.insert(transactions)
         .values({
@@ -104,16 +111,16 @@ export const init: AppRouteHandler<InitTransactionRoute> = async ({ body, log, s
 
       transaction = newTransaction
 
-      await cache.transaction.set(`payment.method.${payment.method}.${transaction.metadata.accountNumber}`, payment.id, "10m");
+      await cache.transaction.set(`payment.method.${payment.method}.${newTransaction.metadata.accountNumber}`, payment.id, "10m");
 
       return status(200, {
         details: {
           bankName: bankDetails.deposit.bank_name,
-          accountName: bankDetails.deposit.account_number,
+          accountName: bankDetails.deposit.account_name,
           accountNumber: bankDetails.deposit.account_number
         },
         status: newTransaction.status as any,
-        amount: payment.invoice.amount,
+        amount: bankDetails?.source?.amount || payment.invoice.amount,
         method: payment.method,
         id: newTransaction.id
       })

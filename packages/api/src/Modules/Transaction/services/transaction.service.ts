@@ -71,6 +71,8 @@ class Transaction {
   }
 
   async addAddressToAlchemy(address: Address, chain: "bsc" | "base") {
+    console.log(`Alchemy token`, {token: env.ALCHEMY_API_KEY})
+
     const { data, error } = await betterFetch<{}>(`${env.ALCHEMY_API_URL}/api/update-webhook-addresses`, {
       method: "patch",
       headers: {
@@ -124,7 +126,7 @@ class Transaction {
         channel: 'BANK',
         currency: 'NGN',
         exact_output: true,
-        developer_fee: 0.2,
+        developer_fee: 0.8,
         developer_recipient: env.FEE_COLLECTION_ADDRESS
       }),
       headers: {
@@ -141,6 +143,42 @@ class Transaction {
     }
 
     return offrampInitResponse.data;
+  }
+
+  async getExistingBankDetails(reference: string) {
+    const { data: existingResponse, error } = await betterFetch<{
+      success: boolean;
+      message: string;
+      timestamp: string;
+      data: {
+        [key: string]: any;
+        deposit: {
+          bank_name: string
+          bank_code: string;
+          account_name: string;
+          account_number: string
+          note: Array<string>
+        }
+      }
+    }>(`${env.SWITCH_API_URL}/status`, {
+      method: "get",
+      query: {
+        reference,
+      },
+      headers: {
+        "x-service-key": env.SWITCH_API_KEY,
+        "content-type": "application/json"
+      },
+    });
+
+    if (error) {
+      console.error(`Failed to existing payment details request`, {
+        error
+      })
+      throw error;
+    }
+
+    return existingResponse.data;
   }
 
   async getSwitchRate() {

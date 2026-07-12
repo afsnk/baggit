@@ -13,7 +13,7 @@ export const transactions = sqliteTable("transactions", {
   id: text("id").primaryKey().$defaultFn(() => generateId('trx')),
   status: text("status", { enum: ["failed", "canceled", "expired", "pending", "complete"] }).default("pending"),
   network: text("network", { enum: ["base", "bsc", "solana", "stellar"] }).notNull().default("base"), // Base is still crypto
-  asset: text("asset", { enum: ["usdc", "usdt", "cngn"] }).notNull(),
+  asset: text("asset", { enum: ["usdc", "usdt", "cngn", "ngn", "usd", "gbp"] }).notNull(),
   paymentId: text("payment_id").references(() => payments.id, {onDelete: "no action"}),
   rampId: text("ramp_id").references(() => ramps.id, { onDelete: "no action" }),
   orgId: text("org_id").references(() => organization.id),

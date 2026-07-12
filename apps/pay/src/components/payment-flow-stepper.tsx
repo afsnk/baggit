@@ -8,7 +8,7 @@ import { cn } from '#/lib/utils.ts' // Assuming you have a utility for class nam
 export interface StepProps {
   step: number
   title: string
-  description: string
+  description: string | React.ReactNode
   content: React.ReactNode
 }
 
