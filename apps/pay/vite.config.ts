@@ -19,9 +19,13 @@ const config = defineConfig({
       outdir: './src/paraglide',
       strategy: ['url', 'baseLocale'],
     }),
+    cloudflare({
+      viteEnvironment: {
+        name: 'ssr'
+      }
+    }),
     tailwindcss(),
     tanstackStart(),
-    cloudflare({ viteEnvironment: { name: 'ssr' } }),
     viteReact(),
     babel({ presets: [reactCompilerPreset()] }),
   ],
