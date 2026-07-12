@@ -32,6 +32,9 @@ interface IPaymentPageProps {
   amount: number
   paymentId: string
   orgId: string
+  method: string | "bank-transfer" | "crypto"
+  exchangeRate: number | null
+  currency: string | null
 }
 
 // Helper components for the demo content
@@ -246,8 +249,8 @@ export function PaymentPage(props: IPaymentPageProps) {
 
   const [selectedChain, setSelectChain] = useState(chains[0].value)
   const [pickerOpen, setPickerOpen] = useState(false)
-  const [currency, setCurrency] = useState('ngn')
-  const [paymentMethod, setPaymentMethod] = useState<string>(paymentMethods[0].value)
+  const [currency, setCurrency] = useState(props.currency || 'ngn')
+  const [paymentMethod, setPaymentMethod] = useState<string>(props.method || paymentMethods[0].value)
   // const [confirm, setConfirm] = useState<boolean>(false)
   const amount = currency === 'ngn' ? props.amount : props.amount / 1400
 
@@ -259,18 +262,6 @@ export function PaymentPage(props: IPaymentPageProps) {
   } = useMutation(initTransaction())
 
   const payment = useMutation(updatePayment(props.paymentId))
-
-  useEffect(() => {
-    console.log(`Distribution`, { currency });
-    if (paymentMethod === "bank-transfer") {
-      payment.mutate({method: "bank-transfer", amount: props.amount, currency: "ngn"})
-      setCurrency("ngn")
-    }
-    if (paymentMethod === "crypto" && currency === "usdt" || currency === "usdc") {
-      payment.mutate({method: "crypto", amount: Number((props.amount / 1400).toFixed(2)), currency: currency})
-      setCurrency(currency)
-    }
-  }, [paymentMethod, currency])
 
   // Timer logic
   useEffect(() => {
@@ -309,7 +300,22 @@ export function PaymentPage(props: IPaymentPageProps) {
       content: (
         <div className="space-y-2 mt-1">
           <div className='w-full'>
-            <Select onValueChange={(value) => {
+            <Select
+              defaultValue={paymentMethod}
+              onValueChange={(value) => {
+              const computedAmount = Number(value === "crypto" ? (props.amount / (props.exchangeRate || 1400)).toFixed(2) : props.amount)
+              console.log(`Method value`, {value, computedAmount})
+              payment.mutate({
+                method: value,
+                amount: computedAmount,
+                currency: value === "crypto"? "usdt" : "ngn"
+              })
+
+              if (value === "crypto") {
+                setCurrency("usdt")
+              } else {
+                setCurrency("ngn")
+              }
               setPaymentMethod(value)
             }}>
               <SelectTrigger className="w-full">
@@ -343,7 +349,15 @@ export function PaymentPage(props: IPaymentPageProps) {
               {amount.toLocaleString('en-US', {maximumFractionDigits: 2, minimumFractionDigits: 2})}
             </p>)}
             <CurrencyToggle
-              onCurrencyChange={setCurrency}
+              onCurrencyChange={(newCurrency: string) => {
+                console.log(`Currency toggle`, {newCurrency})
+                payment.mutate({
+                  method: paymentMethod,
+                  amount: Number(paymentMethod === "crypto" ? (props.amount / 1400).toFixed(2) : props.amount),
+                  currency: newCurrency
+                })
+                setCurrency(newCurrency)
+              }}
               currency={currency}
               method={paymentMethod}
               // isLoadingMethod={payment.isPending}
