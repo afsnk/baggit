@@ -5,7 +5,11 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**"]
+      "outputs": [
+        ".output/**",
+        ".vercel/output/**",
+        "dist/**"
+      ]
     },
     "check-types": {
       "dependsOn": ["^check-types"]
@@ -13,6 +17,9 @@
     "dev": {
       "persistent": true,
       "cache": false
+    },
+    "deploy": {
+      "dependsOn": ["build"]
     }
   }
 }
