@@ -19,7 +19,7 @@ const config = defineConfig({
       outdir: './src/paraglide',
       strategy: ['url', 'baseLocale'],
     }),
-    nitro({ rollupConfig: { external: [/^@sentry\//] } }),
+    nitro({ rollupConfig: { external: [/^@sentry\//] }, preset: "vercel" }),
     // cloudflare({ viteEnvironment: { name: 'ssr' } }),
     tailwindcss(),
     tanstackStart(),
