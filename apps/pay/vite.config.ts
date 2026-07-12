@@ -7,11 +7,11 @@ import { tanstackStart } from '@tanstack/react-start/plugin/vite'
 import viteReact, { reactCompilerPreset } from '@vitejs/plugin-react'
 import babel from '@rolldown/plugin-babel'
 import tailwindcss from '@tailwindcss/vite'
-// import { cloudflare } from '@cloudflare/vite-plugin'
-import { nitro } from 'nitro/vite'
+import { cloudflare } from '@cloudflare/vite-plugin'
 
 const config = defineConfig({
   resolve: { tsconfigPaths: true },
+  logLevel: "error",
   plugins: [
     devtools(),
     paraglideVitePlugin({
@@ -21,8 +21,7 @@ const config = defineConfig({
     }),
     tailwindcss(),
     tanstackStart(),
-    nitro({ rollupConfig: { external: [/^@sentry\//] }, preset: "vercel" }),
-    // cloudflare({ viteEnvironment: { name: 'ssr' } }),
+    cloudflare({ viteEnvironment: { name: 'ssr' } }),
     viteReact(),
     babel({ presets: [reactCompilerPreset()] }),
   ],
