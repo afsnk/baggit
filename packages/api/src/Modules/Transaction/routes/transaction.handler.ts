@@ -105,13 +105,21 @@ export const init: AppRouteHandler<InitTransactionRoute> = async ({ body, log, s
           }
         }).onConflictDoUpdate({
           target: transactions.id,
-          set: {...body}
+          set: {
+            ...body,
+            metadata: {
+              accountName: bankDetails.deposit.account_name,
+              accountNumber: bankDetails.deposit.account_number,
+              bankName: bankDetails.deposit.bank_name,
+              bankCode: bankDetails.deposit.bank_code,
+            }
+          }
         }).returning();
       log.set({ transaction: { id: newTransaction.id, rampId: newTransaction.rampId, paymentId: newTransaction.paymentId } });
 
       transaction = newTransaction
 
-      await cache.transaction.set(`payment.method.${payment.method}.${newTransaction.metadata.accountNumber}`, payment.id, "10m");
+      await cache.transaction.set(`payment.method.${payment.method}.${bankDetails.deposit.account_number}`, payment.id, "10m");
 
       return status(200, {
         details: {
