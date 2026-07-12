@@ -22,13 +22,13 @@ interface MyRouterContext {
 }
 
 export const Route = createRootRouteWithContext<MyRouterContext>()({
-  beforeLoad: async () => {
-    // Other redirect strategies are possible; see
-    // https://github.com/TanStack/router/tree/main/examples/react/i18n-paraglide#offline-redirect
-    if (typeof document !== 'undefined') {
-      document.documentElement.setAttribute('lang', getLocale())
-    }
-  },
+  // beforeLoad: async () => {
+  //   // Other redirect strategies are possible; see
+  //   // https://github.com/TanStack/router/tree/main/examples/react/i18n-paraglide#offline-redirect
+  //   if (typeof document !== 'undefined') {
+  //     document.documentElement.setAttribute('lang', getLocale())
+  //   }
+  // },
 
   head: () => ({
     meta: [
