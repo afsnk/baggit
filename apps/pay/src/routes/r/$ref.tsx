@@ -31,7 +31,8 @@ export const Route = createFileRoute('/r/$ref')({
     try {
       const reference = props.params.ref
       const search = props.location.search as PaymentSearch
-      console.log(`props`, { reference, search })
+      console.log(`URL for request`, env.VITE_API_URL)
+      console.log(`props`, { reference, search, url: env.VITE_API_URL })
 
       const { data, error } = await fetch(`/v1/payment/:invoiceRef`, {
         method: 'GET',
