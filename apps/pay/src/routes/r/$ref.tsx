@@ -11,8 +11,10 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty"
-import { Cloud } from 'lucide-react'
+import { Cloud, Loader2 } from 'lucide-react'
 import { env } from '#/env'
+import { useQuery } from '@tanstack/react-query'
+import { Container, Main, Section } from '#/components/craft'
 
 const paymentSearchSchema = z.object({
   merchantName: z.string().optional().default('Ugamy'),
@@ -22,57 +24,72 @@ const paymentSearchSchema = z.object({
   mode: z.enum(['test', 'prod']).optional(),
 })
 
-type PaymentSearch = z.infer<typeof paymentSearchSchema>
+// type PaymentSearch = z.infer<typeof paymentSearchSchema>
 
 export const Route = createFileRoute('/r/$ref')({
   component: RouteComponent,
   validateSearch: paymentSearchSchema,
-  async loader(props) {
-    try {
-      const reference = props.params.ref
-      const search = props.location.search as PaymentSearch
-      console.log(`props`, { reference, search })
-
-      const { data, error } = await fetch(`/v1/payment/:invoiceRef`, {
-        method: 'GET',
-        params: {
-          invoiceRef: reference,
-        }
-      })
-
-      if (error) {
-        console.log(`Error fetching payment`, { error })
-        throw error
-      }
-
-      console.log(`Pay details`, { data })
-
-      return { ...data}
-    }
-    catch (error: any) {
-      console.log(`[checkout] Error getting payments`, { error })
-      if (error?.name === 'HTTPError') {
-        const res = error.response;
-        const body = await res.text().catch(() => '<no body>');
-        console.error('upstream failed', {
-          url: `${env.VITE_API_URL}/v1/payment/${props.params.ref}`,
-          status: res.status,
-          body,
-        });
-      }
-      return null;
-    }
-  },
 })
 
 function RouteComponent() {
   const { ref } = Route.useParams()
-  const data = Route.useLoaderData()
+  const search = Route.useSearch()
+  const { data, isLoading} = useQuery({
+    queryKey: ['getInvoice'],
+    queryFn: async () => {
+      try {
+        console.log(`URL for request`, env.VITE_API_URL)
+        console.log(`props`, { reference: ref, search, url: env.VITE_API_URL })
+
+        const { data: invoiceData, error } = await fetch(`/v1/payment/:invoiceRef`, {
+          method: 'GET',
+          params: {
+            invoiceRef: ref,
+          }
+        })
+
+        if (error) {
+          console.log(`Error fetching payment`, { error })
+          throw error
+        }
+
+        console.log(`Pay details`, { invoiceData })
+
+        return { ...invoiceData}
+      }
+      catch (error: any) {
+        console.log(`[checkout] Error getting payments`, { error })
+        if (error?.name === 'HTTPError') {
+          const res = error.response;
+          const body = await res.text().catch(() => '<no body>');
+          console.error('upstream failed', {
+            url: `${env.VITE_API_URL}/v1/payment/${ref}`,
+            status: res.status,
+            body,
+          });
+        }
+        return null;
+      }
+    }
+  })
 
   const { merchantCallbackUrl, merchantName } = Route.useSearch()
   console.log(`Payment Reference`, { ref, merchantCallbackUrl, merchantName })
 
-  if (!data) {
+  if (!data && isLoading) {
+    return (
+      <Main>
+        <Section>
+          <Container className='flex items-center justify-center gap-2'>
+            <Loader2 className='animate-spin' />
+            <span>Loading invoice details</span>
+          </Container>
+        </Section>
+      </Main>
+    )
+  }
+
+  if (!data && !isLoading) {
     return (
       <Empty className="border border-dashed">
         <EmptyHeader>
@@ -95,11 +112,14 @@ function RouteComponent() {
 
   return (
     <PaymentPage
-      merchantCallbackUrl={data.payments[0].callbackUrl || merchantCallbackUrl}
-      merchantName={data.metadata.merchantName || merchantName}
-      amount={data.amount}
-      paymentId={data.payments[0].id}
-      orgId={data.orgId}
+      merchantCallbackUrl={data?.payments[0].callbackUrl || merchantCallbackUrl}
+      merchantName={data?.metadata.merchantName || merchantName}
+      amount={data!.amount}
+      paymentId={data!.payments[0].id}
+      orgId={data!.orgId}
+      method={data!.payments[0].method}
+      exchangeRate={data!.payments[0].rate}
+      currency={data!.payments[0].currency}
     />
   )
 }

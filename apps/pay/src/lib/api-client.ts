@@ -1,7 +1,9 @@
 import { env } from '#/env'
 import type { APIApp } from '@baggit/api/app'
 import { edenFetch } from '@elysia/eden'
-import { mutationOptions } from '@tanstack/react-query'
+import { mutationOptions, QueryClient } from '@tanstack/react-query'
+
+const queryClient = new QueryClient()
 
 // jwtClient.ts  (browser)
 // let cached: { token: string; expMs: number } | null = null;
@@ -50,7 +52,7 @@ import { mutationOptions } from '@tanstack/react-query'
 // }
 
 
-export const fetch = edenFetch<APIApp>(env.SERVER_URL || env.VITE_API_URL)
+export const fetch = edenFetch<APIApp>(env.VITE_API_URL)
 
 export const initTransaction = () =>
   mutationOptions({
@@ -90,6 +92,9 @@ export const updatePayment = (paymentId: string) => mutationOptions({
     }
 
     return data
+  },
+  onSuccess: () => {
+    queryClient.invalidateQueries({queryKey: ['getInvoice']})
   }
 })
 
