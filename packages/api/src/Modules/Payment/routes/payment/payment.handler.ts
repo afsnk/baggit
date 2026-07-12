@@ -45,13 +45,14 @@ export const getPayment: AppRouteHandler<GetPaymentRoute> = async ({params, stat
         payments: true
       }
     }).catch(error => {
-      console.log(`Failed to get invoice`, error)
+      log.error(error)
       throw error
     })
 
     if (!invoice) {
+      log.set({error: "Not found"})
       return status(404, {
-        message: "Invoicenot found",
+        message: "Invoice not found",
         code: "NOT_FOUND"
       })
     }
