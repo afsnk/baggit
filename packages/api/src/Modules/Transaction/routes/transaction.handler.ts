@@ -58,18 +58,25 @@ export const init: AppRouteHandler<InitTransactionRoute> = async ({ body, log, s
           } as any
         }).onConflictDoUpdate({
           target: transactions.id,
-          set: {...body}
+          set: {
+            ...body,
+            metadata: {
+              address: keypair.address,
+              pk: keypair.pk,
+              fromBlock: keypair.fromBlock
+              } as any
+            }
         }).returning()
 
       log.set({ transaction: { id: newTransaction.id, rampId: newTransaction.rampId, paymentId: newTransaction.paymentId } });
       transaction = newTransaction;
 
-      await cache.transaction.set(`payment.method.${payment.method}.${transaction.metadata.address}`, payment.id, "10m");
+      await cache.transaction.set(`payment.method.${payment.method}.${keypair.address}`, payment.id, "10m");
       await transactionService.addAddressToAlchemy( keypair.address as Address, body.network as "bsc" | "base")
 
       return status(200, {
         details: {
-          address: transaction.metadata.address!,
+          address: keypair.address,
         },
         status: transaction.status as any,
         amount: payment.invoice.amount,
