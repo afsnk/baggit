@@ -4,30 +4,22 @@ import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { Button } from './ui/button'
 
-import { BanknoteArrowUp, ChevronLeftIcon, Copy, Loader2 } from 'lucide-react'
+import { ChevronLeftIcon } from 'lucide-react'
 import { PaymentFlowStepper } from './payment-flow-stepper'
 import type { StepProps } from './payment-flow-stepper'
-import QRCode from 'react-qr-code'
+
 import { ReferralCTACard } from './referral-cta'
 import { ReceiptSheet } from './ReceiptSheet'
-import { ChainPicker } from './NetworkPicker'
-import type { Chain } from './NetworkPicker'
-import { ToggleGroup, ToggleGroupItem } from './ui/toggle-group'
+
 import { Skeleton } from './ui/skeleton'
 import { useMutation} from '@tanstack/react-query'
-import { initTransaction, updatePayment } from '#/lib/api-client'
+import { initTransaction } from '#/lib/api-client'
 import { Avatar, AvatarFallback, AvatarImage } from '#/components/ui/avatar'
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import { Badge } from '#/components/ui/badge'
+
 import { useNatsKVWatcher } from './nats/use-kv-watcher'
 import { toast } from 'sonner'
+import PaymentDetails from './PaymentDetails'
+import PaymentMethodPicker from './PaymentMethod'
 
 interface IPaymentPageProps {
   merchantCallbackUrl: string
@@ -39,88 +31,6 @@ interface IPaymentPageProps {
   exchangeRate: number | null
   currency: string | null
 }
-
-// Helper components for the demo content
-const CurrencyToggle = ({
-  onCurrencyChange,
-  currency,
-  method,
-}: {
-  onCurrencyChange: (currency: string) => void
-  currency: string
-  method: string
-  }) => (
-
-    <ToggleGroup
-      // className="flex items-center text-sm border rounded-md p-1 bg-muted"
-      variant="default"
-      type="single"
-      size="sm"
-      defaultValue={currency}
-      value={currency}
-      onValueChange={async (value: string) => {
-        if (!value) {
-          onCurrencyChange(currency)
-        } else {
-          onCurrencyChange(value)
-        }
-      }}
-    >
-      {
-        method === "bank-transfer" && (
-          <>
-            <ToggleGroupItem value="ngn">NGN</ToggleGroupItem>
-            <ToggleGroupItem value="ngn" disabled>USD</ToggleGroupItem>
-          </>
-        )
-      }
-      {
-        method === "crypto" && (
-          <>
-            <ToggleGroupItem value="usdt">USDT</ToggleGroupItem>
-            <ToggleGroupItem value="usdc">USDC</ToggleGroupItem>
-          </>
-        )
-      }
-
-    </ToggleGroup>
-)
-
-const PriceDetail = ({ label, value }: { label: string; value: string }) => (
-  <div className="flex justify-between items-center text-sm">
-    <p className="text-muted-foreground">{label}</p>
-    <p className="font-medium text-foreground">{value}</p>
-  </div>
-)
-
-const chains: Chain[] = [
-  {
-    chainId: `bsc`,
-    logoUrl: 'https://www.bnbchain.org/favicon.ico',
-    description: 'Binance Smart Chain for the Binance Exchange',
-    name: 'Binace Smart Chain',
-    value: 'bsc',
-    explorerUrl: 'https://bscscan.com',
-    labels: {
-      symbol: 'BSC',
-      fees: 'Low Fees',
-      // compatible: 'EVM Compatible',
-    },
-  },
-  {
-    chainId: `base`,
-    logoUrl: 'https://www.base.org/favicon.ico',
-    description: 'Base, ETH Layer 2 chain',
-    name: 'Base Blockchain',
-    value: 'base',
-    explorerUrl: 'https://basescan.org',
-    labels: {
-      symbol: 'BASE',
-      fees: 'Ultra Low Fees',
-      // compatible: 'EVM compatible',
-    },
-  },
-]
 
 // TODO: Update props with total count
 const CircularTimer = ({ timeLeft }: { timeLeft: number }) => {
@@ -164,134 +74,25 @@ const CircularTimer = ({ timeLeft }: { timeLeft: number }) => {
   )
 }
 
-const AddressQRCode = ({
-  timer,
-  onCancel,
-  // onComplete,
-  details,
-  chain,
-}: {
-    timer: number | string;
-    chain: string;
-  details: {
-    address: string
-  } | {
-    bankName: string;
-    accountNumber: string;
-    accountName: string;
-  } | undefined
-  onCancel: () => void
-  // onComplete: () => void
-}) => {
-  // const address = '0x'.padEnd(32, '0')
-  const handleCopy = (text: string) => {
-    navigator.clipboard.writeText(text)
-  }
-  return (
-    <div className="flex flex-col items-center justify-center rounded-lg space-y-3">
-      <div className="flex flex-row gap-2 w-full">
-        <div className="flex flex-col items-center justify-center">
-          {typeof details !== "undefined" && 'address' in details && (
-            <div className="flex w-14 lg:w-28 aspect-square border border-border p-1 rounded-sm">
-              <QRCode
-                size={256}
-                style={{
-                  height: 'auto',
-                  maxWidth: '100%',
-                  width: '100%',
-                  borderRadius: 4,
-                }}
-                viewBox="0 0 256 256"
-                value={details.address}
-              />
-            </div>
-          )}
-
-          {typeof details !== "undefined" && ('bankName' in details || 'accountNumber' in details || 'accountName' in details)  && (
-            <div className="flex w-8 lg:w-14 aspect-square items-center justify-center border border-border p-1 rounded-sm">
-              <BanknoteArrowUp className='size-4' />
-            </div>
-          )}
-        </div>
-        <div className="flex flex-col">
-          {typeof details !== "undefined" && 'address' in details && (
-            <>
-              <span className="text-xs text-foreground-muted">
-                {chain.toUpperCase()} {chain === "bsc"? '(BEP-20)' : '(ERC-20)'} address
-              </span>
-              <div className="flex flex-row items-start justify-start max-w-50">
-                <span className="flex-1 min-w-0 text-sm font-semibold text-left text-wrap line-clamp-2 wrap-break-word">
-                  {details.address}
-                </span>
-                <Button
-                  size="icon"
-                  variant="outline"
-                  className="w-6 h-6 shrink-0"
-                  onClick={() => handleCopy(details.address)}
-                >
-                  <Copy className="size-3" />
-                </Button>
-              </div>
-            </>
-          )}
-          {typeof details !== "undefined" && ('bankName' in details) && (
-            <div className='grid space-y-2'>
-              <Badge variant="secondary" className="text-xs text-foreground-muted">{details.bankName}</Badge>
-              <div className="flex flex-row items-start justify-start max-w-50">
-                <span className="flex-1 min-w-0 text-sm font-semibold text-left text-wrap line-clamp-2 wrap-break-word">
-                  {details.accountNumber}
-                </span>
-                <Button
-                  size="icon"
-                  variant="outline"
-                  className="w-6 h-6 shrink-0"
-                  onClick={() => handleCopy(details.accountNumber)}
-                >
-                  <Copy className="size-3" />
-                </Button>
-              </div>
-              <span className="flex-1 min-w-0 text-sm text-left text-wrap line-clamp-2 wrap-break-word">
-                {details.accountName}
-              </span>
-            </div>
-          )}
-          <span className="text-sm font-light mt-3">Expires in: {timer}</span>
-        </div>
-      </div>
-      <Button variant="ghost" size="sm" className="w-full" onClick={onCancel}>
-        Cancel
-      </Button>
-    </div>
-  )
-}
-
-const paymentMethods = [
-  {value: "bank-transfer", label: "Bank Transfer", enabled: true},
-  {value: "crypto", label: "Crypto", enabled: true},
-  {value: "ussd", label: "USSD", enabled: false},
-  {value: "applepay", label: "Apple pay", enabled: false},
-  {value: "googlepay", label: "Google pay", enabled: false}
-]
 
 export function PaymentPage(props: IPaymentPageProps) {
   const [currentStep, setCurrentStep] = useState(0)
   const [timer, setTimer] = useState(90)
 
-  const [selectedChain, setSelectChain] = useState(chains[0].value)
-  const [pickerOpen, setPickerOpen] = useState(false)
+  const [selectedChain, setSelectChain] = useState('bsc')
   const [currency, setCurrency] = useState(props.currency || 'ngn')
-  const [paymentMethod, setPaymentMethod] = useState<string>(props.method || paymentMethods[0].value)
+  const [paymentMethod, setPaymentMethod] = useState<string>(props.method)
   // const [confirm, setConfirm] = useState<boolean>(false)
   const amount = currency === 'ngn' ? props.amount : props.amount / 1400
 
   // Mutation/Query
   const {
     mutateAsync,
-    isPending,
+    isPending: isInitTransactionLoading,
     data: trxData,
   } = useMutation(initTransaction())
 
-  const payment = useMutation(updatePayment(props.paymentId))
+
 
   // Timer logic
   useEffect(() => {
@@ -341,100 +142,19 @@ export function PaymentPage(props: IPaymentPageProps) {
       title: 'Pick a payment method',
       description: 'Click continue to generate payment details',
       content: (
-        <div className="space-y-2 mt-1">
-          <div className='w-full'>
-            <Select
-              defaultValue={paymentMethod}
-              onValueChange={(value) => {
-              const computedAmount = Number(value === "crypto" ? (props.amount / (props.exchangeRate || 1400)).toFixed(2) : props.amount)
-              console.log(`Method value`, {value, computedAmount})
-              payment.mutate({
-                method: value,
-                amount: computedAmount,
-                currency: value === "crypto"? "usdt" : "ngn"
-              })
-
-              if (value === "crypto") {
-                setCurrency("usdt")
-              } else {
-                setCurrency("ngn")
-              }
-              setPaymentMethod(value)
-            }}>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Pick payment method" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  {paymentMethods.map(({value, label, enabled}) => (
-                    <SelectItem key={value} value={value} className='capitalize' isLoading={payment.isPending} disabled={!enabled}>
-                      {label}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="flex justify-between items-center p-1 border rounded-lg">
-            {payment.isPending? <Loader2 className='size-4 animate-spin' /> : (<p className="font-mono font-medium flex items-center gap-1">
-              <Avatar className="size-4 rounded-md object-contain">
-                <AvatarImage
-                  src={
-                    currency === 'usdc'
-                      ? `/assets/usdc.png`
-                      : currency === 'usdt'
-                        ? `/assets/usdt.svg`
-                        : undefined
-                  }
-                />
-                <AvatarFallback>{'₦'}</AvatarFallback>
-              </Avatar>
-              {amount.toLocaleString('en-US', {maximumFractionDigits: 2, minimumFractionDigits: 2})}
-            </p>)}
-            <CurrencyToggle
-              onCurrencyChange={(newCurrency: string) => {
-                console.log(`Currency toggle`, {newCurrency})
-                payment.mutate({
-                  method: paymentMethod,
-                  amount: Number(paymentMethod === "crypto" ? (props.amount / 1400).toFixed(2) : props.amount),
-                  currency: newCurrency
-                })
-                setCurrency(newCurrency)
-              }}
-              currency={currency}
-              method={paymentMethod}
-              // isLoadingMethod={payment.isPending}
-            />
-          </div>
-          {!(currency === 'ngn') && (
-            <ChainPicker
-              chains={chains}
-              value={selectedChain}
-              onValueChange={(value) => {
-                setSelectChain(value)
-                // Keep dropdown open after selection
-                setPickerOpen(true)
-              }}
-              open={pickerOpen}
-              onOpenChange={setPickerOpen}
-              placeholder="Select a chain..."
-            />
-          )}
-          <div className="space-y-2 text-sm">
-            <PriceDetail
-              label="Total due"
-              value={`${amount.toLocaleString('en-US', {maximumFractionDigits: 2, minimumFractionDigits: 2})} ${currency.toUpperCase()}`}
-            />
-          </div>
-          <Button
-            className="w-full"
-            onClick={handleCommit}
-            disabled={!currency || isPending}
-          >
-            {isPending && <Loader2 className="animate-spin" />}
-            {!isPending && 'Continue'}
-          </Button>
-        </div>
+        <PaymentMethodPicker
+          handleCommit={handleCommit}
+          paymentId={props.paymentId}
+          isInitTransactionLoading={isInitTransactionLoading}
+          paymentMethod={paymentMethod}
+          setPaymentMethod={setPaymentMethod}
+          currency={currency}
+          setCurrency={setCurrency}
+          amount={amount}
+          exchangeRate={props.exchangeRate}
+          selectedChain={selectedChain}
+          setSelectChain={setSelectChain}
+        />
       ),
     },
     {
@@ -442,7 +162,7 @@ export function PaymentPage(props: IPaymentPageProps) {
       title: 'Make transfer',
       description: <b>Send exactly {currency.toUpperCase()}{(trxData?.amount || amount).toFixed()} to the {paymentMethod === "crypto"? 'address on chain' : 'account details'}</b>,
       content: (
-        <AddressQRCode
+        <PaymentDetails
           timer={timer}
           onCancel={resetFlow}
           // onComplete={() => {
