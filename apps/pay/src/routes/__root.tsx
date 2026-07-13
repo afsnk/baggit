@@ -16,6 +16,7 @@ import { getLocale } from '#/paraglide/runtime'
 import appCss from '../styles.css?url'
 
 import type { QueryClient } from '@tanstack/react-query'
+import { Toaster } from '#/components/ui/sonner'
 
 interface MyRouterContext {
   queryClient: QueryClient
@@ -61,22 +62,23 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         {/*<PostHogProvider>*/}
-          <Web3Provider>
-            {children}
-            <TanStackDevtools
-              config={{
-                position: 'bottom-right',
-                hideUntilHover: true,
-              }}
-              plugins={[
-                {
-                  name: 'Tanstack Router',
-                  render: <TanStackRouterDevtoolsPanel />,
-                },
-                TanStackQueryDevtools,
-              ]}
-            />
-          </Web3Provider>
+        <Web3Provider>
+          {children}
+          <TanStackDevtools
+            config={{
+              position: 'bottom-right',
+              hideUntilHover: true,
+            }}
+            plugins={[
+              {
+                name: 'Tanstack Router',
+                render: <TanStackRouterDevtoolsPanel />,
+              },
+              TanStackQueryDevtools,
+            ]}
+          />
+        </Web3Provider>
+        <Toaster />
         {/*</PostHogProvider>*/}
         <Scripts />
       </body>

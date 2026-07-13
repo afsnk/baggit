@@ -52,28 +52,27 @@ export const confirmTransactionSchema = {
       message: z.string()
     })
   },
-  body: z.any(),
-    // object({
-    // webhookId: z.string(),
-    // id: z.string(),
-    // createdAt: z.string(),
-    // type: z.string(),
-    // event: z.object({
-    //   network: z.string(),
-    //   activity: z.array(z.object({
-    //     fromAddress: z.string(),
-    //     toAddress: z.string(),
-    //     blockNum: z.string(),
-    //     hash: z.string(),
-    //     value: z.number(),
-    //     asset: z.string(),
-    //     category: z.string(),
-    //     rawContract: z.any(),
-    //     log: z.any(),
-    //     blockTimestamp: z.string()
-    //   }))
-    // })
-  // }),
+  body: z.object({
+    webhookId: z.string(),
+    id: z.string(),
+    createdAt: z.string(),
+    type: z.string(),
+    event: z.object({
+      network: z.string(),
+      activity: z.array(z.object({
+        fromAddress: z.string(),
+        toAddress: z.string(),
+        blockNum: z.string(),
+        hash: z.string(),
+        value: z.number(),
+        asset: z.string(),
+        category: z.string(),
+        rawContract: z.any(),
+        log: z.any(),
+        blockTimestamp: z.string()
+      }))
+    })
+  }),
   params: z.object({
     network: z.string()
   }),
@@ -100,7 +99,40 @@ export const switchSchema = {
   params: z.object({
     paymentId: z.string()
   }),
-  body: z.any(),
+  body: z.object({
+    status: z.string(),
+    type: z.string(),
+    reference: z.string(),
+    beneficiary: z.string(),
+    rate: z.number(),
+    developer_fee: z.object({
+      amount: z.number(),
+      amount_usd: z.number(),
+      currency: z.string(),
+      network: z.string(),
+    }),
+    source: z.object({
+      amount: z.number(),
+      amount_usd: z.number(),
+      currency: z.string(),
+      network: z.string(),
+    }),
+    destination: z.object({
+      amount: z.number(),
+      amount_usd: z.number(),
+      currency: z.string(),
+      network: z.string(),
+    }),
+    deposit: z.object({
+      amount: z.number(),
+      address: z.string(),
+      asset: z.string(),
+      note: z.array(z.string())
+    }),
+    meta: z.any(),
+    created_at: z.string(),
+    updated_at: z.string(),
+  }),
   detail: {
     tags: ['Transaction'],
     summary: "Transaction API routes",

@@ -26,6 +26,8 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Badge } from '#/components/ui/badge'
+import { useNatsKVWatcher } from './nats/use-kv-watcher'
+import { toast } from 'sonner'
 
 interface IPaymentPageProps {
   merchantCallbackUrl: string
@@ -320,6 +322,19 @@ export function PaymentPage(props: IPaymentPageProps) {
     setTimer(90)
   }
 
+  const { status, value: transactionValue, key } = useNatsKVWatcher(`transaction.tracker.${props.paymentId}`)
+  console.log(`Watched values`, { status, transactionValue, key })
+
+  useEffect(() => {
+    if (transactionValue && import.meta.env.DEV) {
+      toast.success(`Transaction complete event received success`)
+    }
+
+    if (transactionValue === "processing") {
+      setCurrentStep(2)
+    }
+  }, [transactionValue])
+
   const steps: StepProps[] = [
     {
       step: 1,
@@ -444,7 +459,7 @@ export function PaymentPage(props: IPaymentPageProps) {
       description: 'Confirming your transaction',
       content: (
         <div className="flex flex-col space-y-2">
-          {true && (
+          {transactionValue === "processing" && (
             <>
               <h4 className="font-semibold text-xs text-center">
                 Making sure the stars align
@@ -452,7 +467,7 @@ export function PaymentPage(props: IPaymentPageProps) {
               <Skeleton className="h-28" />
             </>
           )}
-          {false && (
+          {transactionValue === "complete" && (
             <>
               <ReferralCTACard
                 title="Earnings on Subscriptions"
