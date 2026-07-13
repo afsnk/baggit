@@ -85,7 +85,7 @@ export const init: AppRouteHandler<InitTransactionRoute> = async ({ body, log, s
       })
     } else if (payment.method === "bank-transfer") {
       const chain = getChain(body.network)
-      const keypair = await generateAccount(chain, payment.id)
+      const keypair = await generateAccount(chain, payment.id, trxQuery?.metadata.pk, trxQuery?.metadata.receiveAddress)
 
       const rate = await transactionService.getSwitchRate()
       const usdAmount = transactionService.convertToUSD(payment.amount, rate)
@@ -119,7 +119,8 @@ export const init: AppRouteHandler<InitTransactionRoute> = async ({ body, log, s
             bankName: bankDetails.deposit.bank_name,
             bankCode: bankDetails.deposit.bank_code,
             receiveAddress: keypair.address,
-          }
+            pk: keypair.pk,
+          } as any
         }).onConflictDoUpdate({
           target: transactions.id,
           set: {
@@ -130,7 +131,8 @@ export const init: AppRouteHandler<InitTransactionRoute> = async ({ body, log, s
               bankName: bankDetails.deposit.bank_name,
               bankCode: bankDetails.deposit.bank_code,
               receiveAddress: keypair.address,
-            }
+              pk: keypair.pk,
+            } as any
           }
         }).returning();
       log.set({ transaction: { id: newTransaction.id, rampId: newTransaction.rampId, paymentId: newTransaction.paymentId } });
@@ -329,6 +331,7 @@ export const confirm: AppRouteHandler<ConfirmTransactionRoute> = async ({ log, s
           status: "complete",
           metadata: {
             collectionHash: body.event.activity?.[0].hash as Hex,
+            ...transaction.metadata
           }
         })
         .where(eq(transactions.paymentId, payment.id!))
