@@ -35,7 +35,7 @@ export const invoice = sqliteTable("invoice", {
 export const payments = sqliteTable("payments", {
   id: text("id").primaryKey().$defaultFn(() => generateId('pay')),
   currency: text("currency", { enum: ["ngn", "usd", "gbp", "cngn", "usdt", "usdc"] }).notNull(), // Lock in a currency
-  method: text("method", {enum: ['bank-transfer', 'ussd', 'crypto', 'applepay', 'googlepay']}).default("crypto").notNull(), // Lock in a method — when method is bank transfer on-ramp is triggered
+  method: text("method", {enum: ['bank-transfer', 'ussd', 'crypto', 'applepay', 'googlepay']}).default("bank-transfer").notNull(), // Lock in a method — when method is bank transfer on-ramp is triggered
   callbackUrl: text("callback_url").notNull(),
   amount: real("amount").notNull().default(0),
   rate: real("currency_rate").default(1395),
