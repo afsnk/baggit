@@ -34,6 +34,7 @@ export const createCheckoutOrder: AppRouteHandler<CreateCheckoutOrderRoute, 'api
     const [defaultPayment] = await db.insert(payments)
       .values({
         currency: body.currency.toLowerCase(),
+        method: "bank-transfer",
         callbackUrl: body.callbackUrl || body.redirectUrl,
         orgId: organization.id,
         invoiceId: newInvoice.id,

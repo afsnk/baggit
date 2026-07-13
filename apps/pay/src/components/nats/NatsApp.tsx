@@ -1,5 +1,5 @@
-import { Suspense } from "react";
-import Nats from "@/components/nats/Nats";
+// import { Suspense } from "react";
+// import Nats from "@/components/nats/Nats";
 import { ErrorBoundary } from "@/components/nats/ErrorBoundary";
 import { natsConn } from "@/lib/nats";
 
@@ -18,9 +18,10 @@ export default function NatsApp() {
         </div>
       )}
     >
-      <Suspense fallback={<h3>Connecting to NATS...</h3>}>
-        <Nats />
-      </Suspense>
+      <div></div>
+      {/*<Suspense fallback={<h3>Connecting to NATS...</h3>}>*/}
+        {/*<Nats />*/}
+      {/*</Suspense>*/}
     </ErrorBoundary>
   );
 }
