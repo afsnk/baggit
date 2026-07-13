@@ -218,7 +218,7 @@ export const switchWebhook: AppRouteHandler<SwitchWebhookRoute> = async ({ log, 
 
     if (body.status === "COMPLETED") {
       // TODO: validate amount sent
-      const isValidAmount = transactionService.validateAmountPaid(payment, body.source.amount);
+      const isValidAmount = transactionService.validateAmountPaid(payment, (body.source?.amount || 0));
       if (isValidAmount) {
         const [updatedTransaction] = await db.update(transactions)
           .set({
@@ -272,7 +272,7 @@ export const confirm: AppRouteHandler<ConfirmTransactionRoute> = async ({ log, s
   try {
     log.set({ params, body })
 
-    const paymentId = await cache.transaction.get(`payment.method.crypto.${body.event.activity[0].toAddress.toLowerCase()}`) as string
+    const paymentId = await cache.transaction.get(`payment.method.crypto.${body.event.activity![0].toAddress.toLowerCase()}`) as string
     await cache.transaction.set(`transaction.tracker.${paymentId}`, 'processing', '5m')
 
     log.set({paymentId})
@@ -318,7 +318,7 @@ export const confirm: AppRouteHandler<ConfirmTransactionRoute> = async ({ log, s
       });
     }
 
-    const amountSent = body.event.activity[0].value;
+    const amountSent = body.event.activity?.[0].value || 0;
     const isValidPayment = transactionService.validateAmountPaid(payment, amountSent)
     if (!isValidPayment) {
       console.log("Amount sent", { amountConvertCeil: Math.ceil(amountSent * payment.rate!), amountConvertRound: Math.round(amountSent * payment.rate!) });
@@ -328,7 +328,7 @@ export const confirm: AppRouteHandler<ConfirmTransactionRoute> = async ({ log, s
         .set({
           status: "complete",
           metadata: {
-            collectionHash: body.event.activity[0].hash as Hex,
+            collectionHash: body.event.activity?.[0].hash as Hex,
           }
         })
         .where(eq(transactions.paymentId, payment.id!))
@@ -337,15 +337,15 @@ export const confirm: AppRouteHandler<ConfirmTransactionRoute> = async ({ log, s
 
       Webhook.trigger(payment.callbackUrl, payment.invoice.reference, {
         reference: payment.invoice.reference,
-        hash: body.event.activity[0].hash,
-        from: body.event.activity[0].fromAddress,
-        to: body.event.activity[0].toAddress,
-        amountSent: body.event.activity[0].value,
+        hash: body.event.activity?.[0].hash,
+        from: body.event.activity?.[0].fromAddress,
+        to: body.event.activity?.[0].toAddress,
+        amountSent: body.event.activity?.[0].value,
         fee: {
           percent: 5,
           payoutAmount: amountSent - (amountSent * 0.05),
         },
-        asset: body.event.activity[0].asset,
+        asset: body.event.activity?.[0].asset,
         network: "bsc",
         status: "completed",
       })
