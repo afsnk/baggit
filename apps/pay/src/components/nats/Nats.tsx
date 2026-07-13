@@ -27,8 +27,8 @@ function Msgs({ msgs }: { msgs: MsgEvent[] }) {
 export default function Nats() {
   const nc = use(natsConn());
   const [status, setStatus] = useState(`connected to ${nc.getServer()}`);
-  const [messages, setMessages] = useState<MsgEvent[]>([]);
-  const [err, setErr] = useState<Error | null>(null);
+  const [messages, _setMessages] = useState<MsgEvent[]>([]);
+  const [err, _setErr] = useState<Error | null>(null);
   const [inbox] = useState(() => {
     const i = createInbox("hello");
     return i.slice(0, i.length - 1);
@@ -36,7 +36,7 @@ export default function Nats() {
 
   useEffect(() => {
     let stopped = false;
-    let id = 0;
+    // let id = 0;
     const statusIter = nc.status() as QueuedIterator<Status>;
 
     nc.closed().then(() => {
@@ -51,25 +51,25 @@ export default function Nats() {
           setStatus(`connected to ${nc.getServer()}`);
         }
       }
-    })().catch((err) => {
+    })().catch((err: any) => {
       console.error("status:", err);
     });
 
-    const sub = nc.subscribe(inbox, {
-      callback: (e, msg) => {
-        if (e) {
-          setErr(e);
-          return;
-        }
-        const next = { id: ++id, msg };
-        setMessages((prev) => [...prev, next].slice(-5));
-      },
-    });
+    // const sub = nc.subscribe(inbox, {
+    //   callback: (e, msg) => {
+    //     if (e) {
+    //       setErr(e);
+    //       return;
+    //     }
+    //     const next = { id: ++id, msg };
+    //     setMessages((prev) => [...prev, next].slice(-5));
+    //   },
+    // });
 
     return () => {
       stopped = true;
       statusIter.stop();
-      sub.unsubscribe();
+      // sub.unsubscribe();
     };
   }, [nc, inbox]);
 
