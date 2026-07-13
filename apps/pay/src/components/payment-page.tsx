@@ -217,7 +217,7 @@ const AddressQRCode = ({
               <span className="text-xs text-foreground-muted">
                 {chain.toUpperCase()} {chain === "bsc"? '(BEP-20)' : '(ERC-20)'} address
               </span>
-              <div className="flex flex-row items-start justify-start max-w-[200px]">
+              <div className="flex flex-row items-start justify-start max-w-50">
                 <span className="flex-1 min-w-0 text-sm font-semibold text-left text-wrap line-clamp-2 wrap-break-word">
                   {details.address}
                 </span>
@@ -235,7 +235,7 @@ const AddressQRCode = ({
           {typeof details !== "undefined" && ('bankName' in details) && (
             <div className='grid space-y-2'>
               <Badge variant="secondary" className="text-xs text-foreground-muted">{details.bankName}</Badge>
-              <div className="flex flex-row items-start justify-start max-w-[200px]">
+              <div className="flex flex-row items-start justify-start max-w-50">
                 <span className="flex-1 min-w-0 text-sm font-semibold text-left text-wrap line-clamp-2 wrap-break-word">
                   {details.accountNumber}
                 </span>
@@ -267,7 +267,7 @@ const paymentMethods = [
   {value: "bank-transfer", label: "Bank Transfer", enabled: true},
   {value: "crypto", label: "Crypto", enabled: true},
   {value: "ussd", label: "USSD", enabled: false},
-  { value: "applepay", label: "Apple pay", enabled: false },
+  {value: "applepay", label: "Apple pay", enabled: false},
   {value: "googlepay", label: "Google pay", enabled: false}
 ]
 
@@ -483,7 +483,7 @@ export function PaymentPage(props: IPaymentPageProps) {
   return (
     <main className="w-full min-w-screen overflow-hidden lg:h-screen lg:overflow-hidden lg:grid lg:grid-cols-2">
       <div className="bg-muted/60 relative hidden h-full flex-col border-r p-10 lg:flex">
-        <div className="from-background absolute inset-0 z-10 bg-gradient-to-t to-transparent" />
+        <div className="from-background absolute inset-0 z-10 bg-linear-to-t to-transparent" />
         <div className="z-10 mt-auto">
           <blockquote className="space-y-2">
             <p className="text-xl">

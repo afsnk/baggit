@@ -71,7 +71,7 @@ export const init: AppRouteHandler<InitTransactionRoute> = async ({ body, log, s
       log.set({ transaction: { id: newTransaction.id, rampId: newTransaction.rampId, paymentId: newTransaction.paymentId } });
       transaction = newTransaction;
 
-      await cache.transaction.set(`payment.method.${payment.method}.${keypair.address}`, payment.id, "10m");
+      await cache.transaction.set(`payment.method.${payment.method}.${keypair.address.toLowerCase()}`, payment.id, "10m");
       await transactionService.addAddressToAlchemy( keypair.address as Address, body.network as "bsc" | "base")
 
       return status(200, {
@@ -109,6 +109,7 @@ export const init: AppRouteHandler<InitTransactionRoute> = async ({ body, log, s
             accountNumber: bankDetails.deposit.account_number,
             bankName: bankDetails.deposit.bank_name,
             bankCode: bankDetails.deposit.bank_code,
+            receiveAddress: keypair.address,
           }
         }).onConflictDoUpdate({
           target: transactions.id,
@@ -119,6 +120,7 @@ export const init: AppRouteHandler<InitTransactionRoute> = async ({ body, log, s
               accountNumber: bankDetails.deposit.account_number,
               bankName: bankDetails.deposit.bank_name,
               bankCode: bankDetails.deposit.bank_code,
+              receiveAddress: keypair.address,
             }
           }
         }).returning();
@@ -161,70 +163,80 @@ export const init: AppRouteHandler<InitTransactionRoute> = async ({ body, log, s
 
 export const switchWebhook: AppRouteHandler<SwitchWebhookRoute> = async ({ log, status, params, body }) => {
   try {
+    console.log(`Body params`, {body, params})
     log.set({ body, params })
-    const {paymentId} = params
+    const { paymentId } = params
+    await cache.transaction.set(`transaction.tracker.${paymentId}`, 'processing', '5m')
 
     const payment = await db.query.payments.findFirst({
       where: (fields, ops) => ops.eq(fields.id, paymentId),
       with: {
         invoice: true,
         organization: true,
-        transaction: true,
+        // transaction: true,
       }
     })
 
-    if (!payment) {
-      return status(404, {
-        message: "Payment not found"
-      })
-    }
+    // if (!payment) {
+    //   return status(404, {
+    //     message: "Payment not found"
+    //   })
+    // }
 
     log.set({ payment })
 
-    if (payment.transaction.status === "complete") {
-      Webhook.trigger(payment.callbackUrl, payment.invoice.reference, {
-        reference: payment.invoice.reference,
-        hash: payment.transaction.metadata?.collectionHash,
-        to: payment.transaction.metadata.address,
-        amountSent: payment.transaction.payment.amount,
-        fee: {
-          percent: 5,
-          payoutAmount: payment.transaction.payment.amount - (payment.transaction.payment.amount * 0.05),
-        },
-        asset: payment.transaction.asset,
-        network: payment.transaction.network,
-        status: payment.transaction.metadata?.collectionHash ? "completed" : "failed",
-      }).then(() => console.log("Webhook transaction sent")).catch(error => console.log("failed to sent webhook", { error }));
 
-      return status(200, {
-        message: `Webhook resent transaction completed`,
-      });
+
+    // if (payment.transaction.status === "complete") {
+    //   Webhook.trigger(payment.callbackUrl, payment.invoice.reference, {
+    //     reference: payment.invoice.reference,
+    //     hash: payment.transaction.metadata?.collectionHash,
+    //     to: payment.transaction.metadata.address,
+    //     amountSent: payment.transaction.payment.amount,
+    //     fee: {
+    //       percent: 5,
+    //       payoutAmount: payment.transaction.payment.amount - (payment.transaction.payment.amount * 0.05),
+    //     },
+    //     asset: payment.transaction.asset,
+    //     network: payment.transaction.network,
+    //     status: payment.transaction.metadata?.collectionHash ? "completed" : "failed",
+    //   }).then(() => console.log("Webhook transaction sent")).catch(error => console.log("failed to sent webhook", { error }));
+
+    //   return status(200, {
+    //     message: `Webhook resent transaction completed`,
+    //   });
+    // }
+
+    if (body.status === "COMPLETED") {
+      const [updatedTransaction] = await db.update(transactions)
+        .set({
+          status: "complete",
+          metadata: {
+            ...body,
+          }
+        })
+        .where(eq(transactions.paymentId, paymentId!))
+        .returning();
+
+      console.log("Transaction has Transfer event and updated", { updatedTransaction });
+      await cache.transaction.set(`transaction.tracker.${paymentId}`, 'complete', '5m')
+
+      return status(200, {message: `Transaction completed`});
     }
+    return status(200, {message: `Transaction event received`});
 
-    const [updatedTransaction] = await db.update(transactions)
-      .set({
-        status: "complete",
-        metadata: {
-          ...body,
-        }
-      })
-      .where(eq(transactions.id, payment.transaction.id!))
-      .returning();
 
-    Webhook.trigger(payment.callbackUrl, payment.invoice.reference, {
-      reference: payment.invoice.reference,
-      amountSent: payment.amount,
-      fee: {
-        percent: 5,
-        payoutAmount: payment.amount,
-      },
-      asset: "ngn",
-      network: payment.transaction.network,
-      status: "completed",
-    }).then(() => console.log("Webhook transaction sent")).catch(error => console.log("failed to sent webhook", { error }));
-    console.log("Transaction has Transfer event and updated", { updatedTransaction });
-
-    return status(200, {message: `Transaction completed`});
+    // Webhook.trigger(payment.callbackUrl, payment.invoice.reference, {
+    //   reference: payment.invoice.reference,
+    //   amountSent: payment.amount,
+    //   fee: {
+    //     percent: 5,
+    //     payoutAmount: payment.amount,
+    //   },
+    //   asset: "ngn",
+    //   network: payment.transaction.network,
+    //   status: "completed",
+    // }).then(() => console.log("Webhook transaction sent")).catch(error => console.log("failed to sent webhook", { error }));
   }
   catch (error: any) {
     log.error(error)
@@ -241,14 +253,17 @@ export const confirm: AppRouteHandler<ConfirmTransactionRoute> = async ({ log, s
   try {
     log.set({ params, body })
 
-    const paymentId = await cache.transaction.get(`payment.method.crypto.${body.event.activity[0].toAddress}`) as string
+    const paymentId = await cache.transaction.get(`payment.method.crypto.${body.event.activity[0].toAddress.toLowerCase()}`) as string
+    await cache.transaction.set(`transaction.tracker.${paymentId}`, 'processing', '5m')
+
+    log.set({paymentId})
 
     const payment = await db.query.payments.findFirst({
       where: (fields, ops) => ops.eq(fields.id, paymentId),
       with: {
         invoice: true,
         organization: true,
-        transaction: true,
+        // transaction: true,
       }
     })
 
@@ -260,25 +275,25 @@ export const confirm: AppRouteHandler<ConfirmTransactionRoute> = async ({ log, s
 
     log.set({ payment })
 
-    if (payment.transaction.status === "complete") {
-      Webhook.trigger(payment.callbackUrl, payment.invoice.reference, {
-        reference: payment.invoice.reference,
-        hash: payment.transaction.metadata?.collectionHash,
-        to: payment.transaction.metadata.address,
-        amountSent: payment.transaction.payment.amount,
-        fee: {
-          percent: 5,
-          payoutAmount: payment.transaction.payment.amount - (payment.transaction.payment.amount * 0.05),
-        },
-        asset: payment.transaction.asset,
-        network: payment.transaction.network,
-        status: payment.transaction.metadata?.collectionHash ? "completed" : "failed",
-      }).then(() => console.log("Webhook transaction sent")).catch(error => console.log("failed to sent webhook", { error }));
+    // if (payment.transaction.status === "complete") {
+    //   Webhook.trigger(payment.callbackUrl, payment.invoice.reference, {
+    //     reference: payment.invoice.reference,
+    //     hash: payment.transaction.metadata?.collectionHash,
+    //     to: payment.transaction.metadata.address,
+    //     amountSent: payment.transaction.payment.amount,
+    //     fee: {
+    //       percent: 5,
+    //       payoutAmount: payment.transaction.payment.amount - (payment.transaction.payment.amount * 0.05),
+    //     },
+    //     asset: payment.transaction.asset,
+    //     network: payment.transaction.network,
+    //     status: payment.transaction.metadata?.collectionHash ? "completed" : "failed",
+    //   }).then(() => console.log("Webhook transaction sent")).catch(error => console.log("failed to sent webhook", { error }));
 
-      return status(200, {
-        message: `Webhook resent transaction completed`,
-      });
-    }
+    //   return status(200, {
+    //     message: `Webhook resent transaction completed`,
+    //   });
+    // }
 
     // Call smart contract and check for Transfer event on address
     // const chain = getChain(payment.transaction.network);
@@ -290,24 +305,24 @@ export const confirm: AppRouteHandler<ConfirmTransactionRoute> = async ({ log, s
       // Call calbackUrl with reference and transaction details
     // Update transaction as completed
 
-    const amountSent = body.event.activity[0].value
-    let amountMatch: boolean = false;
+    // const amountSent = body.event.activity[0].value
+    // let amountMatch: boolean = false;
 
-    const isNaira = payment.invoice.currency === "ngn"
-    const invoiceAmount = payment.invoice.amount;
+    // const isNaira = payment.invoice.currency === "ngn"
+    // const invoiceAmount = payment.invoice.amount;
 
-    if (isNaira) {
-      const nairaAmount = transactionService.convertToNGN(amountSent, payment.rate!)
-      amountMatch = nairaAmount >= invoiceAmount;
-    }
+    // if (isNaira) {
+    //   const nairaAmount = transactionService.convertToNGN(amountSent, payment.rate!)
+    //   amountMatch = nairaAmount >= invoiceAmount;
+    // }
 
-    if (!amountMatch) {
-      console.log("Amount sent", { amountConvertCeil: Math.ceil(amountSent * payment.rate!), amountConvertRound: Math.round(amountSent * payment.rate!) });
-      return status(401, {
-        status: "failed",
-        message: "Amount sent does not match the expected amount.",
-      });
-    }
+    // if (!amountMatch) {
+    //   console.log("Amount sent", { amountConvertCeil: Math.ceil(amountSent * payment.rate!), amountConvertRound: Math.round(amountSent * payment.rate!) });
+    //   return status(401, {
+    //     status: "failed",
+    //     message: "Amount sent does not match the expected amount.",
+    //   });
+    // }
 
     const [updatedTransaction] = await db.update(transactions)
       .set({
@@ -316,23 +331,24 @@ export const confirm: AppRouteHandler<ConfirmTransactionRoute> = async ({ log, s
           collectionHash: body.event.activity[0].hash as Hex,
         }
       })
-      .where(eq(transactions.id, payment.transaction.id!))
+      .where(eq(transactions.paymentId, payment.id!))
       .returning();
+    await cache.transaction.set(`transaction.tracker.${payment.id}`, 'complete', '5m')
 
-    Webhook.trigger(payment.callbackUrl, payment.invoice.reference, {
-      reference: payment.invoice.reference,
-      hash: body.event.activity[0].hash,
-      from: body.event.activity[0].fromAddress,
-      to: body.event.activity[0].toAddress,
-      amountSent: body.event.activity[0].value,
-      fee: {
-        percent: 5,
-        payoutAmount: amountSent - (amountSent * 0.05),
-      },
-      asset: body.event.activity[0].asset,
-      network: payment.transaction.network,
-      status: "completed",
-    }).then(() => console.log("Webhook transaction sent")).catch(error => console.log("failed to sent webhook", { error }));
+    // Webhook.trigger(payment.callbackUrl, payment.invoice.reference, {
+    //   reference: payment.invoice.reference,
+    //   hash: body.event.activity[0].hash,
+    //   from: body.event.activity[0].fromAddress,
+    //   to: body.event.activity[0].toAddress,
+    //   amountSent: body.event.activity[0].value,
+    //   fee: {
+    //     percent: 5,
+    //     payoutAmount: amountSent - (amountSent * 0.05),
+    //   },
+    //   asset: body.event.activity[0].asset,
+    //   network: "bsc",
+    //   status: "completed",
+    // }).then(() => console.log("Webhook transaction sent")).catch(error => console.log("failed to sent webhook", { error }));
     console.log("Transaction has Transfer event and updated", { updatedTransaction });
 
     return status(200, {message: `Transaction completed`});

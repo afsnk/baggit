@@ -52,27 +52,28 @@ export const confirmTransactionSchema = {
       message: z.string()
     })
   },
-  body: z.object({
-    webhookId: z.string(),
-    id: z.string(),
-    createdAt: z.string(),
-    type: z.string(),
-    event: z.object({
-      network: z.string(),
-      activity: z.array(z.object({
-        fromAddress: z.string(),
-        toAddress: z.string(),
-        blockNum: z.string(),
-        hash: z.string(),
-        value: z.number(),
-        asset: z.string(),
-        category: z.string(),
-        rawContract: z.any(),
-        log: z.any(),
-        blockTimestamp: z.string()
-      }))
-    })
-  }),
+  body: z.any(),
+    // object({
+    // webhookId: z.string(),
+    // id: z.string(),
+    // createdAt: z.string(),
+    // type: z.string(),
+    // event: z.object({
+    //   network: z.string(),
+    //   activity: z.array(z.object({
+    //     fromAddress: z.string(),
+    //     toAddress: z.string(),
+    //     blockNum: z.string(),
+    //     hash: z.string(),
+    //     value: z.number(),
+    //     asset: z.string(),
+    //     category: z.string(),
+    //     rawContract: z.any(),
+    //     log: z.any(),
+    //     blockTimestamp: z.string()
+    //   }))
+    // })
+  // }),
   params: z.object({
     network: z.string()
   }),

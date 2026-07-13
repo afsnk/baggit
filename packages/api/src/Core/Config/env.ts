@@ -41,7 +41,7 @@ const EnvSchema = z.object({
   SWITCH_API_URL: z.url(),
   SWITCH_API_KEY: z.string(),
 
-  API_URL: z.string(),
+  API_URL: z.url(),
 
   // nats server
   NATS_SERVER_URL: z.url(),
