@@ -5,6 +5,7 @@ import { generateId } from "../utils"
 import { toZodV4SchemaTyped } from "@/Core/Lib/zod-utils"
 import { organization } from "./auth"
 import { relations } from "drizzle-orm"
+import { transactions } from "./transaction"
 
 export const invoice = sqliteTable("invoice", {
   id: text("id").primaryKey().$defaultFn(() => generateId('inv')),
@@ -69,6 +70,7 @@ export const insertPayments = toZodV4SchemaTyped(createInsertSchema(payments)
 // @ts-expect-error partial exists on zod v4 type
 export const patchPayments = insertPayments.partial()
 
+
 export const selectInvoice = toZodV4SchemaTyped(createSelectSchema(invoice));
 export const selectInvoiceWithPayment = createSelectSchema(invoice).extend({payments: z.array(selectPayments)})
 export const insertInvoice = toZodV4SchemaTyped(createInsertSchema(invoice)
@@ -105,3 +107,6 @@ export const paymentRelations = relations(payments, ({ one }) => ({
     references: [invoice.id]
   })
 }))
+
+export type TPayment = z.infer<typeof selectPayments>;
+export type TInvoice = z.infer<typeof selectInvoice>;

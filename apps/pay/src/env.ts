@@ -20,6 +20,10 @@ export const env = createEnv({
     VITE_BSC_RPC_URL: z.string().url().optional(),
     VITE_API_URL: z.string().url(),
     VITE_BETTER_AUTH_URL: z.url(),
+    VITE_NATS_CON_URL: z.url(),
+    VITE_NATS_KV_KEY: z.string(),
+    VITE_NATS_USER_JWT: z.string(),
+    VITE_NATS_USER_NKEY: z.string(),
   },
 
   /**
