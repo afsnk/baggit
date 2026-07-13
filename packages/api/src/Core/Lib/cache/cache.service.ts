@@ -61,7 +61,7 @@ class Cache {
   get transaction(): CacheFunctions {
     return {
       async get(key) {
-        return await Cache.transactionKv?.get(key);
+        return (await Cache.transactionKv?.get(key))?.string();
       },
       async set(key: string, value: string, ttl: string) {
         console.log(`Cache TTL: unused might remove`, ttl)
