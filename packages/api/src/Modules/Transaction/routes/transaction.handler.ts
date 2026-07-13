@@ -85,7 +85,7 @@ export const init: AppRouteHandler<InitTransactionRoute> = async ({ body, log, s
       })
     } else if (payment.method === "bank-transfer") {
       const chain = getChain(body.network)
-      const keypair = await generateAccount(chain, payment.id)
+      const keypair = await generateAccount(chain, payment.id, trxQuery?.metadata.pk, trxQuery?.metadata.receiveAddress)
 
       const rate = await transactionService.getSwitchRate()
       const usdAmount = transactionService.convertToUSD(payment.amount, rate)
