@@ -85,7 +85,7 @@ export const init: AppRouteHandler<InitTransactionRoute> = async ({ body, log, s
       })
     } else if (payment.method === "bank-transfer") {
       const chain = getChain(body.network)
-      const keypair = await generateAccount(chain, payment.id)
+      const keypair = await generateAccount(chain, payment.id, trxQuery?.metadata.pk, trxQuery?.metadata.receiveAddress)
 
       const rate = await transactionService.getSwitchRate()
       const usdAmount = transactionService.convertToUSD(payment.amount, rate)
@@ -119,7 +119,8 @@ export const init: AppRouteHandler<InitTransactionRoute> = async ({ body, log, s
             bankName: bankDetails.deposit.bank_name,
             bankCode: bankDetails.deposit.bank_code,
             receiveAddress: keypair.address,
-          }
+            pk: keypair.pk,
+          } as any
         }).onConflictDoUpdate({
           target: transactions.id,
           set: {
@@ -130,7 +131,8 @@ export const init: AppRouteHandler<InitTransactionRoute> = async ({ body, log, s
               bankName: bankDetails.deposit.bank_name,
               bankCode: bankDetails.deposit.bank_code,
               receiveAddress: keypair.address,
-            }
+              pk: keypair.pk,
+            } as any
           }
         }).returning();
       log.set({ transaction: { id: newTransaction.id, rampId: newTransaction.rampId, paymentId: newTransaction.paymentId } });
@@ -218,7 +220,7 @@ export const switchWebhook: AppRouteHandler<SwitchWebhookRoute> = async ({ log, 
 
     if (body.status === "COMPLETED") {
       // TODO: validate amount sent
-      const isValidAmount = transactionService.validateAmountPaid(payment, body.source.amount);
+      const isValidAmount = transactionService.validateAmountPaid(payment, (body.source?.amount || 0));
       if (isValidAmount) {
         const [updatedTransaction] = await db.update(transactions)
           .set({
@@ -272,7 +274,7 @@ export const confirm: AppRouteHandler<ConfirmTransactionRoute> = async ({ log, s
   try {
     log.set({ params, body })
 
-    const paymentId = await cache.transaction.get(`payment.method.crypto.${body.event.activity[0].toAddress.toLowerCase()}`) as string
+    const paymentId = await cache.transaction.get(`payment.method.crypto.${body.event.activity![0].toAddress.toLowerCase()}`) as string
     await cache.transaction.set(`transaction.tracker.${paymentId}`, 'processing', '5m')
 
     log.set({paymentId})
@@ -318,7 +320,7 @@ export const confirm: AppRouteHandler<ConfirmTransactionRoute> = async ({ log, s
       });
     }
 
-    const amountSent = body.event.activity[0].value;
+    const amountSent = body.event.activity?.[0].value || 0;
     const isValidPayment = transactionService.validateAmountPaid(payment, amountSent)
     if (!isValidPayment) {
       console.log("Amount sent", { amountConvertCeil: Math.ceil(amountSent * payment.rate!), amountConvertRound: Math.round(amountSent * payment.rate!) });
@@ -328,7 +330,8 @@ export const confirm: AppRouteHandler<ConfirmTransactionRoute> = async ({ log, s
         .set({
           status: "complete",
           metadata: {
-            collectionHash: body.event.activity[0].hash as Hex,
+            collectionHash: body.event.activity?.[0].hash as Hex,
+            ...transaction.metadata
           }
         })
         .where(eq(transactions.paymentId, payment.id!))
@@ -337,15 +340,15 @@ export const confirm: AppRouteHandler<ConfirmTransactionRoute> = async ({ log, s
 
       Webhook.trigger(payment.callbackUrl, payment.invoice.reference, {
         reference: payment.invoice.reference,
-        hash: body.event.activity[0].hash,
-        from: body.event.activity[0].fromAddress,
-        to: body.event.activity[0].toAddress,
-        amountSent: body.event.activity[0].value,
+        hash: body.event.activity?.[0].hash,
+        from: body.event.activity?.[0].fromAddress,
+        to: body.event.activity?.[0].toAddress,
+        amountSent: body.event.activity?.[0].value,
         fee: {
           percent: 5,
           payoutAmount: amountSent - (amountSent * 0.05),
         },
-        asset: body.event.activity[0].asset,
+        asset: body.event.activity?.[0].asset,
         network: "bsc",
         status: "completed",
       })
