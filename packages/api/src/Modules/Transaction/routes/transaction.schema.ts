@@ -71,7 +71,7 @@ export const confirmTransactionSchema = {
         log: z.any(),
         blockTimestamp: z.string()
       }))
-    })
+    }).partial()
   }),
   params: z.object({
     network: z.string()
@@ -110,6 +110,7 @@ export const switchSchema = {
       amount_usd: z.number(),
       currency: z.string(),
       network: z.string(),
+      recipient: z.string(),
     }),
     source: z.object({
       amount: z.number(),
@@ -127,12 +128,18 @@ export const switchSchema = {
       amount: z.number(),
       address: z.string(),
       asset: z.string(),
+      provider: z.string(),
+      expires_at: z.string(),
+      account_number: z.string(),
+      account_name: z.string(),
+      bank_code: z.string(),
+      bank_name: z.string(),
       note: z.array(z.string())
     }),
     meta: z.any(),
     created_at: z.string(),
     updated_at: z.string(),
-  }),
+  }).partial(),
   detail: {
     tags: ['Transaction'],
     summary: "Transaction API routes",
