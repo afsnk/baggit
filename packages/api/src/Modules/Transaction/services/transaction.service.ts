@@ -1,5 +1,5 @@
 import env from "@/Core/Config/env";
-import { TTransaction } from "@/Core/DB/schema/transaction";
+import { TInvoice, TPayment } from "@/Core/DB/schema/payment";
 import { Cypher } from "@/Core/Lib/wallet/cypher.utils";
 import { getChain, refactoredGetLogs, runTransaction, TOKEN_ADDRESSES } from "@/Core/Lib/wallet/wallet.utils";
 import { betterFetch } from "@better-fetch/fetch";
@@ -210,6 +210,17 @@ class Transaction {
     }
 
     return rateData.data.rate;
+  }
+
+  validateAmountPaid(payment: TPayment & {invoice: TInvoice}, amountSent: number) {
+    const isNaira = payment.currency === "ngn" || payment.currency === "cngn";
+    const invoiceAmount = payment.invoice.amount
+    if (isNaira) {
+      const nairaAmount = this.convertToNGN(amountSent, payment.rate!)
+      return nairaAmount >= invoiceAmount;
+    }
+
+    return amountSent >= invoiceAmount
   }
 
   convertToUSD(nairaAmount: number, rate: number) {
