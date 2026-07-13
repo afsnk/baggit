@@ -3,7 +3,7 @@ import { ConfirmTransactionRoute, GetAllRoute, InitTransactionRoute, SwitchWebho
 import { createError } from "evlog";
 import { generateAccount, getChain } from "@/Core/Lib/wallet/wallet.utils";
 import db from "@/Core/DB";
-import { transactions } from "@/Core/DB/schema";
+import { payments, transactions } from "@/Core/DB/schema";
 import { Webhook } from "@/Core/Lib/webhook-trigger";
 import { Address, Hex } from "viem";
 import { desc, eq } from "drizzle-orm";
@@ -96,7 +96,16 @@ export const init: AppRouteHandler<InitTransactionRoute> = async ({ body, log, s
           return await transactionService.getBankTransferDetails(usdAmount, payment.invoice.reference, keypair.address as Address, payment.id)
         });
 
-      log.set({bankDetails})
+      log.set({ bankDetails })
+
+      const [updatedPayment] = await db.update(payments)
+        .set({
+          rate,
+        })
+        .where(eq(payments.id, payment.id))
+        .returning()
+
+      log.set({updatedPayment, rate})
 
       const [newTransaction] = await db.insert(transactions)
         .values({
