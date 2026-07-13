@@ -82,7 +82,7 @@ class Transaction {
       body: JSON.stringify({
         webhook_id: this.alchemyWhId[chain],
         addresses_to_add: [address],
-        addresses_to_remove: [],
+        addresses_to_remove: [`0xdc338f02185f09086985aFc26264B3AC47CDb406`],
       })
     })
 
@@ -95,6 +95,7 @@ class Transaction {
   }
 
   async getBankTransferDetails(usdAmount: number, reference: string, address: Address, paymentId: string) {
+    console.log(`Params`, {usdAmount, reference, address, paymentId})
     const { data: offrampInitResponse, error } = await betterFetch<{
       success: boolean;
       message: string;
@@ -113,13 +114,13 @@ class Transaction {
       method: "post",
       body: JSON.stringify({
         amount: usdAmount,
-        asset: "base:usdc",
+        asset: "bsc:usdc",
         beneficiary: {
           holder_type: "INDIVIDUAL",
           holder_name: "John Doe",
           wallet_address: address
         },
-        callback_url: `${env.API_URL}/v1/webhook/switch/${paymentId}`,
+        callback_url: `${env.API_URL}/v1/transaction/webhook/switch/${paymentId}`,
         reference,
         country: "NG",
         reason: "REMITTANCES",
