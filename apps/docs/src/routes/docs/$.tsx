@@ -1,13 +1,12 @@
 import { createFileRoute, notFound } from '@tanstack/react-router';
 import { DocsLayout } from 'fumadocs-ui/layouts/docs';
-import type * as PageTree from 'fumadocs-core/page-tree'
 import { createServerFn } from '@tanstack/react-start';
 import { source } from '@/lib/source';
 import browserCollections from 'collections/browser';
 import { DocsBody, DocsDescription, DocsPage, DocsTitle } from 'fumadocs-ui/layouts/docs/page';
 import { baseOptions } from '@/lib/layout.shared';
 import { useFumadocsLoader } from 'fumadocs-core/source/client';
-import { Suspense, useMemo } from 'react';
+import { Suspense } from 'react';
 import { useMDXComponents } from '@/components/mdx';
 import { MessageCircleCode } from 'lucide-react';
 
@@ -57,11 +56,6 @@ const clientLoader = browserCollections.docs.createClientLoader({
 
 function Page() {
   const data = useFumadocsLoader(Route.useLoaderData());
-  // const Content = clientLoader.getComponent(data.path)
-  // const tree = useMemo(
-  //   () => transformPageTree(data.pageTree as PageTree.Root),
-  //   [data.pageTree],
-  // )
 
   return (
     <DocsLayout {
@@ -105,35 +99,35 @@ function Page() {
 }
 
 
-function transformPageTree(root: PageTree.Root): PageTree.Root {
-  function mapNode<T extends PageTree.Node>(item: T): T {
-    if (typeof item.icon === 'string') {
-      item = {
-        ...item,
-        icon: (
-          <span
-            dangerouslySetInnerHTML={{
-              __html: item.icon,
-            }}
-          />
-        ),
-      }
-    }
+// function transformPageTree(root: PageTree.Root): PageTree.Root {
+//   function mapNode<T extends PageTree.Node>(item: T): T {
+//     if (typeof item.icon === 'string') {
+//       item = {
+//         ...item,
+//         icon: (
+//           <span
+//             dangerouslySetInnerHTML={{
+//               __html: item.icon,
+//             }}
+//           />
+//         ),
+//       }
+//     }
 
-    if (item.type === 'folder') {
-      return {
-        ...item,
-        index: item.index ? mapNode(item.index) : undefined,
-        children: item.children.map(mapNode),
-      }
-    }
+//     if (item.type === 'folder') {
+//       return {
+//         ...item,
+//         index: item.index ? mapNode(item.index) : undefined,
+//         children: item.children.map(mapNode),
+//       }
+//     }
 
-    return item
-  }
+//     return item
+//   }
 
-  return {
-    ...root,
-    children: root.children.map(mapNode),
-    fallback: root.fallback ? transformPageTree(root.fallback) : undefined,
-  }
-}
+//   return {
+//     ...root,
+//     children: root.children.map(mapNode),
+//     fallback: root.fallback ? transformPageTree(root.fallback) : undefined,
+//   }
+// }
