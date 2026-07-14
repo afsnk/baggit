@@ -18,6 +18,7 @@ import type { QueryClient } from '@tanstack/react-query'
 import { TooltipProvider } from '#/components/ui/tooltip'
 import { Toaster } from '#/components/ui/sonner'
 import NiceModal from '@ebay/nice-modal-react'
+import { ThemeProvider } from '#/components/theme-provider'
 
 interface MyRouterContext {
   queryClient: QueryClient
@@ -64,8 +65,10 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         </head>
         <body>
           <PostHogProvider>
-            <TooltipProvider>{children}</TooltipProvider>
-            <Toaster position="top-center" />
+            <ThemeProvider defaultTheme="system" storageKey="theme">
+              <TooltipProvider>{children}</TooltipProvider>
+                <Toaster position="top-center" />
+            </ThemeProvider>
             <TanStackDevtools
               config={{
                 position: 'bottom-right',
