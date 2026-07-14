@@ -1,0 +1,139 @@
+import { createFileRoute, notFound } from '@tanstack/react-router';
+import { DocsLayout } from 'fumadocs-ui/layouts/docs';
+import type * as PageTree from 'fumadocs-core/page-tree'
+import { createServerFn } from '@tanstack/react-start';
+import { source } from '@/lib/source';
+import browserCollections from 'collections/browser';
+import { DocsBody, DocsDescription, DocsPage, DocsTitle } from 'fumadocs-ui/layouts/docs/page';
+import { baseOptions } from '@/lib/layout.shared';
+import { useFumadocsLoader } from 'fumadocs-core/source/client';
+import { Suspense, useMemo } from 'react';
+import { useMDXComponents } from '@/components/mdx';
+import { MessageCircleCode } from 'lucide-react';
+
+export const Route = createFileRoute('/docs/$')({
+  head: () => ({meta: [{title: "Baggit service docs"}]}),
+  component: Page,
+  loader: async ({ params }) => {
+    const slugs = params._splat?.split('/') ?? [];
+    const data = await serverLoader({ data: slugs });
+    await clientLoader.preload(data.path);
+    return data;
+  },
+});
+
+const serverLoader = createServerFn({
+  method: 'GET',
+})
+  .validator((slugs: string[]) => slugs)
+  .handler(async ({ data: slugs }) => {
+    const page = source.getPage(slugs);
+    if (!page) throw notFound();
+
+    return {
+      path: page.path,
+      pageTree: await source.serializePageTree(source.getPageTree()),
+    };
+  });
+
+const clientLoader = browserCollections.docs.createClientLoader({
+  component(
+    { toc, frontmatter, default: MDX },
+    // you can define props for the component
+    _props: undefined,
+  ) {
+    return (
+      <DocsPage toc={toc}>
+        <DocsTitle>{frontmatter.title}</DocsTitle>
+        <DocsDescription>{frontmatter.description}</DocsDescription>
+        <DocsBody className='text-primary'>
+          {/*@ts-ignore*/}
+          <MDX components={useMDXComponents()} />
+        </DocsBody>
+      </DocsPage>
+    );
+  },
+});
+
+function Page() {
+  const data = useFumadocsLoader(Route.useLoaderData());
+  // const Content = clientLoader.getComponent(data.path)
+  // const tree = useMemo(
+  //   () => transformPageTree(data.pageTree as PageTree.Root),
+  //   [data.pageTree],
+  // )
+
+  return (
+    <DocsLayout {
+      ...baseOptions()
+    }
+      // tree={data.pageTree}
+      links={[
+        {
+          type: 'main',
+          text: 'API Reference',
+          url: 'https://api.baggit.link/reference',
+          external: true,
+        },
+        {
+          type: 'main',
+          text: 'Merchant Dashboard',
+          url: 'https://merchant.baggit.link',
+          external: true,
+        },
+      ]}
+      tree={data.pageTree}
+      themeSwitch={{ enabled: true }}
+      sidebar={{
+        banner: (
+          <div
+            className="p-2 flex items-center justify-between bg-accent rounded-md hover:cursor-pointer"
+            onClick={() => {
+              const message = prompt('Enter feedback below')
+              console.log('MEssage to send to feedback API', message)
+            }}
+          >
+            Give Feedback
+            <MessageCircleCode className="size-4" />
+          </div>
+        ),
+      }}
+    >
+      <Suspense>{clientLoader.useContent(data.path)}</Suspense>
+    </DocsLayout>
+  );
+}
+
+
+function transformPageTree(root: PageTree.Root): PageTree.Root {
+  function mapNode<T extends PageTree.Node>(item: T): T {
+    if (typeof item.icon === 'string') {
+      item = {
+        ...item,
+        icon: (
+          <span
+            dangerouslySetInnerHTML={{
+              __html: item.icon,
+            }}
+          />
+        ),
+      }
+    }
+
+    if (item.type === 'folder') {
+      return {
+        ...item,
+        index: item.index ? mapNode(item.index) : undefined,
+        children: item.children.map(mapNode),
+      }
+    }
+
+    return item
+  }
+
+  return {
+    ...root,
+    children: root.children.map(mapNode),
+    fallback: root.fallback ? transformPageTree(root.fallback) : undefined,
+  }
+}
