@@ -6,7 +6,7 @@
     "#/*": "./src/*"
   },
   "scripts": {
-    "dev": "portless merchant.baggit --app-port 3004 bunx --bun vite dev",
+    "dev": "portless merchant.baggit --app-port 3004 vite dev --port 3004",
     "generate-routes": "tsr generate",
     "build": "vite build && tsc --noEmit",
     "preview": "vite preview",
@@ -43,7 +43,6 @@
     "clsx": "^2.1.1",
     "lucide-react": "^0.577.0",
     "next-themes": "^0.4.6",
-    "nitro": "3.0.260610-beta",
     "posthog-js": "^1.358.1",
     "radix-ui": "^1.6.0",
     "react": "^19.2.0",

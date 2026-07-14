@@ -1,4 +1,4 @@
-import { Bell, ChevronsUpDown, LogOut } from 'lucide-react'
+import { Bell, ChevronsUpDown, LogOut, Moon, Sun } from 'lucide-react'
 
 import { Avatar, AvatarFallback, AvatarImage } from '#/components/ui/avatar.tsx'
 import {
@@ -19,12 +19,14 @@ import {
 import { authClient } from '#/lib/auth-client'
 import { toast } from 'sonner'
 import { useRouter } from '@tanstack/react-router'
+import { useTheme } from './theme-provider'
 
 export function NavUser() {
   const { isMobile } = useSidebar()
   const router = useRouter()
 
   const { data: session } = authClient.useSession()
+  const { setTheme, theme } = useTheme()
 
   return (
     <SidebarMenu>
@@ -78,6 +80,10 @@ export function NavUser() {
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
+              <DropdownMenuItem onClick={() => setTheme(theme === "dark"? "light" : "dark")}>
+                {theme === "dark"? <Sun className='size-4' /> : <Moon className='size-4' />}
+                Theme
+              </DropdownMenuItem>
               <DropdownMenuItem>
                 <Bell />
                 Notifications
