@@ -57,9 +57,11 @@ export async function authorize(req: Request, status: any): Promise<any> {
 export const appMacro = {
   auth: {
     async resolve({ status, request: {headers}}: Context) {
+      console.log(`headers`, {headers})
       const session = await betterAuth.api.getSession({
         headers
       })
+      console.log(`Session`, {session})
       if (!session) return status(401, `Unauthorized access`)
       return {
         user: session.user,
@@ -67,12 +69,12 @@ export const appMacro = {
       }
     }
   },
-  jwt: {
-    async resolve({ status, request }: Context) {
-      // Validate and resolve jwt token/session
-      return authorize(request, status)
-    }
-  },
+  // jwt: {
+  //   async resolve({ status, request }: Context) {
+  //     // Validate and resolve jwt token/session
+  //     return authorize(request, status)
+  //   }
+  // },
   apiKey: {
     async resolve({status, request: {headers} }: Context) {
       // TODO: API key validation

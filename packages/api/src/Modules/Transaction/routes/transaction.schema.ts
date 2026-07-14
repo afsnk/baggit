@@ -1,4 +1,4 @@
-import { insertTransactions, selectTransactions } from "@/Core/DB/schema";
+import { cleanedTransaction, insertTransactions, selectTransactions } from "@/Core/DB/schema";
 import { AppRouteSchema } from "@/Core/Lib/types";
 import {z} from "zod";
 
@@ -150,17 +150,17 @@ export const switchSchema = {
 
 export const getAllSchema = {
   response: {
-    200: z.array(selectTransactions),
+    200: z.array(cleanedTransaction),
     401: z.object({
       message: z.string()
     })
   },
   query: z.object({
-    page: z.number(),
-    count: z.number(),
-    filter: z.enum(['ramp', 'payment'])
-  }).optional(),
-  apiKey: true,
+    page: z.number().optional().nullable(),
+    count: z.number().optional().nullable(),
+    filter: z.enum(['ramp', 'payment']).optional().nullable()
+  }).optional().nullable(),
+  auth: true,
   detail: {
     tags: ['Transaction'],
     summary: "Transaction API routes",
