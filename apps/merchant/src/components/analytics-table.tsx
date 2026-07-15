@@ -12,7 +12,7 @@ import type {
   SortingState,
   ColumnDef,
 } from '@tanstack/react-table'
-import { ChevronDownIcon, ChevronUpIcon, Clock, LinkIcon } from 'lucide-react'
+import { ChevronDownIcon, ChevronUpIcon, LinkIcon } from 'lucide-react'
 import { useState } from 'react'
 import { cn } from '#/lib/utils.ts'
 import { Badge } from '#/components/ui/badge.tsx'

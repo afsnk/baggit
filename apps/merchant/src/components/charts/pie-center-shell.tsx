@@ -2,14 +2,13 @@
 
 import { pie as d3Pie } from "d3-shape";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { PieCenter, type PieCenterProps } from "./pie-center";
+import { PieCenter, } from "./pie-center";
+import type {PieCenterProps} from "./pie-center"
 import {
   defaultPieColors,
-  type PieArcData,
-  type PieContextValue,
-  type PieData,
   PieProvider,
 } from "./pie-context";
+import type {PieArcData,PieContextValue, PieData} from "./pie-context"
 
 const SHELL_HOVER_OFFSET = 10;
 
