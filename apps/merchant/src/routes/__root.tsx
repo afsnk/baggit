@@ -14,15 +14,11 @@ import { getLocale } from '#/paraglide/runtime'
 
 import appCss from '../styles.css?url'
 
-import type { QueryClient } from '@tanstack/react-query'
 import { TooltipProvider } from '#/components/ui/tooltip'
 import { Toaster } from '#/components/ui/sonner'
 import NiceModal from '@ebay/nice-modal-react'
 import { ThemeProvider } from '#/components/theme-provider'
-
-interface MyRouterContext {
-  queryClient: QueryClient
-}
+import type { MyRouterContext } from '#/integrations/tanstack-query/root-provider'
 
 export const Route = createRootRouteWithContext<MyRouterContext>()({
   beforeLoad: async () => {

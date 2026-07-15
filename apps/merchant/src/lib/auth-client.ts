@@ -7,4 +7,5 @@ export const authClient = createAuthClient({
   baseURL: env.VITE_BETTER_AUTH_URL,
   basePath: '/api/auth',
   plugins: [apiKeyClient(), organizationClient()],
+  fetchOptions: {credentials: "include"}
 })

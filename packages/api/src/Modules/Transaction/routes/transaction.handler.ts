@@ -6,7 +6,7 @@ import db from "@/Core/DB";
 import { payments, transactions } from "@/Core/DB/schema";
 import { Webhook } from "@/Core/Lib/webhook-trigger";
 import { Address, Hex } from "viem";
-import { desc, eq } from "drizzle-orm";
+import { asc, eq } from "drizzle-orm";
 import transactionService from "../services/transaction.service"
 import { TTransaction } from "@/Core/DB/schema/transaction";
 import cache from "@/Core/Lib/cache/cache.service";
@@ -369,10 +369,16 @@ export const confirm: AppRouteHandler<ConfirmTransactionRoute> = async ({ log, s
   }
 }
 
-export const getAll: AppRouteHandler<GetAllRoute, 'apiKey'> = async ({ log, query, status }) => {
+export const getAll: AppRouteHandler<GetAllRoute, 'auth'> = async ({ log, query, status, session }) => {
   try {
+    log.set({session})
     const transactionList = await db.query.transactions.findMany({
-      orderBy: [desc(transactions.createdAt)],
+      where: (fields, ops) => ops.eq(fields.orgId, session.activeOrganizationId),
+      orderBy: [asc(transactions.createdAt)],
+      with: {
+        ramp: true,
+        payment: true,
+      }
     });
 
     if (!transactionList || !transactionList.length) {
@@ -381,7 +387,7 @@ export const getAll: AppRouteHandler<GetAllRoute, 'apiKey'> = async ({ log, quer
       });
     }
 
-    return status(200, transactionList.map(t => ({ ...t, vAddress: t.metadata.address })));
+    return status(200, transactionList.map(t => ({ ...t, payment: t.payment, vAddress: t.metadata.address })));
   }
   catch (error: any) {
     log.error(error);

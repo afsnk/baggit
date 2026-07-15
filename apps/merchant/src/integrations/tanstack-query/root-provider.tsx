@@ -5,6 +5,12 @@ export function getContext() {
 
   return {
     queryClient,
+    isUnderConstruction: false,
   }
+}
+
+export interface MyRouterContext {
+  queryClient: QueryClient,
+  isUnderConstruction: boolean
 }
 export default function TanstackQueryProvider() {}
