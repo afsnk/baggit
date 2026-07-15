@@ -151,8 +151,9 @@ export const switchSchema = {
 export const getAllSchema = {
   response: {
     200: z.array(cleanedTransaction),
-    401: z.object({
-      message: z.string()
+    404: z.object({
+      message: z.string(),
+      code: z.string()
     })
   },
   query: z.object({

@@ -4,6 +4,7 @@ import env from "./Core/Config/env";
 import paymentRoute from "@/Modules/Payment/routes/payment/payment.route";
 import transactionRoute from "@/Modules/Transaction/routes/transaction.route";
 import checkoutRoute from "@/Modules/Payment/routes/checkout/checkout.route";
+import balanceRoute from "@/Modules/Transaction/routes/balance/balance.route";
 import { appMacro } from "./Core/Lib/macros";
 
 
@@ -22,6 +23,7 @@ const apiApp = createApp({
   .use(paymentRoute)
   .use(transactionRoute)
   .use(checkoutRoute)
+  .use(balanceRoute)
   .get(`/user`, ({ user }) => user, { auth: true }) // TODO: remove when sure everything works
   .listen({port: 8001, hostname: "::"});
 

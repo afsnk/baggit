@@ -394,8 +394,9 @@ export const getAll: AppRouteHandler<GetAllRoute, 'auth'> = async ({ log, query,
     });
 
     if (!transactionList || !transactionList.length) {
-      return status(401, {
+      return status(404, {
         message: "No transactions found",
+        code: "NOT_FOUND"
       });
     }
 

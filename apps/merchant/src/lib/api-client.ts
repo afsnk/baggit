@@ -77,6 +77,26 @@ export const getTransactions =
     },
   })
 
+export const getBalanceOptions = queryOptions({
+  queryKey: ['getBalances'],
+  queryFn: async () => {
+    const { data, error } = await fetch(`/v1/balance/`, {
+      method: 'GET',
+      headers: {
+        'content-type': 'application/json',
+      },
+      credentials: "include",
+    })
+
+    if (error) {
+      console.log(`Error from init`, { error: JSON.stringify(error, null, 2) })
+      throw error
+    }
+
+    return data
+  },
+})
+
 export const updatePayment = (paymentId: string) => mutationOptions({
   mutationKey: ['updatePayment', {paymentId}],
   mutationFn: async (values: any) => {

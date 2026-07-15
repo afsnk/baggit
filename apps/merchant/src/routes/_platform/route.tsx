@@ -1,4 +1,5 @@
 import { AppSidebar } from '#/components/app-sidebar'
+import Balance from '#/components/Balance'
 import { Container, Main, Section } from '#/components/craft'
 import { Button } from '#/components/ui/button'
 import { SidebarInset, SidebarProvider } from '#/components/ui/sidebar'
@@ -45,13 +46,7 @@ function RouteComponent() {
               </div>
               <div className='flex-1 flex justify-end'>
                 {routerState.location.pathname.slice(1).toLowerCase() === "analytics" && (
-                  <div className='p-1 bg-muted flex items-center justify-center gap-4 rounded-lg'>
-                    <div className='grid items-start'>
-                      <span className='text-xs font-light text-muted-foreground'>Balance</span>
-                      <span className='text-sm font-semibold text-primary'>$1200000000</span>
-                    </div>
-                    <Button size="sm" variant="default">Request payout</Button>
-                  </div>
+                  <Balance />
                 )}
               </div>
             </Container>
