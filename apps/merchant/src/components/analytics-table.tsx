@@ -1,46 +1,12 @@
 'use client'
 
-import {
-  flexRender,
-  getCoreRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable,
-} from '@tanstack/react-table'
 import type {
-  PaginationState,
-  SortingState,
   ColumnDef,
 } from '@tanstack/react-table'
-import { ChevronDownIcon, ChevronUpIcon, LinkIcon } from 'lucide-react'
-import { useState } from 'react'
+import { LinkIcon } from 'lucide-react'
 import { cn } from '#/lib/utils.ts'
 import { Badge } from '#/components/ui/badge.tsx'
-import { Button } from '#/components/ui/button.tsx'
 import { Checkbox } from '#/components/ui/checkbox.tsx'
-import { Frame, FrameFooter } from '#/components/ui/frame.tsx'
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationNext,
-  PaginationPrevious,
-} from '#/components/ui/pagination.tsx'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '#/components/ui/select.tsx'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '#/components/ui/table.tsx'
 import type { Transaction } from "@baggit/api/app"
 import { DataTable } from './data-table'
 
@@ -161,35 +127,6 @@ const columns: ColumnDef<Transaction>[] = [
 ]
 
 export default function AnalyticsTable({ data }: { data: Array<Transaction> }) {
-  const pageSize = 10
-
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: pageSize,
-  })
-
-  const [sorting, setSorting] = useState<SortingState>([
-    {
-      desc: false,
-      id: 'departureTime',
-    },
-  ])
-
-  const table = useReactTable({
-    columns,
-    data: data,
-    enableSortingRemoval: false,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    onPaginationChange: setPagination,
-    onSortingChange: setSorting,
-    state: {
-      pagination,
-      sorting,
-    },
-  })
-
   return (
     <DataTable data={data} columns={columns} />
   )

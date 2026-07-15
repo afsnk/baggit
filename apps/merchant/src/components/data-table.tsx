@@ -2,9 +2,13 @@
 
 import type {
   ColumnDef,
+  PaginationState,
+  SortingState,
 } from "@tanstack/react-table"
 import {flexRender,
 getCoreRowModel,
+getPaginationRowModel,
+getSortedRowModel,
 useReactTable,} from "@tanstack/react-table"
 
 import {
@@ -19,6 +23,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react"
 import { Button } from "./ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select"
 import { Label } from "./ui/label"
+import { useState } from "react"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -29,10 +34,32 @@ export function DataTable<TData, TValue>({
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
+  const pageSize = 10
+
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: pageSize,
+  })
+
+  const [sorting, setSorting] = useState<SortingState>([
+    {
+      desc: false,
+      id: 'departureTime',
+    },
+  ])
   const table = useReactTable({
-    data,
     columns,
+    data: data,
+    enableSortingRemoval: false,
     getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    onPaginationChange: setPagination,
+    onSortingChange: setSorting,
+    state: {
+      pagination,
+      sorting,
+    },
   })
 
   return (
@@ -101,9 +128,9 @@ export function DataTable<TData, TValue>({
                 />
               </SelectTrigger>
               <SelectContent side="top">
-                {[10, 20, 30, 40, 50].map((pageSize) => (
-                  <SelectItem key={pageSize} value={`${pageSize}`}>
-                    {pageSize}
+                {[10, 20, 30, 40, 50].map((size) => (
+                  <SelectItem key={size} value={`${size}`}>
+                    {size}
                   </SelectItem>
                 ))}
               </SelectContent>
