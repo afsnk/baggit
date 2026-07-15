@@ -177,7 +177,9 @@ export const switchWebhook: AppRouteHandler<SwitchWebhookRoute> = async ({ log, 
   try {
     log.set({ body, params })
     const { paymentId } = params
-    await cache.transaction.set(`transaction.tracker.${paymentId}`, 'processing', '5m')
+    if (body.status = "PROCESSING") {
+      await cache.transaction.set(`transaction.tracker.${paymentId}`, 'processing', '5m')
+    }
 
     const payment = await db.query.payments.findFirst({
       where: (fields, ops) => ops.eq(fields.id, paymentId),

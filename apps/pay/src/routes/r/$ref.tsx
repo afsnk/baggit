@@ -32,10 +32,9 @@ export const Route = createFileRoute('/r/$ref')({
   gcTime: 0,
   shouldReload: true,
   loaderDeps: ({search}) => ({...search}),
-  loader: async ({deps, params}) => {
+  loader: async ({ params}) => {
     try {
       const ref = params.ref
-      const search = deps
 
       const { data: invoiceData, error } = await fetch(`/v1/payment/:invoiceRef`, {
         method: 'GET',
