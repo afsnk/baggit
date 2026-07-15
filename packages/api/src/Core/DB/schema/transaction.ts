@@ -43,7 +43,8 @@ export const transactions = sqliteTable("transactions", {
 
 export const selectTransactions = toZodV4SchemaTyped(createSelectSchema(transactions));
 export const cleanedTransaction = createSelectSchema(transactions).omit({ metadata: true }).extend({
-  vAddress: z.string().optional(),
+  payment: createSelectSchema(payments),
+  ramp: createSelectSchema(ramps).nullable(),
 });
 export const insertTransactions = toZodV4SchemaTyped(createInsertSchema(
   transactions,

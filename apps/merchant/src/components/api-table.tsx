@@ -95,6 +95,7 @@ const columns: ColumnDef<APIKey>[] = [
       return (
         <Checkbox
           aria-label="Select all rows"
+          className="mx-2.5"
           checked={isAllSelected}
           indeterminate={isSomeSelected && !isAllSelected}
           onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
@@ -112,7 +113,7 @@ const columns: ColumnDef<APIKey>[] = [
       </div>
     ),
     header: 'Name',
-    size: 80,
+    size: 120,
   },
   {
     accessorKey: 'enabled',
@@ -161,7 +162,7 @@ const columns: ColumnDef<APIKey>[] = [
   // },
 ]
 
-export default function Particle({ data }: { data: Array<APIKey> }) {
+export default function APIKeyTable({ data }: { data: Array<APIKey> }) {
   const pageSize = 10
 
   const [pagination, setPagination] = useState<PaginationState>({
@@ -194,7 +195,7 @@ export default function Particle({ data }: { data: Array<APIKey> }) {
   return (
     <Frame className="w-full">
       <Table variant="card" className="table-fixed">
-        <TableHeader>
+        <TableHeader className=''>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow className="hover:bg-transparent" key={headerGroup.id}>
               {headerGroup.headers.map((header) => {

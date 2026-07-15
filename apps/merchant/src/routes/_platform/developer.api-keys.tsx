@@ -1,4 +1,4 @@
-import Particle from '#/components/api-table'
+import APIKeyTable from '#/components/api-table'
 import { showCreateKeysModal } from '#/components/create-key-modal'
 import {
   Alert,
@@ -39,7 +39,7 @@ function RouteComponent() {
   return (
     <div className="grid gap-4">
       <div className="flex items-center justify-between w-full">
-        <Alert className="bg-muted">
+        <Alert className="bg-muted/30">
           <AlertTitle>Manage API keys</AlertTitle>
           <AlertDescription>
             Keep these keys secret — they grant full API access. Rotate any key
@@ -56,7 +56,7 @@ function RouteComponent() {
           </AlertAction>
         </Alert>
       </div>
-      <Particle data={apiKeys?.apiKeys || []} />
+      <APIKeyTable data={apiKeys?.apiKeys || []} />
     </div>
   )
 }

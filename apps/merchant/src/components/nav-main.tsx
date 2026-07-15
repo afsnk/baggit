@@ -16,7 +16,7 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from '#/components/ui/sidebar.tsx'
-import { Link } from '@tanstack/react-router'
+import { Link, useMatchRoute } from '@tanstack/react-router'
 
 export function NavMain({
   items,
@@ -31,14 +31,17 @@ export function NavMain({
       url: string
     }[]
   }[]
-}) {
+  }) {
+  const match = useMatchRoute()
   return (
     <SidebarGroup>
       <SidebarGroupLabel>Platform</SidebarGroupLabel>
       <SidebarMenu>
-        {items.map((item) => (
+        {items.map((item, index) => {
+          console.log(`Route match ${item.url} - Is active: ${item.isActive}`, match({to: item.url, fuzzy: true}))
+          return (
           <Collapsible
-            key={item.title}
+            key={item.url+index}
             asChild
             defaultOpen={item.isActive}
             className="group/collapsible"
@@ -66,7 +69,7 @@ export function NavMain({
               </CollapsibleContent>
             </SidebarMenuItem>
           </Collapsible>
-        ))}
+        )})}
       </SidebarMenu>
     </SidebarGroup>
   )

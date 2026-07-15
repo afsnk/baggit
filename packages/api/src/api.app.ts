@@ -12,10 +12,10 @@ const apiApp = createApp({
   prefix: "/v1"
 }).use(
   cors({
-    origin: "*",
+    origin: ({referrer, headers}) => true ||  [referrer, headers.get('origin'), ...env.TRUSTED_ORIGINS.split(',')],
     methods: ["POST", "OPTIONS", "POST", "HEAD", "PATCH", "OPTIONS"],
     credentials: true,
-    allowedHeaders: "*"
+    allowedHeaders: ["Content-type", "Authorization", "Baggit-Public-Key", "Baggit-Secret-Key"]
   })
 )
   .macro(appMacro)
