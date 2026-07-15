@@ -3,7 +3,7 @@ import { Button } from "./ui/button";
 import { getBalanceOptions } from "#/lib/api-client";
 
 interface IBalanceProps { }
-export default function Balance(props: IBalanceProps) {
+export default function Balance(_props: IBalanceProps) {
   const { data, error, isLoading } = useQuery(getBalanceOptions)
   return (
     <div className='p-1 bg-muted flex items-center justify-center gap-4 rounded-lg'>

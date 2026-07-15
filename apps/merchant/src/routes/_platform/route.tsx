@@ -1,7 +1,6 @@
 import { AppSidebar } from '#/components/app-sidebar'
 import Balance from '#/components/Balance'
 import { Container, Main, Section } from '#/components/craft'
-import { Button } from '#/components/ui/button'
 import { SidebarInset, SidebarProvider } from '#/components/ui/sidebar'
 import { Tooltip, TooltipTrigger, TooltipContent } from '#/components/ui/tooltip'
 import { cn } from '#/lib/utils'
