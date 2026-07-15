@@ -182,7 +182,7 @@ export function PaymentPage(props: IPaymentPageProps) {
     },
     {
       step: 3,
-      title: `Transaction ${transactionValue?.includes('failed')? 'failed' : transactionValue}`,
+      title: `Transaction ${transactionValue && transactionValue.includes('failed')? 'failed' : transactionValue}${!transactionValue && 'in-progress'}`,
       description: transactionValue === "processing"
         ? 'Confirming your transaction'
         : transactionValue === "complete"
