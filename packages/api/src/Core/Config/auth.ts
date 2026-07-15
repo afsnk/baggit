@@ -8,6 +8,9 @@ import { createAuthMiddleware } from "better-auth/api"
 import { apiKey } from "@better-auth/api-key"
 import { organization, anonymous, jwt, bearer, emailOTP } from "better-auth/plugins"
 import { sendEmail } from "../Lib/email"
+import { generateAccount, getChain } from "../Lib/wallet/wallet.utils"
+import { useLogger } from "evlog/elysia"
+import { createError } from "evlog"
 
 const defaultAuthConfig: BetterAuthOptions = {
   baseURL: {
@@ -144,8 +147,30 @@ export const auth = betterAuth({
         return user.emailVerified
       },
       organizationHooks: {
-        async afterCreateOrganization(data) {
-          // TODO: Initialise organization resources after creation
+        async afterCreateOrganization({ organization }) {
+          const log = useLogger()
+          try {
+            // TODO: Initialise organization resources after creation
+            const chain = getChain("bsc")
+            const account = await generateAccount(chain, organization.id)
+
+            const [updatedOrg] = await db.update(schema.organization)
+              .set({
+                metadata: {
+                  ...organization.metadata,
+                  ...account
+                }
+              })
+              .returning()
+            log.set({orgWithAddress: updatedOrg})
+          } catch (error: any) {
+            log.error(error)
+            throw createError({
+              message: error?.message,
+              why: "Failed to created organization address",
+              fix: "Try again later, contact support"
+            })
+          }
         },
       }
     }),
