@@ -22,6 +22,13 @@
       "when": 1783637909525,
       "tag": "0002_light_jubilee",
       "breakpoints": false
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1784110988496,
+      "tag": "0003_bouncy_northstar",
+      "breakpoints": false
     }
   ]
 }

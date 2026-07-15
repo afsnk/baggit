@@ -11,6 +11,7 @@ import { sendEmail } from "../Lib/email"
 import { generateAccount, getChain } from "../Lib/wallet/wallet.utils"
 import { useLogger } from "evlog/elysia"
 import { createError } from "evlog"
+import { eq } from "drizzle-orm"
 
 const defaultAuthConfig: BetterAuthOptions = {
   baseURL: {
@@ -154,13 +155,16 @@ export const auth = betterAuth({
             const chain = getChain("bsc")
             const account = await generateAccount(chain, organization.id)
 
+            log.set({ account, chain });
+
             const [updatedOrg] = await db.update(schema.organization)
               .set({
                 metadata: {
-                  ...organization.metadata,
+                  ...organization?.metadata,
                   ...account
-                }
+                } as any
               })
+              .where(eq(schema.organization.id, organization.id))
               .returning()
             log.set({orgWithAddress: updatedOrg})
           } catch (error: any) {
