@@ -4,12 +4,19 @@ import { getRequest } from '@tanstack/react-start/server'
 
 export const Route = createFileRoute('/')({
   component: Home,
-  loader: async () => {
+  beforeLoad: async () => {
     // TODO: check session before redirecting to auth
     const request = getRequest()
     const { data, error } = await authClient.getSession({
       fetchOptions: {headers: request.headers}
     })
+
+    if (error) {
+      console.log(`Failed to validate sesssion`, { error })
+      throw redirect({
+        to: '/auth'
+      })
+    }
 
     if (!data) {
       throw redirect({
