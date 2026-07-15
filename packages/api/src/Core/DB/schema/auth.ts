@@ -133,7 +133,15 @@ export const organization = sqliteTable(
     slug: text("slug").notNull().unique(),
     logo: text("logo"),
     createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull(),
-    metadata: text("metadata"),
+    metadata: text("metadata", { mode: "json" }).$type<{
+      pk?: string;
+      address?: string;
+      fromBlock?: number
+      bankCode?: string;
+      accountNumber?: string;
+      accountName?: string;
+      [key: string]: any
+    }>(),
   },
   (table) => [uniqueIndex("organization_slug_uidx").on(table.slug)],
 );
