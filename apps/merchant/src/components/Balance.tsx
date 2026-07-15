@@ -12,7 +12,10 @@ export default function Balance(_props: IBalanceProps) {
     <div className='p-1 bg-muted flex items-center justify-center gap-4 rounded-lg'>
       <div className='grid items-start'>
         <span className='text-xs font-light text-muted-foreground'>Balance</span>
-        <span className='text-sm font-semibold text-primary'>{data?.totalNgnBalance}</span>
+        <span className='text-sm font-semibold text-primary'>₦ {data?.totalNgnBalance.toLocaleString('en-US', {
+          maximumFractionDigits: 2,
+          minimumFractionDigits: 2,
+        })}</span>
       </div>
       <Button
         size={isMobile ? "icon-sm" : "sm"}

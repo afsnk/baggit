@@ -57,7 +57,6 @@ export async function authorize(req: Request, status: any): Promise<any> {
 export const appMacro = {
   auth: {
     async resolve({ status, request: {headers}}: Context) {
-      console.log(`headers`, {headers})
       const session = await betterAuth.api.getSession({
         headers
       })
