@@ -90,10 +90,10 @@ export const ReferralCTACard = React.forwardRef<
         >
           <div className="flex items-start justify-between">
             <div>
-              <p className="font-semibold text-card-foreground text-sm lg:text-lg">
+              <p className="font-semibold text-card-foreground text-sm lg:text-sm">
                 {subCardTitle}
               </p>
-              <p className="text-xs text-muted-foreground lg:text-lg">
+              <p className="text-xs text-muted-foreground lg:text-sm">
                 {subCardSubtitle}
               </p>
             </div>

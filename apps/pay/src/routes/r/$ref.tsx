@@ -13,8 +13,6 @@ import {
 } from "@/components/ui/empty"
 import { Cloud } from 'lucide-react'
 import { env } from '#/env'
-// import { useQuery } from '@tanstack/react-query'
-// import { Container, Main, Section } from '#/components/craft'
 
 const paymentSearchSchema = z.object({
   merchantName: z.string().optional().default('Ugamy'),
@@ -38,8 +36,6 @@ export const Route = createFileRoute('/r/$ref')({
     try {
       const ref = params.ref
       const search = deps
-      console.log(`URL for request`, env.VITE_API_URL)
-      console.log(`props`, { reference: ref, search, url: env.VITE_API_URL })
 
       const { data: invoiceData, error } = await fetch(`/v1/payment/:invoiceRef`, {
         method: 'GET',
@@ -52,8 +48,6 @@ export const Route = createFileRoute('/r/$ref')({
         console.log(`Error fetching payment`, { error })
         throw error
       }
-
-      console.log(`Pay details`, { invoiceData })
 
       return { ...invoiceData}
     }
@@ -111,6 +105,7 @@ function RouteComponent() {
       method={data.payments[0].method}
       exchangeRate={data.payments[0].rate}
       currency={data.payments[0].currency}
+      reference={ref}
     />
   )
 }

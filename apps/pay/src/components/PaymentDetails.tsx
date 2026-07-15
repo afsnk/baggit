@@ -5,13 +5,11 @@ import { Button } from "#/components/ui/button";
 
 
 const PaymentDetails = ({
-  timer,
   onCancel,
   // onComplete,
   details,
   chain,
 }: {
-    timer: number | string;
     chain: string;
   details: {
     address: string
@@ -94,7 +92,6 @@ const PaymentDetails = ({
               </span>
             </div>
           )}
-          <span className="text-sm font-light mt-3">Expires in: {timer}</span>
         </div>
       </div>
       <Button variant="ghost" size="sm" className="w-full" onClick={onCancel}>

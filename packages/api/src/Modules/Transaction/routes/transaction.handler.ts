@@ -111,6 +111,7 @@ export const init: AppRouteHandler<InitTransactionRoute> = async ({ body, log, s
         .values({
           id: trxQuery?.id,
           ...body,
+          asset: "usdc",
           paymentId: payment.id,
           orgId: payment.organization.id,
           metadata: {
@@ -212,6 +213,9 @@ export const switchWebhook: AppRouteHandler<SwitchWebhookRoute> = async ({ log, 
         network: transaction.network,
         status: transaction.metadata?.collectionHash ? "completed" : "failed",
       }).then(() => console.log("Webhook transaction sent")).catch(error => console.log("failed to sent webhook", { error }));
+
+      await cache.transaction.set(`transaction.tracker.${paymentId}`, 'complete', '5m')
+        .catch(log.error)
 
       return status(200, {
         message: `Webhook resent transaction completed`,
