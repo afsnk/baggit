@@ -177,9 +177,6 @@ export const switchWebhook: AppRouteHandler<SwitchWebhookRoute> = async ({ log, 
   try {
     log.set({ body, params })
     const { paymentId } = params
-    if (body.status = "PROCESSING") {
-      await cache.transaction.set(`transaction.tracker.${paymentId}`, 'processing', '5m')
-    }
 
     const payment = await db.query.payments.findFirst({
       where: (fields, ops) => ops.eq(fields.id, paymentId),
@@ -225,6 +222,7 @@ export const switchWebhook: AppRouteHandler<SwitchWebhookRoute> = async ({ log, 
     }
 
     if (body.status === "COMPLETED") {
+      await cache.transaction.set(`transaction.tracker.${paymentId}`, 'processing', '5m')
       // TODO: validate amount sent
       const isValidAmount = transactionService.validateAmountPaid(payment, (body.source?.amount || 0));
       if (isValidAmount) {
@@ -266,7 +264,6 @@ export const switchWebhook: AppRouteHandler<SwitchWebhookRoute> = async ({ log, 
       }
       return status(200, {message: `Transaction completed`});
     } else {
-      await cache.transaction.set(`transaction.tracker.${paymentId}`, 'processing', '5m')
       return status(200, {message: `Transaction event received`});
     }
   }
