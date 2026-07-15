@@ -6,6 +6,7 @@ import db from "@/Core/DB";
 import * as schema from "@/Core/DB/schema"
 import { eq } from "drizzle-orm";
 import { Address } from "viem";
+import transactionService from "../../services/transaction.service";
 
 
 
@@ -56,8 +57,13 @@ export const getBalances: AppRouteHandler<GetBalanceRoute, 'auth'> = async ({ lo
       )))
     }
 
+    const rate = await transactionService.getSwitchRate()
+    const totalUsd = balances.filter((_, index) => index !== 2).reduce((prev, curr) => prev + curr, 0)
+    const totalNgn = (balances[2] + (totalUsd * rate))
+
     return status(200, {
-      totalBalance: balances.reduce((prev, curr) => prev + curr, 0),
+      totalNgnBalance: totalNgn,
+      totalUsdBalance: totalUsd,
       usdtBalance: balances[0],
       usdcBalance: balances[1],
       cngnBalance: balances[2]
