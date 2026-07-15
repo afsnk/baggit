@@ -43,7 +43,6 @@ export const payments = sqliteTable("payments", {
   invoiceId: text("invoice_id").notNull().references(() => invoice.id, {onDelete: "restrict"}),
   metadata: text("metadata", { mode: "json" }).$type<{
     [key: string]: any;
-    pk: string;
     url: string;
   }>(),
   createdAt: integer({ mode: "timestamp" })
