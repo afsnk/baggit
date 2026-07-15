@@ -83,7 +83,6 @@ export function PaymentPage(props: IPaymentPageProps) {
   const [currency, setCurrency] = useState(props.currency || 'ngn')
   const [paymentMethod, setPaymentMethod] = useState<string>(props.method)
   // const [confirm, setConfirm] = useState<boolean>(false)
-  const amount = currency === 'ngn' ? props.amount : props.amount / 1400
 
   // Mutation/Query
   const {
@@ -150,7 +149,7 @@ export function PaymentPage(props: IPaymentPageProps) {
           setPaymentMethod={setPaymentMethod}
           currency={currency}
           setCurrency={setCurrency}
-          amount={amount}
+          amount={props.amount}
           exchangeRate={props.exchangeRate}
           selectedChain={selectedChain}
           setSelectChain={setSelectChain}
@@ -160,7 +159,7 @@ export function PaymentPage(props: IPaymentPageProps) {
     {
       step: 2,
       title: 'Make transfer',
-      description: <b>Send exactly {currency.toUpperCase()}{(trxData?.amount || amount).toFixed()} to the {paymentMethod === "crypto"? 'address on chain' : 'account details'}</b>,
+      description: <b>Send exactly {currency.toUpperCase()}{(trxData?.amount || paymentMethod === 'bank-transfer' ? props.amount : props.amount / 1400).toFixed()} to the {paymentMethod === "crypto"? 'address on chain' : 'account details'}</b>,
       content: (
         <PaymentDetails
           timer={timer}
