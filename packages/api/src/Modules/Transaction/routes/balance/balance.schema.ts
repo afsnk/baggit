@@ -5,7 +5,8 @@ import {z} from "zod";
 export const getBalanceSchema = {
   response: {
     200: z.object({
-      totalBalance: z.number().default(0),
+      totalNgnBalance: z.number().default(0),
+      totalUsdBalance: z.number().default(0),
       usdcBalance: z.number().default(0),
       usdtBalance: z.number().default(0),
       cngnBalance: z.number().default(0)

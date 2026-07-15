@@ -78,6 +78,10 @@ export const getTransactions =
   })
 
 export const getBalanceOptions = queryOptions({
+  refetchOnMount: true,
+  retryOnMount: true,
+  refetchOnWindowFocus: false,
+  staleTime: 30_0000,
   queryKey: ['getBalances'],
   queryFn: async () => {
     const { data, error } = await fetch(`/v1/balance/`, {

@@ -51,7 +51,7 @@ function RouteComponent() {
             </Container>
           </Section>
           <Section className="p-4!">
-            <Container className="p-0!">
+            <Container className="p-0! w-full">
               <Outlet />
             </Container>
           </Section>

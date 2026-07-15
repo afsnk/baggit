@@ -10,6 +10,7 @@ import PieSlice from '#/components/charts/pie-slice'
 import { ChartTooltip } from '#/components/charts/tooltip'
 import { Badge } from '#/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '#/components/ui/card'
+import { ScrollArea, ScrollBar } from '#/components/ui/scroll-area'
 import { getTransactions } from '#/lib/api-client'
 import { useQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
@@ -51,9 +52,14 @@ function RouteComponent() {
 
   return (
     <div className='grid gap-6'>
-      <div className='max-h-[250px] h-full flex relative group'>
+      <div className='max-h-62.5 h-full grid relative group border border-green-400'>
         <h4 className='absolute font-semibold text-muted-foreground group-hover:text-primary transition z-50'>Revenue accross currencies</h4>
-        <BarChart data={computedBarChartData || []} xDataKey="date" status={isLoading? 'loading' : 'ready'}>
+        <BarChart
+          data={computedBarChartData || []}
+          xDataKey="date"
+          status={isLoading ? 'loading' : 'ready'}
+          className='max-w-min'
+        >
           <Grid horizontal shimmer />
           <Bar dataKey="usdt" fill="var(--color-chart-3)" lineCap="round" />
           <Bar
@@ -71,14 +77,14 @@ function RouteComponent() {
         </BarChart>
       </div>
 
-      <div className='grid lg:grid-cols-2 grid-cols-1 gap-4'>
-        <Card>
+      <div className='grid grid-cols-1 lg:grid-cols-2 gap-4'>
+        <Card className=''>
           <CardHeader>
             <CardTitle className='text-sm font-semibold flex items-center gap-2'>
               Widget revenue <Badge>Last 7 days</Badge>
             </CardTitle>
           </CardHeader>
-          <CardContent className='flex items-center justify-start gap-6'>
+          <CardContent className='flex w-full items-center justify-start gap-6'>
             <PieChart data={computedPieChartdata} size={180} innerRadius={40} padAngle={.12} cornerRadius={5}>
               {computedPieChartdata.map((_, index) => (
                 <PieSlice key={index} index={index} />
@@ -94,13 +100,13 @@ function RouteComponent() {
             </Legend>
           </CardContent>
         </Card>
-        <Card>
+        <Card className=''>
           <CardHeader>
             <CardTitle className='text-sm font-semibold flex items-center gap-2'>
               Checkout revenue <Badge>Last 7 days</Badge>
             </CardTitle>
           </CardHeader>
-          <CardContent className='flex items-center justify-start gap-6'>
+          <CardContent className='flex w-full items-center justify-start gap-6'>
             <PieChart data={pieData} size={150} innerRadius={30} padAngle={.12} cornerRadius={5}>
               {pieData.map((_, index) => (
                 <PieSlice key={index} index={index} />
