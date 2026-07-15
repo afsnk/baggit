@@ -1,9 +1,10 @@
 import env from "@/Core/Config/env";
-import { TInvoice, TPayment } from "@/Core/DB/schema/payment";
+import type { TInvoice, TPayment } from "@/Core/DB/schema/payment";
+import type { TTransaction } from "@/Core/DB/schema/transaction";
 import { Cypher } from "@/Core/Lib/wallet/cypher.utils";
-import { getChain, refactoredGetLogs, runTransaction, TOKEN_ADDRESSES } from "@/Core/Lib/wallet/wallet.utils";
+import { getBalance, getChain, runTransaction, TOKEN_ADDRESSES } from "@/Core/Lib/wallet/wallet.utils";
 import { betterFetch } from "@better-fetch/fetch";
-import { Address, Chain, encodeFunctionData, formatUnits, Hex, parseAbi, parseUnits } from "viem";
+import { Address, encodeFunctionData, formatUnits, Hex, parseAbi, parseUnits } from "viem";
 
 
 
@@ -33,42 +34,44 @@ class Transaction {
   //   }
   // }
 
-  // async collectFeeAndPayout(pk: string, transaction: TTransaction, amountSent: number, merchantAddress?: Address) {
+  async collectFeeAndPayout(pk: Hex, transaction: TTransaction, key: string, trxAddress: Address, merchantAddress: Address) {
 
-  //   const chain = getChain(transaction.network);
-  //   const token = TOKEN_ADDRESSES[chain.id][`${transaction.asset}`];
+    const chain = getChain(transaction.network);
+    const asset = transaction.asset as "usdt" | "usdc" | "cngn";
+    const token = TOKEN_ADDRESSES[chain.id][asset];
+    const balance = getBalance(transaction.network as "base" | "bsc", trxAddress, asset)
 
-  //   return await runTransaction(
-  //     Cypher.decrypt(pk, env.ENC_KEY) as Hex,
-  //     chain,
-  //     token.address as Address,
-  //     [
-  //       encodeFunctionData({
-  //         abi: parseAbi([
-  //           "function transfer(address to, uint256 amount) external returns (bool)",
-  //         ]),
-  //         functionName: "transfer",
-  //         args: [
-  //           merchantAddress || `0x3a91a76d654e24021eec78472d06c5d8846b6dee`, // Send to mercahnt
-  //           parseUnits((amountSent - (amountSent * 0.05)).toString(), token.decimal),
-  //         ],
-  //       }),
-  //       encodeFunctionData({
-  //         abi: parseAbi([
-  //           "function transfer(address to, uint256 amount) external returns (bool)",
-  //         ]),
-  //         functionName: "transfer",
-  //         args: [
-  //           env.FEE_COLLECTION_ADDRESS as Address, // collect fee
-  //           parseUnits((amountSent * 0.05).toString(), token.decimal),
-  //         ],
-  //       }),
-  //     ],
-  //   ).then((receipt) => {
-  //     console.log(`Reciept of payout transaction`, { receipt });
-  //     return receipt;
-  //   }).catch(error => console.log(`Error sweeping funds`, { error }));
-  // }
+    return await runTransaction(
+      Cypher.decrypt(pk, key || env.ENC_KEY) as Hex,
+      chain,
+      token.address as Address,
+      [
+        encodeFunctionData({
+          abi: parseAbi([
+            "function transfer(address to, uint256 amount) external returns (bool)",
+          ]),
+          functionName: "transfer",
+          args: [
+            merchantAddress, // Send to mercahnt
+            parseUnits(balance.toString(), token.decimal),
+          ],
+        }),
+        // encodeFunctionData({
+        //   abi: parseAbi([
+        //     "function transfer(address to, uint256 amount) external returns (bool)",
+        //   ]),
+        //   functionName: "transfer",
+        //   args: [
+        //     env.FEE_COLLECTION_ADDRESS as Address, // collect fee
+        //     parseUnits((amountSent * 0.05).toString(), token.decimal),
+        //   ],
+        // }),
+      ],
+    ).then((receipt) => {
+      console.log(`Reciept of payout transaction`, { receipt });
+      return receipt;
+    }).catch(error => console.log(`Error sweeping funds`, { error }));
+  }
 
   async addAddressToAlchemy(address: Address, chain: "bsc" | "base") {
     console.log(`Alchemy token`, {token: env.ALCHEMY_API_KEY})
@@ -216,11 +219,11 @@ class Transaction {
     const isNaira = payment.currency === "ngn" || payment.currency === "cngn";
     const invoiceAmount = payment.invoice.amount
     if (isNaira) {
-      const nairaAmount = this.convertToNGN(amountSent, payment.rate!)
-      return nairaAmount >= invoiceAmount;
+      // const nairaAmount = this.convertToNGN(amountSent, payment.rate!)
+      return amountSent >= payment.amount;
     }
 
-    return amountSent >= invoiceAmount
+    return amountSent >= payment.amount;
   }
 
   convertToUSD(nairaAmount: number, rate: number) {

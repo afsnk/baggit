@@ -82,3 +82,4 @@ export const transactionRelations = relations(transactions, ({ one }) => ({
 
 
 export type TTransaction = z.infer<typeof selectTransactions>
+export type CleanedTransaction = z.infer<typeof cleanedTransaction>

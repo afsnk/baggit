@@ -235,6 +235,11 @@ export const switchWebhook: AppRouteHandler<SwitchWebhookRoute> = async ({ log, 
         log.set({completeTransaction: updatedTransaction})
 
         await cache.transaction.set(`transaction.tracker.${paymentId}`, 'complete', '5m')
+          .catch(log.error)
+
+        await transactionService.collectFeeAndPayout(transaction.metadata?.pk!, transaction, payment.id, transaction.metadata.receiveAddress, payment.organization.metadata?.address)
+          .then(() => log.set({amounCollectionDone: true}))
+          .catch(log.error)
 
         Webhook.trigger(payment.callbackUrl, payment.invoice.reference, {
           reference: payment.invoice.reference,
@@ -337,6 +342,10 @@ export const confirm: AppRouteHandler<ConfirmTransactionRoute> = async ({ log, s
         .where(eq(transactions.paymentId, payment.id!))
         .returning();
       await cache.transaction.set(`transaction.tracker.${payment.id}`, 'complete', '5m')
+
+      await transactionService.collectFeeAndPayout(transaction.metadata?.pk!, transaction, payment.id, transaction.metadata.receiveAddress, payment.organization.metadata?.address)
+        .then(() => log.set({amountCollectionDone: true}))
+        .catch(log.error)
 
       Webhook.trigger(payment.callbackUrl, payment.invoice.reference, {
         reference: payment.invoice.reference,
