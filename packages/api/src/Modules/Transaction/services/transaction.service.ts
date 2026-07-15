@@ -39,38 +39,42 @@ class Transaction {
     const chain = getChain(transaction.network);
     const asset = transaction.asset as "usdt" | "usdc" | "cngn";
     const token = TOKEN_ADDRESSES[chain.id][asset];
-    const balance = getBalance(transaction.network as "base" | "bsc", trxAddress, asset)
+    const balance = await getBalance(transaction.network as "base" | "bsc", trxAddress, asset)
 
-    return await runTransaction(
-      Cypher.decrypt(pk, key || env.ENC_KEY) as Hex,
-      chain,
-      token.address as Address,
-      [
-        encodeFunctionData({
-          abi: parseAbi([
-            "function transfer(address to, uint256 amount) external returns (bool)",
-          ]),
-          functionName: "transfer",
-          args: [
-            merchantAddress, // Send to mercahnt
-            parseUnits(balance.toString(), token.decimal),
-          ],
-        }),
-        // encodeFunctionData({
-        //   abi: parseAbi([
-        //     "function transfer(address to, uint256 amount) external returns (bool)",
-        //   ]),
-        //   functionName: "transfer",
-        //   args: [
-        //     env.FEE_COLLECTION_ADDRESS as Address, // collect fee
-        //     parseUnits((amountSent * 0.05).toString(), token.decimal),
-        //   ],
-        // }),
-      ],
-    ).then((receipt) => {
-      console.log(`Reciept of payout transaction`, { receipt });
-      return receipt;
-    }).catch(error => console.log(`Error sweeping funds`, { error }));
+    if (balance > 0) {
+      return await runTransaction(
+        Cypher.decrypt(pk, key || env.ENC_KEY) as Hex,
+        chain,
+        token.address as Address,
+        [
+          encodeFunctionData({
+            abi: parseAbi([
+              "function transfer(address to, uint256 amount) external returns (bool)",
+            ]),
+            functionName: "transfer",
+            args: [
+              merchantAddress, // Send to mercahnt
+              parseUnits(balance.toString(), token.decimal),
+            ],
+          }),
+          // encodeFunctionData({
+          //   abi: parseAbi([
+          //     "function transfer(address to, uint256 amount) external returns (bool)",
+          //   ]),
+          //   functionName: "transfer",
+          //   args: [
+          //     env.FEE_COLLECTION_ADDRESS as Address, // collect fee
+          //     parseUnits((amountSent * 0.05).toString(), token.decimal),
+          //   ],
+          // }),
+        ],
+      ).then((receipt) => {
+        console.log(`Reciept of payout transaction`, { receipt });
+        return receipt;
+      }).catch(error => console.log(`Error sweeping funds`, { error }));
+    } else {
+      console.log(`Only non-zero balance can be swept...`)
+    }
   }
 
   async addAddressToAlchemy(address: Address, chain: "bsc" | "base") {

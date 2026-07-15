@@ -359,6 +359,7 @@ export async function getBalance(network: "base" | "bsc", address: Address, asse
     transport: http(),
     chain,
   });
+  console.log(`Catch undefined`, chain.id, asset)
   const token = TOKEN_ADDRESSES[chain.id][asset];
   console.log("Token", { token });
   const balance = await publicClient.readContract({
