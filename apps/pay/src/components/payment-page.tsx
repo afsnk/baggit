@@ -9,7 +9,6 @@ import { PaymentFlowStepper } from './payment-flow-stepper'
 import type { StepProps } from './payment-flow-stepper'
 
 import { ReferralCTACard } from './referral-cta'
-import { ReceiptSheet } from './ReceiptSheet'
 
 import { Skeleton } from './ui/skeleton'
 import { useMutation} from '@tanstack/react-query'
@@ -139,7 +138,7 @@ export function PaymentPage(props: IPaymentPageProps) {
   console.log(`Watched values`, { status, transactionValue, key })
 
   useEffect(() => {
-    if (transactionValue && import.meta.env.DEV) {
+    if (transactionValue === "complete" && import.meta.env.DEV) {
       toast.success(`Transaction complete event received success`)
     }
 
@@ -172,7 +171,7 @@ export function PaymentPage(props: IPaymentPageProps) {
     {
       step: 2,
       title: 'Make transfer',
-      description: <b>Send exactly {currency.toUpperCase()}{(trxData?.amount || paymentMethod === 'bank-transfer' ? props.amount : props.amount / 1400).toFixed()} to the {paymentMethod === "crypto"? 'address on chain' : 'account details'}</b>,
+      description: <span>Send exactly <b className='text-green-500'>{currency.toUpperCase()}{(trxData?.amount || paymentMethod === 'bank-transfer' ? (trxData?.amount || props.amount) : props.amount / (props.exchangeRate || 1400)).toFixed()}</b> to the {paymentMethod === "crypto"? 'address on chain' : 'account details'}</span>,
       content: (
         <PaymentDetails
           onCancel={resetFlow}
