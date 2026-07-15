@@ -27,16 +27,17 @@ interface IPaymentPageProps {
   amount: number
   paymentId: string
   orgId: string
+  reference: string
   method: string | "bank-transfer" | "crypto"
   exchangeRate: number | null
   currency: string | null
 }
 
 // TODO: Update props with total count
-const CircularTimer = ({ timeLeft }: { timeLeft: number }) => {
+const CircularTimer = ({ timeLeft, timerCount }: { timeLeft: number; timerCount: number }) => {
   const radius = 40
   const circumference = 2 * Math.PI * radius
-  const progress = ((90 - timeLeft) / 90) * circumference
+  const progress = ((timerCount - timeLeft) / timerCount) * circumference
 
   return (
     <div className="relative h-8 w-8">
@@ -74,10 +75,10 @@ const CircularTimer = ({ timeLeft }: { timeLeft: number }) => {
   )
 }
 
-
+const TIMER_COUNT = 30
 export function PaymentPage(props: IPaymentPageProps) {
   const [currentStep, setCurrentStep] = useState(0)
-  const [timer, setTimer] = useState(90)
+  const [timer, setTimer] = useState(TIMER_COUNT)
 
   const [selectedChain, setSelectChain] = useState('bsc')
   const [currency, setCurrency] = useState(props.currency || 'ngn')
@@ -96,12 +97,12 @@ export function PaymentPage(props: IPaymentPageProps) {
   // Timer logic
   useEffect(() => {
     let interval: NodeJS.Timeout
-    if (currentStep === 1 && timer > 0) {
+    if (currentStep === 2 && timer > 0) {
       interval = setInterval(() => {
         setTimer((prev) => prev - 1)
       }, 1000)
     } else if (timer === 0) {
-      resetFlow() // Auto-reverse to the previous step
+      redirectToMerchant() // Auto-redirect to merchant
     }
     return () => clearInterval(interval)
   }, [currentStep, timer])
@@ -117,9 +118,21 @@ export function PaymentPage(props: IPaymentPageProps) {
   }
 
   const resetFlow = () => {
-    // setConfirm(false)
     setCurrentStep(0)
-    setTimer(90)
+  }
+
+  const retryPayment = () => {
+    setCurrentStep(1)
+    setTimer(30)
+  }
+
+  const redirectToMerchant = () => {
+    const url = new URL(props.merchantCallbackUrl)
+    url.searchParams.append('status', 'success')
+    url.searchParams.append('reference', props.reference)
+    url.searchParams.append('paymentId', props.paymentId)
+
+    window.location.href = url.toString()
   }
 
   const { status, value: transactionValue, key } = useNatsKVWatcher(`transaction.tracker.${props.paymentId}`)
@@ -162,11 +175,7 @@ export function PaymentPage(props: IPaymentPageProps) {
       description: <b>Send exactly {currency.toUpperCase()}{(trxData?.amount || paymentMethod === 'bank-transfer' ? props.amount : props.amount / 1400).toFixed()} to the {paymentMethod === "crypto"? 'address on chain' : 'account details'}</b>,
       content: (
         <PaymentDetails
-          timer={timer}
           onCancel={resetFlow}
-          // onComplete={() => {
-          //   // Killers — Junks
-          // }}
           chain={selectedChain}
           details={trxData?.details}
         />
@@ -174,8 +183,12 @@ export function PaymentPage(props: IPaymentPageProps) {
     },
     {
       step: 3,
-      title: 'Complete transaction',
-      description: 'Confirming your transaction',
+      title: `Transaction ${transactionValue?.includes('failed')? 'failed' : transactionValue}`,
+      description: transactionValue === "processing"
+        ? 'Confirming your transaction'
+        : transactionValue === "complete"
+          ? `You will be redirected back to the merchant in ${timer} seconds`
+          : 'Something went wrong with your payment',
       content: (
         <div className="flex flex-col space-y-2">
           {transactionValue === "processing" && (
@@ -193,7 +206,7 @@ export function PaymentPage(props: IPaymentPageProps) {
                 amount={128.32}
                 currency="$"
                 subCardTitle="Share with friends"
-                subCardSubtitle="Earn when they complete subscription"
+                subCardSubtitle="Earn when they complete payment"
                 moreCount={8}
                 onSubCardClick={() => {
                   window.alert(`Referral Earnings are comming soon`)
@@ -204,9 +217,7 @@ export function PaymentPage(props: IPaymentPageProps) {
                   { src: 'https://i.pravatar.cc/150?img=3', alt: 'User 3' },
                 ]}
               />
-              <ReceiptSheet confirmData={{} as any}>
-                <Button className="w-full">View Receipt</Button>
-              </ReceiptSheet>
+              {transactionValue.includes("failed") && <Button className="w-full" onClick={retryPayment}>View Receipt</Button>}
             </>
           )}
         </div>
@@ -279,7 +290,7 @@ export function PaymentPage(props: IPaymentPageProps) {
                 </Button>
               </div>
             }
-            timerComponent={<CircularTimer timeLeft={timer} />}
+            timerComponent={<CircularTimer timeLeft={timer} timerCount={TIMER_COUNT} />}
             // headerStatus="Review"
           />
         </div>
