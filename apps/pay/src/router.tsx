@@ -15,7 +15,17 @@ export function getRouter() {
     defaultPreloadStaleTime: 0,
   })
 
-  setupRouterSsrQueryIntegration({ router, queryClient: context.queryClient })
+  setupRouterSsrQueryIntegration({
+    router,
+    queryClient: context.queryClient,
+    hydrateOptions: {
+      defaultOptions: {
+        queries: {
+          gcTime: 5 * 60 * 1000,
+        },
+      },
+    },
+  })
 
   return router
 }

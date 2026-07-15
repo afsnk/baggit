@@ -1,5 +1,5 @@
 {
-  "name": "merchant",
+  "name": "@baggit/merchant",
   "private": true,
   "type": "module",
   "imports": {

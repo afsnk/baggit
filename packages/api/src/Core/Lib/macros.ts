@@ -151,11 +151,3 @@ export type ResolvedOf<Macros extends keyof typeof appMacro> =
 
 export type AppResolve = MacroResolved<typeof appMacro>
 export type AppMacroFlags = { [K in keyof typeof appMacro]?: boolean }
-
-
-type T1 = (typeof appMacro)['jwt'] extends { resolve: (...a: any) => infer R } ? R : 'NO_RESOLVE'
-// Expect: Promise<{ user; session } | ElysiaCustomStatusResponse<401, ...>>
-// If T1 = 'NO_RESOLVE' → the `: Context` annotation broke the `resolve` shape match. ← most likely
-
-type T2 = Awaited<T1>
-type T3 = Exclude<T2, ElysiaCustomStatusResponse<any, any, any>>

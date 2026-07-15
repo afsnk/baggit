@@ -170,27 +170,29 @@ const PaymentMethodPicker = ({
         </Select>
       </div>
       <div className="flex justify-between items-center p-1 border rounded-lg">
-        {payment.isPending? <Loader2 className='size-4 animate-spin' /> : (<p className="font-mono font-medium flex items-center gap-1">
-          <Avatar className="size-4 rounded-md object-contain">
-            <AvatarImage
-              src={
-                currency === 'usdc'
-                  ? `/assets/usdc.png`
-                  : currency === 'usdt'
-                    ? `/assets/usdt.svg`
-                    : undefined
-              }
-            />
-            <AvatarFallback>{'₦'}</AvatarFallback>
-          </Avatar>
-          {amount.toLocaleString('en-US', {maximumFractionDigits: 2, minimumFractionDigits: 2})}
-        </p>)}
+        {payment.isPending
+          ? <Loader2 className='size-4 animate-spin' />
+          : (<p className="font-mono font-medium flex items-center gap-1">
+                <Avatar className="size-4 rounded-md object-contain">
+                  <AvatarImage
+                    src={
+                      currency === 'usdc'
+                        ? `/assets/usdc.png`
+                        : currency === 'usdt'
+                          ? `/assets/usdt.svg`
+                          : undefined
+                    }
+                  />
+                  <AvatarFallback>{'₦'}</AvatarFallback>
+                </Avatar>
+              {(paymentMethod === "crypto"? (amount/(exchangeRate || 1400)) : amount).toLocaleString('en-US', {maximumFractionDigits: 2, minimumFractionDigits: 2})}
+            </p>)}
         <CurrencyToggle
           onCurrencyChange={(newCurrency: string) => {
             console.log(`Currency toggle`, {newCurrency})
             payment.mutate({
               method: paymentMethod,
-              amount: Number(paymentMethod === "crypto" ? (amount / 1400).toFixed(2) : amount),
+              amount: Number(paymentMethod === "crypto" ? (amount / (exchangeRate || 1400)).toFixed(2) : amount),
               currency: newCurrency
             })
             setCurrency(newCurrency)
