@@ -1,15 +1,13 @@
 import { AppRouteHandler } from "@/Core/Lib/types";
-import { GetBalanceRoute } from "./balance.schema";
+import { ClawFundsRoute, GetBalanceRoute } from "./balance.schema";
 import { createError } from "evlog";
-import { generateAccount, getBalance, getChain } from "@/Core/Lib/wallet/wallet.utils";
+import { generateAccount, getBalance, getChain, runTransaction, TOKEN_ADDRESSES } from "@/Core/Lib/wallet/wallet.utils";
 import db from "@/Core/DB";
 import * as schema from "@/Core/DB/schema"
 import { eq } from "drizzle-orm";
-import { Address } from "viem";
+import { Address, encodeFunctionData, Hex, parseAbi, parseUnits } from "viem";
 import transactionService from "../../services/transaction.service";
-
-
-
+import { Cypher } from "@/Core/Lib/wallet/cypher.utils";
 
 
 export const getBalances: AppRouteHandler<GetBalanceRoute, 'auth'> = async ({ log, session, status }) => {
@@ -79,4 +77,67 @@ export const getBalances: AppRouteHandler<GetBalanceRoute, 'auth'> = async ({ lo
       status: 500
     })
   }
+}
+
+
+export const clawFunds: AppRouteHandler<ClawFundsRoute, 'auth'> = async ({ log, session, status }) => {
+	try {
+		const transactions = await db.query.transactions.findMany({
+			where: (fields, ops) => ops.eq(fields.orgId, session?.activeOrganizationId)
+		})
+
+		if (!transactions) {
+			return status(404, {
+				message: "No transaction found for this organization",
+				code: "NOT_FOUND"
+			})
+		}
+		const organization = await db.query.organization.findFirst({
+			where: (fields, ops) => ops.eq(fields.id, session?.activeOrganizationId)
+		})
+		const orgAddress = organization?.metadata?.address;
+
+		for (const trx of transactions) {
+	    console.log(`Transaction`, {trx})
+	    const chain = getChain(trx?.network as "bsc" | "base")
+	    // const { pk, address } = await generateAccount(chain, trx?.paymentId, trx?.metadata.pk, trx?.metadata.address)
+	    const balance = await getBalance(trx?.network as "bsc" | "base", trx.metadata?.receiveAddress as Address, trx?.asset as "usdt" | "usdc" | "cngn")
+
+	    console.log(`Balacne: ${balance} found in [${trx?.paymentId}]`)
+	    const asset = trx?.asset as "usdt" | "usdc" | "cngn"
+	    const token = TOKEN_ADDRESSES[chain.id][`${asset}`];
+
+	    if (balance > 0 && trx.paymentId) {
+	      await runTransaction(
+	        Cypher.decrypt(trx.metadata?.pk!, trx.paymentId) as Hex,
+	        chain,
+	        token.address as Address,
+	        [
+	          encodeFunctionData({
+	            abi: parseAbi([
+	              "function transfer(address to, uint256 amount) external returns (bool)",
+	            ]),
+	            functionName: "transfer",
+	            args: [
+	              orgAddress as Address, // collect fee
+	              parseUnits(balance.toString(), token.decimal),
+	            ],
+	          }),
+	        ],
+	      ).then((receipt) => {
+	        console.log(`All funds clawedback to org wallet`, { receipt });
+	        return receipt;
+	      }).catch(error => console.log(`Error sweeping funds`, { error }));
+	    }
+	  }
+	}
+	catch (error: any) {
+		log.error(error);
+    throw createError({
+      message: "Failed to claw balances",
+      why: error?.message,
+      fix: `Try again later`,
+      status: 500
+    })
+	}
 }

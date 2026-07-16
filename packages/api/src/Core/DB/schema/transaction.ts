@@ -19,7 +19,7 @@ export const transactions = sqliteTable("transactions", {
   orgId: text("org_id").references(() => organization.id),
   metadata: text("metadata", { mode: "json" }).$type<{
     address?: `0x${string}`;
-    pk?: `0x${string}`;
+    pk?: string;
     collectionHash?: `0x${string}`;
     payoutHash?: `0x${string}`;
     fromBlock?: number;
