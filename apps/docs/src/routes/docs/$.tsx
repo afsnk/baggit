@@ -66,7 +66,7 @@ function Page() {
         {
           type: 'main',
           text: 'API Reference',
-          url: 'https://api.baggit.link/reference',
+          url: 'https://api.baggit.link/v1/reference',
           external: true,
         },
         {
