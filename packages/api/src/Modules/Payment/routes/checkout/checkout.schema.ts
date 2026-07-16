@@ -42,9 +42,9 @@ export const createCheckoutOrder = {
   }),
 	apiKey: true,
 	headers: z.object({
-		'Baggit-Public-Key': z.string(),
-		'Baggit-Secret-Key': z.string()
-	}),
+		'Baggit-Public-Key': z.string().optional(),
+		'Baggit-Secret-Key': z.string().optional()
+	}).optional(),
   detail: {
     ...DETAILS,
     description: "Checkout a user to make payment",
@@ -69,9 +69,9 @@ export const verifyCheckoutStatus = {
   }),
 	apiKey: true,
 	headers: z.object({
-		'Baggit-Public-Key': z.string(),
-		'Baggit-Secret-Key': z.string()
-	}),
+		'Baggit-Public-Key': z.string().optional(),
+		'Baggit-Secret-Key': z.string().optional()
+	}).optional(),
   detail: {
     ...DETAILS,
     description: "Verify checkout status by order"
