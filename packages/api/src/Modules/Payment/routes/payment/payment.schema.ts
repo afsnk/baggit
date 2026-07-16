@@ -26,7 +26,8 @@ export const updateMethodRoute = {
     tags: ["Payment"],
     summary: "Payments API routes",
     description: "Update a payment method by id.",
-    operationId: 'payments'
+		operationId: 'payments',
+		hide: true
   }
 } satisfies AppRouteSchema;
 
@@ -47,7 +48,8 @@ export const getPaymentRoute = {
     tags: ["Payment"],
     summary: "Payments API routes",
     description: "Get a payment method by its invoice reference.",
-    operationId: 'payments'
+		operationId: 'payments',
+    hide: true
   }
 } satisfies AppRouteSchema;
 
