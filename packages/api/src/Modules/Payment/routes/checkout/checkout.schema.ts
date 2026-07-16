@@ -15,6 +15,10 @@ export const createCheckoutOrder = {
       invoice: selectInvoice,
       defaultPayment: selectPayments
     }),
+    401: z.object({
+      message: z.string(),
+      code: z.string()
+    }),
     500: z.object({
       message: z.string(),
       code: z.string()
@@ -22,13 +26,13 @@ export const createCheckoutOrder = {
   },
   body: z.object({
     amount: z.number(),
-    currency: z.enum(['NGN', 'USD', 'GBP']),
-    reference: z.string().min(6),
-    type: z.enum(['onetime', 'recurring']).default('onetime'),
-    range: z.enum(["monthly", "yearly"]).optional(),
-    callbackUrl: z.url(),
-    memo: z.string().optional(),
-    redirectUrl: z.url().optional(),
+    currency: z.enum(['NGN', 'USD', 'GBP']).default('NGN').describe('Base currency for the payment (Only NGN support for now)'),
+    reference: z.string().min(6).describe('Your invoice reference, store in your DB'),
+    type: z.enum(['onetime', 'recurring']).default('onetime').describe('onetime for sales, recurring for subscriptions'),
+    range: z.enum(["monthly", "yearly"]).optional().nullable(),
+    callbackUrl: z.url().describe('callbackUrl for redirect after payment is done'),
+    memo: z.string().optional().describe('Optional Memo message for user under title'),
+    redirectUrl: z.url().optional().describe('Optional redirect URL'),
     metadata: z.any().optional(),
     customer: z.object({
       email: z.string().optional(),
@@ -36,7 +40,11 @@ export const createCheckoutOrder = {
       phone: z.string().optional()
     }).optional()
   }),
-  apiKey: true,
+	apiKey: true,
+	headers: z.object({
+		'Baggit-Public-Key': z.string(),
+		'Baggit-Secret-Key': z.string()
+	}),
   detail: {
     ...DETAILS,
     description: "Checkout a user to make payment",
@@ -59,7 +67,11 @@ export const verifyCheckoutStatus = {
   params: z.object({
     orderId: z.string(), // reference or id
   }),
-  apiKey: true,
+	apiKey: true,
+	headers: z.object({
+		'Baggit-Public-Key': z.string(),
+		'Baggit-Secret-Key': z.string()
+	}),
   detail: {
     ...DETAILS,
     description: "Verify checkout status by order"
