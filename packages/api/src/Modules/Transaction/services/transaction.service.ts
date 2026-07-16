@@ -34,7 +34,7 @@ class Transaction {
   //   }
   // }
 
-  async collectFeeAndPayout(pk: Hex, transaction: TTransaction, key: string, trxAddress: Address, merchantAddress: Address) {
+  async collectFeeAndPayout(pk: string, transaction: TTransaction, key: string, trxAddress: Address, merchantAddress: Address) {
 
     const chain = getChain(transaction.network);
     const asset = transaction.asset as "usdt" | "usdc" | "cngn";
