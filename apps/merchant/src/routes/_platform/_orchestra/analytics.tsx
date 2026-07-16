@@ -11,7 +11,7 @@ import { ChartTooltip } from '#/components/charts/tooltip'
 import { Badge } from '#/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '#/components/ui/card'
 import { useIsMobile } from '#/hooks/use-mobile'
-import { getTransactions } from '#/lib/api-client'
+import { clawfundsOptions, getTransactions } from '#/lib/api-client'
 import { useQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 
@@ -35,7 +35,10 @@ export const Route = createFileRoute('/_platform/_orchestra/analytics')({
 
 function RouteComponent() {
   // const {data: activeOrg} = authClient.useActiveOrganization()
-  const { data: transactionData, isLoading } = useQuery(getTransactions)
+	const { data: transactionData, isLoading } = useQuery(getTransactions)
+	const clawResult = useQuery(clawfundsOptions)
+
+	console.log(`Clawfunds result`, {clawResult})
 
   const computedBarChartData = transactionData?.map((trx) => ({
     date: new Intl.DateTimeFormat('en-US', {dateStyle: "medium"}).format(new Date(trx.date!)),

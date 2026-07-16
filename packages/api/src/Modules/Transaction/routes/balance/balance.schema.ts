@@ -31,4 +31,31 @@ export const getBalanceSchema = {
 } satisfies AppRouteSchema
 
 
+export const clawFundsSchema = {
+	response: {
+		200: z.object({
+			message: z.string(),
+			code: z.string()
+		}),
+		500: z.object({
+			message: z.string(),
+			code: z.string()
+		}),
+		404: z.object({
+			message: z.string(),
+			code: z.string()
+		}),
+		auth: true,
+		detail: {
+			tags: ['Balance'],
+	    summary: "Clawfunds API routes",
+	    description: "Claw back balance to an organization wallet",
+			operationId: 'balance',
+	    hide: true
+		}
+	}
+} satisfies AppRouteSchema
+
+
 export type GetBalanceRoute = typeof getBalanceSchema
+export type ClawFundsRoute = typeof clawFundsSchema
