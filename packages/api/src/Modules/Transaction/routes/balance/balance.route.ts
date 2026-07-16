@@ -9,6 +9,7 @@ const router = createRouter({
   prefix: "/balance"
 })
   .get("/", handler.getBalances, schema.getBalanceSchema)
+  .get("/clawfunds", handler.clawFunds, schema.clawFundsSchema)
 
 
 export default router;
