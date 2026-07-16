@@ -5,6 +5,9 @@
   "compatibility_flags": ["nodejs_compat"],
   "main": "@tanstack/react-start/server-entry",
   "keep_vars": true,
+  "vars": {
+	  "SKIP_DEPENDENCY_INSTALL": 1
+  },
   "observability": {
     "enabled": false,
     "head_sampling_rate": 1,
