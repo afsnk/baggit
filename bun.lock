@@ -426,6 +426,7 @@
         "@better-auth/api-key": "^1.6.22",
         "@elysia/cors": "^1.4.2",
         "@elysia/openapi": "^1.4.15",
+        "@elysiajs/openapi": "^1.4.15",
         "@libsql/client": "^0.17.3",
         "@nats-io/jetstream": "^3.4.0",
         "@nats-io/kv": "^3.4.0",
@@ -445,6 +446,7 @@
         "typebox": "^1.1.37",
         "viem": "^2.54.3",
         "zod": "^4.4.1",
+        "zod-to-json-schema": "^3.25.2",
       },
       "devDependencies": {
         "bun-types": "latest",
@@ -777,6 +779,8 @@
     "@elysia/eden": ["@elysia/eden@1.4.9", "", { "peerDependencies": { "elysia": ">=1.4.19" } }, "sha512-+yBxDhNQYjw7vTWrBtCpr7t3GBkuNR8fQGO84QFq0ydsUWtYFTCqxyaiSTFd5cPhhW3CMl24EzDR2A9mi0IHVQ=="],
 
     "@elysia/openapi": ["@elysia/openapi@1.4.15", "", { "peerDependencies": { "elysia": ">= 1.4.0" } }, "sha512-MrVGCPo5hnRF4/yWGOyH5ddjt4DlSIbeC5rrkupQtHY8TEQe+XdJa2YM9aUOrtgtRcy4UNGyiVlLl/jllPkPQA=="],
+
+    "@elysiajs/openapi": ["@elysiajs/openapi@1.4.15", "", { "peerDependencies": { "elysia": ">= 1.4.0" } }, "sha512-HDtGIrWfFJk6UJS7qbgRmjifbSqnnRGDM3CsU/GVJkxLbEVEkNuQDf+Quh9fGbytSrJ8g4+tX9eVjshYhCH29w=="],
 
     "@emnapi/core": ["@emnapi/core@1.11.1", "", { "dependencies": { "@emnapi/wasi-threads": "1.2.2", "tslib": "^2.4.0" } }, "sha512-RSvbQmHzdKzNsLYa/wHrbc3KN4sYLKAdPZxqiM2HATqv/SBk2/ENSHpvXGaLOMcsAyz0poEGqkmmKYG3OWiJEQ=="],
 

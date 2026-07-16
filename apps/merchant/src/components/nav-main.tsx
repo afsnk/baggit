@@ -16,7 +16,7 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from '#/components/ui/sidebar.tsx'
-import { Link, useMatchRoute } from '@tanstack/react-router'
+import { Link, useMatchRoute, useRouterState } from '@tanstack/react-router'
 
 export function NavMain({
   items,
@@ -33,13 +33,12 @@ export function NavMain({
   }[]
   }) {
   const match = useMatchRoute()
+
   return (
     <SidebarGroup>
       <SidebarGroupLabel>Platform</SidebarGroupLabel>
       <SidebarMenu>
-        {items.map((item, index) => {
-          console.log(`Route match ${item.url} - Is active: ${item.isActive}`, match({to: item.url, fuzzy: true}))
-          return (
+        {items.map((item, index) => (
           <Collapsible
             key={item.url+index}
             asChild
@@ -56,20 +55,22 @@ export function NavMain({
               </CollapsibleTrigger>
               <CollapsibleContent>
                 <SidebarMenuSub>
-                  {item.items?.map((subItem) => (
-                    <SidebarMenuSubItem key={subItem.title}>
-                      <SidebarMenuSubButton asChild>
-                        <Link to={subItem.url} preload="intent">
-                          <span>{subItem.title}</span>
-                        </Link>
-                      </SidebarMenuSubButton>
-                    </SidebarMenuSubItem>
-                  ))}
+                  {item.items?.map((subItem) => {
+                    useRouterState({ select: (s) => s.matches.some((m) => m.routeId === subItem.url) })
+                    return (
+                      <SidebarMenuSubItem key={subItem.title}>
+                        <SidebarMenuSubButton asChild isActive={!!match({to: subItem.url})}>
+                          <Link to={subItem.url} preload="intent">
+                            <span>{subItem.title}</span>
+                          </Link>
+                        </SidebarMenuSubButton>
+                      </SidebarMenuSubItem>
+                    )})}
                 </SidebarMenuSub>
               </CollapsibleContent>
             </SidebarMenuItem>
           </Collapsible>
-        )})}
+        ))}
       </SidebarMenu>
     </SidebarGroup>
   )

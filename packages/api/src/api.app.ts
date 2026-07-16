@@ -6,6 +6,8 @@ import transactionRoute from "@/Modules/Transaction/routes/transaction.route";
 import checkoutRoute from "@/Modules/Payment/routes/checkout/checkout.route";
 import balanceRoute from "@/Modules/Transaction/routes/balance/balance.route";
 import { appMacro } from "./Core/Lib/macros";
+import { zodToJsonSchema } from "zod-to-json-schema";
+import openapi from "@elysia/openapi";
 
 
 const apiApp = createApp({
@@ -19,12 +21,27 @@ const apiApp = createApp({
     allowedHeaders: ["Content-type", "Authorization", "Baggit-Public-Key", "Baggit-Secret-Key"]
   })
 )
-  .macro(appMacro)
+	.macro(appMacro)
+	.use(
+	  openapi({
+			path: "/reference",
+	    // Zod v3 has no native JSON Schema export; convert for OpenAPI.
+	    // mapJsonSchema: { zod: zodToJsonSchema },
+	    documentation: {
+				info: {
+	        title: "Baggit service API",
+	        version: "0.1.0",
+	        description:
+						"The best web3 DX, on/off-ramp, payment, onboarding, managed wallets, KYC infra all in one ready for your next big idea.",
+				}
+	    }
+	  }),
+  )
   .use(paymentRoute)
   .use(transactionRoute)
   .use(checkoutRoute)
   .use(balanceRoute)
-  .get(`/user`, ({ user }) => user, { auth: true }) // TODO: remove when sure everything works
+	.get(`/user`, ({ user }) => user, { auth: true, detail: {hide: true} }) // TODO: remove when sure everything works
   .listen({port: 8001, hostname: "::"});
 
 console.log(`API server running at [${apiApp.server?.hostname}:${apiApp.server?.port}]`)

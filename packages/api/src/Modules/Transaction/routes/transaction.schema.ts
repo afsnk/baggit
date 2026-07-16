@@ -35,7 +35,8 @@ export const initTransactionSchema = {
     tags: ['Transaction'],
     summary: "Transaction API routes",
     description: "Initialise a transaction requests.",
-    operationId: 'transaction'
+		operationId: 'transaction',
+		hide: true
   }
 } satisfies AppRouteSchema
 
@@ -80,7 +81,8 @@ export const confirmTransactionSchema = {
     tags: ['Transaction'],
     summary: "Transaction API routes",
     description: "Confirm a blockchain transaction has occured called by alchemy",
-    operationId: 'transaction'
+		operationId: 'transaction',
+    hide: true
   }
 } satisfies AppRouteSchema
 
@@ -144,7 +146,8 @@ export const switchSchema = {
     tags: ['Transaction'],
     summary: "Transaction API routes",
     description: "Confirm a transaction webhook for switch",
-    operationId: 'transaction'
+		operationId: 'transaction',
+    hide: true
   }
 } satisfies AppRouteSchema
 
@@ -166,7 +169,8 @@ export const getAllSchema = {
     tags: ['Transaction'],
     summary: "Transaction API routes",
     description: "Confirm a transaction requests.",
-    operationId: 'transaction'
+		operationId: 'transaction',
+    hide: true
   }
 } satisfies AppRouteSchema
 
