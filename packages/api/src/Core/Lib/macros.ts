@@ -60,7 +60,6 @@ export const appMacro = {
       const session = await betterAuth.api.getSession({
         headers
       })
-      console.log(`Session`, {session})
       if (!session) return status(401, `Unauthorized access`)
       return {
         user: session.user,
