@@ -6,7 +6,6 @@ import transactionRoute from "@/Modules/Transaction/routes/transaction.route";
 import checkoutRoute from "@/Modules/Payment/routes/checkout/checkout.route";
 import balanceRoute from "@/Modules/Transaction/routes/balance/balance.route";
 import { appMacro } from "./Core/Lib/macros";
-import { zodToJsonSchema } from "zod-to-json-schema";
 import openapi from "@elysia/openapi";
 
 

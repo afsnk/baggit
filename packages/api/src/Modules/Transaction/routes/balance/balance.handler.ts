@@ -82,8 +82,20 @@ export const getBalances: AppRouteHandler<GetBalanceRoute, 'auth'> = async ({ lo
 
 export const clawFunds: AppRouteHandler<ClawFundsRoute, 'auth'> = async ({ log, session, status }) => {
 	try {
+		const organization = await db.query.organization.findFirst({
+			where: (fields, ops) => ops.eq(fields.id, session?.activeOrganizationId)
+		})
+
+		if (!organization) {
+			return status(404, {
+				message: "No active organization found",
+				code: "NOT_FOUND"
+			})
+		}
+
+		log.set({session, orgId: session?.activeOrganizationId})
 		const transactions = await db.query.transactions.findMany({
-			where: (fields, ops) => ops.eq(fields.orgId, session?.activeOrganizationId)
+			where: (fields, ops) => ops.eq(fields.orgId, organization?.id)
 		})
 
 		if (!transactions) {
@@ -92,20 +104,18 @@ export const clawFunds: AppRouteHandler<ClawFundsRoute, 'auth'> = async ({ log, 
 				code: "NOT_FOUND"
 			})
 		}
-		const organization = await db.query.organization.findFirst({
-			where: (fields, ops) => ops.eq(fields.id, session?.activeOrganizationId)
-		})
 		const orgAddress = organization?.metadata?.address;
+		log.set({orgAddress})
 
 		for (const trx of transactions) {
-	    console.log(`Transaction`, {trx})
 	    const chain = getChain(trx?.network as "bsc" | "base")
 	    // const { pk, address } = await generateAccount(chain, trx?.paymentId, trx?.metadata.pk, trx?.metadata.address)
 	    const balance = await getBalance(trx?.network as "bsc" | "base", trx.metadata?.receiveAddress as Address, trx?.asset as "usdt" | "usdc" | "cngn")
 
-	    console.log(`Balacne: ${balance} found in [${trx?.paymentId}]`)
 	    const asset = trx?.asset as "usdt" | "usdc" | "cngn"
-	    const token = TOKEN_ADDRESSES[chain.id][`${asset}`];
+			const token = TOKEN_ADDRESSES[chain.id][`${asset}`];
+
+			log.set({clawbackBalance: balance, network: trx.network, asset})
 
 	    if (balance > 0 && trx.paymentId) {
 	      await runTransaction(
@@ -125,11 +135,16 @@ export const clawFunds: AppRouteHandler<ClawFundsRoute, 'auth'> = async ({ log, 
 	          }),
 	        ],
 	      ).then((receipt) => {
-	        console.log(`All funds clawedback to org wallet`, { receipt });
+	        log.set({ receipt });
 	        return receipt;
-	      }).catch(error => console.log(`Error sweeping funds`, { error }));
+	      }).catch(error => log.error(error, {message: `error clawing back`}));
 	    }
-	  }
+		}
+
+		return status(200, {
+			message: "Clawback ran",
+			code: "OK"
+		})
 	}
 	catch (error: any) {
 		log.error(error);
