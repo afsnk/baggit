@@ -45,14 +45,14 @@ export const clawFundsSchema = {
 			message: z.string(),
 			code: z.string()
 		}),
-		auth: true,
-		detail: {
-			tags: ['Balance'],
-	    summary: "Clawfunds API routes",
-	    description: "Claw back balance to an organization wallet",
-			operationId: 'balance',
-	    hide: true
-		}
+	},
+	auth: true,
+	detail: {
+		tags: ['Balance'],
+    summary: "Clawfunds API routes",
+    description: "Claw back balance to an organization wallet",
+		operationId: 'balance',
+    hide: true
 	}
 } satisfies AppRouteSchema
 
