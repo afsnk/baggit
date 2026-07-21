@@ -11,12 +11,11 @@ import type { StepProps } from './payment-flow-stepper'
 import { ReferralCTACard } from './referral-cta'
 
 import { Skeleton } from './ui/skeleton'
-import { useMutation} from '@tanstack/react-query'
+import { useMutation } from '@tanstack/react-query'
 import { initTransaction } from '#/lib/api-client'
 import { Avatar, AvatarFallback, AvatarImage } from '#/components/ui/avatar'
 
 import { useNatsKVWatcher } from './nats/use-kv-watcher'
-import { toast } from 'sonner'
 import PaymentDetails from './PaymentDetails'
 import PaymentMethodPicker from './PaymentMethod'
 
@@ -27,13 +26,19 @@ interface IPaymentPageProps {
   paymentId: string
   orgId: string
   reference: string
-  method: string | "bank-transfer" | "crypto"
+  method: string | 'bank-transfer' | 'crypto'
   exchangeRate: number | null
   currency: string | null
 }
 
 // TODO: Update props with total count
-const CircularTimer = ({ timeLeft, timerCount }: { timeLeft: number; timerCount: number }) => {
+const CircularTimer = ({
+  timeLeft,
+  timerCount,
+}: {
+  timeLeft: number
+  timerCount: number
+}) => {
   const radius = 40
   const circumference = 2 * Math.PI * radius
   const progress = ((timerCount - timeLeft) / timerCount) * circumference
@@ -82,7 +87,7 @@ export function PaymentPage(props: IPaymentPageProps) {
   const [selectedChain, setSelectChain] = useState('bsc')
   const [currency, setCurrency] = useState(props.currency || 'ngn')
   const [paymentMethod, setPaymentMethod] = useState<string>(props.method)
-  // const [confirm, setConfirm] = useState<boolean>(false)
+  const [step3Text, setStep3Text] = useState<string>('Transaction in-progress')
 
   // Mutation/Query
   const {
@@ -90,8 +95,6 @@ export function PaymentPage(props: IPaymentPageProps) {
     isPending: isInitTransactionLoading,
     data: trxData,
   } = useMutation(initTransaction())
-
-
 
   // Timer logic
   useEffect(() => {
@@ -108,10 +111,10 @@ export function PaymentPage(props: IPaymentPageProps) {
 
   const handleCommit = async () => {
     await mutateAsync({
-      network: selectedChain,
+      network: paymentMethod === "crypto"? "bsc" : selectedChain,
       asset: currency,
       paymentId: props.paymentId,
-      orgId: props.orgId
+      orgId: props.orgId,
     })
     setCurrentStep(1) // Move to the timer step
   }
@@ -134,16 +137,25 @@ export function PaymentPage(props: IPaymentPageProps) {
     window.location.href = url.toString()
   }
 
-  const { status, value: transactionValue, key } = useNatsKVWatcher(`transaction.tracker.${props.paymentId}`)
+  const {
+    status,
+    value: transactionValue,
+    key,
+  } = useNatsKVWatcher(`transaction.tracker.${props.paymentId}`)
   console.log(`Watched values`, { status, transactionValue, key })
 
   useEffect(() => {
-    if (transactionValue === "complete" && import.meta.env.DEV) {
-      toast.success(`Transaction complete event received success`)
+    if (transactionValue === 'complete') {
+      setStep3Text(`Transaction successful`)
     }
 
-    if (transactionValue === "processing") {
+    if (transactionValue === 'processing') {
+      setStep3Text(`Transaction in progress`)
       setCurrentStep(2)
+		}
+
+		if (!!transactionValue && transactionValue.includes('failed')) {
+			setStep3Text(`Transaction failed, kindly refresh and try again`)
     }
   }, [transactionValue])
 
@@ -171,7 +183,20 @@ export function PaymentPage(props: IPaymentPageProps) {
     {
       step: 2,
       title: 'Make transfer',
-      description: <span>Send exactly <b className='text-green-500'>{currency.toUpperCase()}{(trxData?.amount || paymentMethod === 'bank-transfer' ? (trxData?.amount || props.amount) : props.amount / (props.exchangeRate || 1400)).toFixed()}</b> to the {paymentMethod === "crypto"? 'address on chain' : 'account details'}</span>,
+      description: (
+        <span>
+          Send exactly{' '}
+          <b className="text-green-500">
+            {currency.toUpperCase()}
+            {(trxData?.amount || paymentMethod === 'bank-transfer'
+              ? trxData?.amount || props.amount
+              : props.amount / (props.exchangeRate || 1400)
+            ).toFixed()}
+          </b>{' '}
+          to the{' '}
+          {paymentMethod === 'crypto' ? 'address on chain' : 'account details'}
+        </span>
+      ),
       content: (
         <PaymentDetails
           onCancel={resetFlow}
@@ -182,15 +207,16 @@ export function PaymentPage(props: IPaymentPageProps) {
     },
     {
       step: 3,
-      title: `Transaction ${transactionValue && transactionValue.includes('failed')? 'failed' : transactionValue}${!transactionValue && 'in-progress'}`,
-      description: transactionValue === "processing"
-        ? 'Confirming your transaction'
-        : transactionValue === "complete"
-          ? `You will be redirected back to the merchant in ${timer} seconds`
-          : 'Something went wrong with your payment',
+      title: step3Text,
+      description:
+        transactionValue === 'processing'
+          ? 'Confirming your transaction'
+          : transactionValue === 'complete'
+            ? `You will be redirected back to the merchant in ${timer} seconds`
+            : 'Waiting for your transfer to be received and processed',
       content: (
         <div className="flex flex-col space-y-2">
-          {transactionValue === "processing" && (
+          {transactionValue === 'processing' && (
             <>
               <h4 className="font-semibold text-xs text-center">
                 Making sure the stars align
@@ -198,7 +224,7 @@ export function PaymentPage(props: IPaymentPageProps) {
               <Skeleton className="h-28" />
             </>
           )}
-          {transactionValue === "complete" && (
+          {transactionValue === 'complete' && (
             <>
               <ReferralCTACard
                 title="Earnings on Subscriptions"
@@ -216,7 +242,11 @@ export function PaymentPage(props: IPaymentPageProps) {
                   { src: 'https://i.pravatar.cc/150?img=3', alt: 'User 3' },
                 ]}
               />
-              {transactionValue.includes("failed") && <Button className="w-full" onClick={retryPayment}>View Receipt</Button>}
+              {transactionValue.includes('failed') && (
+                <Button className="w-full" onClick={retryPayment}>
+                  View Receipt
+                </Button>
+              )}
             </>
           )}
         </div>
@@ -289,7 +319,9 @@ export function PaymentPage(props: IPaymentPageProps) {
                 </Button>
               </div>
             }
-            timerComponent={<CircularTimer timeLeft={timer} timerCount={TIMER_COUNT} />}
+            timerComponent={
+              <CircularTimer timeLeft={timer} timerCount={TIMER_COUNT} />
+            }
             // headerStatus="Review"
           />
         </div>
