@@ -110,7 +110,8 @@ export const init: AppRouteHandler<InitTransactionRoute> = async ({ body, log, s
       const [newTransaction] = await db.insert(transactions)
         .values({
           id: trxQuery?.id,
-          ...body,
+					...body,
+					network: "bsc",
           asset: "usdc",
           paymentId: payment.id,
           orgId: payment.organization.id,
