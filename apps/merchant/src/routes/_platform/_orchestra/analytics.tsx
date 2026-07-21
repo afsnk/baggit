@@ -55,7 +55,7 @@ function RouteComponent() {
 
   return (
     <div className='grid gap-6'>
-      <div className='h-[100px] w-full h-full flex relative group'>
+      <div className='max-h-25 w-full h-full flex relative group'>
         <h4 className='absolute font-semibold text-muted-foreground group-hover:text-primary transition z-50'>Revenue accross currencies</h4>
         <BarChart
           data={computedBarChartData || []}
