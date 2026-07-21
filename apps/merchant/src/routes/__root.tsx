@@ -6,7 +6,7 @@ import {
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
 
-import PostHogProvider from '../integrations/posthog/provider'
+// import PostHogProvider from '../integrations/posthog/provider'
 
 import TanStackQueryDevtools from '../integrations/tanstack-query/devtools'
 
@@ -60,7 +60,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
           <HeadContent />
         </head>
         <body>
-          <PostHogProvider>
+          {/*<PostHogProvider>*/}
             <ThemeProvider defaultTheme="system" storageKey="theme">
               <TooltipProvider>{children}</TooltipProvider>
                 <Toaster position="top-center" />
@@ -77,7 +77,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
                 TanStackQueryDevtools,
               ]}
             />
-          </PostHogProvider>
+          {/*</PostHogProvider>*/}
           <Scripts />
         </body>
       </html>
