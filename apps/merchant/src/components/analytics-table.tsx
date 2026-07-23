@@ -105,7 +105,11 @@ const columns: ColumnDef<Transaction>[] = [
     header: 'Date created',
     cell: ({ row }) => {
       const time = new Date(row.getValue('createdAt'))
-      const formatted = new Intl.DateTimeFormat('en-US', {month: "short", day: "2-digit", year: "numeric"}).format(time)
+			const formatted = time.toLocaleString(undefined, {
+				dateStyle: "short",
+				timeStyle: "short",
+			})
+				// new Intl.DateTimeFormat('en-US', { month: "short", day: "2-digit", year: "numeric" }).format(time)
       return (
       <div className="font-medium font-mono text-muted-foreground">
         {formatted}
@@ -117,7 +121,11 @@ const columns: ColumnDef<Transaction>[] = [
     header: 'Date updated',
     cell: ({ row }) => {
       const time = new Date(row.getValue('updatedAt'))
-      const formatted = new Intl.DateTimeFormat('en-US', {month: "short", day: "2-digit", year: "numeric"}).format(time)
+			const formatted = time.toLocaleString(undefined, {
+				dateStyle: "short",
+				timeStyle: "short"
+			})
+			// new Intl.DateTimeFormat('en-US', { month: "short", day: "2-digit", year: "numeric" }).format(time)
       return (
       <div className="font-medium font-mono text-muted-foreground">
         {formatted}

@@ -18,9 +18,13 @@ export const Route = createFileRoute('/_platform')({
 function RouteComponent() {
   const routerState = useRouterState()
 
+	const isOrchestra = routerState.location.pathname.includes('analytics')
+		|| routerState.location.pathname.includes('audit-logs')
+		|| routerState.location.pathname.includes('overview')
+
   const matched = useMatch({
-    from: "/_platform/_orchestra/analytics",
-    shouldThrow: false
+    from: `/_platform${isOrchestra? '/_orchestra' : ''}${routerState.location.pathname}` as any,
+		shouldThrow: false,
   })
 
   return (
