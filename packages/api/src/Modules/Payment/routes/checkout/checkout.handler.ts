@@ -77,15 +77,21 @@ export const verifyCheckoutStatus: AppRouteHandler<VerifyCheckoutStatusRoute, 'a
         message: "Invoice with that reference or id not found",
         code: "NOT_FOUND"
       })
-    }
+		}
 
-    // Get transaction of payment
+		log.set({order})
+
+    // Get transactions of payment, if more than 1, return each payments status
     const transactionWithStatus = await db.query.transactions.findFirst({
-      where: (fields, ops) => ops.eq(fields.paymentId, order.payments.id)
+      where: (fields, ops) => ops.eq(fields.paymentId, order.payments[0].id)
     })
 
     if (!transactionWithStatus) {
-      // Means payment has not been initialised for the payment
+			// Means payment has not been initialised for the payment
+			return status(404, {
+				message: "Transaction not initialised or not found",
+				code: "NOT_FOUND"
+      })
     }
 
     return status(200, {
