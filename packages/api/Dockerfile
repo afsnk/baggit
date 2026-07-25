@@ -31,6 +31,7 @@ COPY --from=caddy:2 /usr/bin/caddy /usr/bin/caddy
 COPY --from=build /app/packages/api/dist ./packages/api/dist
 COPY --from=build /app/packages/templates/dist ./packages/templates/dist
 COPY --from=build /app/packages/api/package.json ./packages/api/package.json
+COPY --from=build /app/packages/templates/package.json ./packages/templates/package.json
 COPY --from=build /app/package.json ./package.json
 # COPY --from=build /app/packages/api/src/Core/DB/migrations ./packages/api/dist/src/Core/DB/migrations
 COPY --from=build /app/packages/api/app-db-migrations.sh ./packages/api/app-db-migrations.sh
