@@ -76,7 +76,8 @@ export class Queue {
       name: resolved.name,
       subjects: resolved.subjects,
       retention: RetentionPolicy.Workqueue,
-      discard: DiscardPolicy.Old,
+			discard: DiscardPolicy.Old,
+			max_bytes: 500_000_000,
       ...(resolved.maxMessages ? { max_msgs: resolved.maxMessages } : {}),
     };
 
@@ -120,7 +121,8 @@ export class Queue {
       ack_policy: AckPolicy.Explicit,
       deliver_policy: DeliverPolicy. All,
       ack_wait: this.opts.ackWaitMs * 1_000_000, // ns
-      max_deliver: this.opts.maxDeliver,
+			max_deliver: this.opts.maxDeliver,
+			max_bytes: 500_000_000,
       ...(filterType ? { filter_subject: `${this.subjectPrefix}.${filterType}` } : {}),
     };
     await this.jsm.consumers.add(this.name, config);
