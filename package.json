@@ -12,6 +12,7 @@
     "build:packages:server": "pnpm --filter @afsnk/pay-server build",
     "start:packages:server": "pnpm --filter @afsnk/pay-server start",
     "build:packages:api": "bun run --filter @baggit/api build",
+    "build:packages:templates": "bun run --filter @baggit/template build",
     "start:packages:api": "bun run --filter @baggit/api start:api",
     "start:packages:auth": "bun run --filter @baggit/api start:auth",
     "start:worker:email": "bun run --filter @baggit/api start:worker:email",
