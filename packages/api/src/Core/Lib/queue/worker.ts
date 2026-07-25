@@ -51,7 +51,7 @@ export class Worker<T = unknown> {
   ): Promise<Worker<T>> {
     const name = await queue.ensureConsumer(options.consumer, options.filterType);
     const consumer = await queue.client.consumers.get(queue.name, name);
-    const heartbeatMs = options.heartbeatMs ?? Math.floor(queue.ackWaitMs / 2);
+		const heartbeatMs = options.heartbeatMs ?? Math.floor(queue.ackWaitMs / 2);
 
     const worker = new Worker<T>(consumer, handler, heartbeatMs, options.onError);
     void worker.run();

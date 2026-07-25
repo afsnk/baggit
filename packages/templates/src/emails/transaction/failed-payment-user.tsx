@@ -16,8 +16,8 @@ import {
   Text,
 } from 'react-email';
 
-interface SuccessPaymentUserEmailProps {
-	status?: "successful" | "failed" | string;
+export interface FailedPaymentUserEmailProps {
+	status?: "failed" | string;
 	date?: Date | string;
 	merchantName?: string;
 	userName?: string;
@@ -26,14 +26,14 @@ interface SuccessPaymentUserEmailProps {
 	currency?: string;
 	paymentMethod?: string;
 	invoiceNumber?: string;
-	receiptLink?: string;
+	retryLink?: string;
 }
 
 const baseUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
   : '';
 
-export const SuccessPaymentUserEmail = ({
+export const FailedPaymentUserEmail = ({
 	status,
 	date,
 	merchantName,
@@ -41,8 +41,8 @@ export const SuccessPaymentUserEmail = ({
 	ngnAmount,
 	usdAmount,
 	invoiceNumber,
-	receiptLink,
-}: SuccessPaymentUserEmailProps) => {
+	retryLink,
+}: FailedPaymentUserEmailProps) => {
   const previewText = `Payment ${status} to ${merchantName}`;
 
   return (
@@ -58,22 +58,22 @@ export const SuccessPaymentUserEmail = ({
 							</Container>
             </Section>
             <Heading className="mx-0 my-[30px] p-0 text-center font-normal text-[24px] text-black">
-							Payment to <strong>{merchantName}</strong> was <strong className='capitalize'>{status}</strong>
+							Payment to <strong>{merchantName}</strong>, <strong className='capitalize'>{status}</strong>
             </Heading>
             <Text className="text-[14px] text-black leading-[24px]">
               Hello {userName},
             </Text>
             <Text className="text-[14px] text-black leading-[24px]">
-	            Thanks for your payment! We have successfully received your payment for Invoice <strong></strong>{invoiceNumber},
-							and processed to the merchant <strong>{merchantName}</strong>.
-            </Text>
+							Your payment for Invoice <strong>{invoiceNumber}</strong>, to the merchant <strong>{merchantName}</strong> has failed.
+						</Text>
+            <Text>The details of the payments are below:</Text>
             <Section className='w-full'>
               <Row>
                 <Column align="left">
                   <Text>Amount:</Text>
                 </Column>
                 <Column align='right'>
-									<strong>NGN {ngnAmount}</strong>
+									<strong>NGN {ngnAmount?.toLocaleString(undefined, {})}</strong>
                 </Column>
               </Row>
               <Row>
@@ -97,7 +97,7 @@ export const SuccessPaymentUserEmail = ({
                   <Text>Status:</Text>
                 </Column>
                 <Column align='right'>
-									<strong>{status}</strong>
+									<strong className='text-red-500'>{status}</strong>
                 </Column>
               </Row>
               <Row>
@@ -108,19 +108,20 @@ export const SuccessPaymentUserEmail = ({
 									<strong>{date?.toLocaleString()}</strong>
                 </Column>
               </Row>
-            </Section>
+						</Section>
+            <Text>You can retry the payment by clicking the button below.</Text>
             <Section className="mt-[32px] mb-[32px] text-center">
               <Button
                 className="rounded bg-[#000000] px-5 py-3 text-center font-semibold text-[12px] text-white no-underline"
-                href={receiptLink}
+                href={retryLink}
               >
-	              Download receipt
+	              Retry payment
               </Button>
             </Section>
             <Text className="text-[14px] text-black leading-[24px]">
               or copy and paste this URL into your browser:{' '}
-              <Link href={receiptLink} className="text-blue-600 no-underline">
-                {receiptLink}
+              <Link href={retryLink} className="text-blue-600 no-underline">
+                {retryLink}
               </Link>
 						</Text>
             <Text>If you have any questions regarding this transaction, please contact the merchant directly or reply to this email.</Text>
@@ -128,7 +129,7 @@ export const SuccessPaymentUserEmail = ({
             <Text className="text-[#666666] text-[12px] leading-[24px]">
               This email was intended for{' '}
               <span className="text-black">{userName}</span>. If you
-              were not expecting this email or did not make the above payment, you can ignore this email. If
+              were not expecting this email or did not attempt the above payment, you can ignore this email. If
               you are concerned about your account's safety, please reply to
               this email to get in touch with us.
             </Text>
@@ -139,15 +140,15 @@ export const SuccessPaymentUserEmail = ({
   );
 };
 
-SuccessPaymentUserEmail.PreviewProps = {
-	status: 'sucessful',
+FailedPaymentUserEmail.PreviewProps = {
+	status: 'failed',
 	userName: 'Micheal Faraday',
 	usdAmount: 14.59,
 	ngnAmount: 20000,
 	merchantName: 'Flowerboy',
 	date: new Date("2026-07-17"),
 	invoiceNumber: "0485843293845743LSD",
-	receiptLink: 'https://api.baggit.dev/receipt/0485843293845743LSD/download'
-} as SuccessPaymentUserEmailProps;
+	retryLink: 'https://pay.baggit.dev/r/0485843293845743LSD'
+} as FailedPaymentUserEmailProps;
 
-export default SuccessPaymentUserEmail;
+export default FailedPaymentUserEmail;

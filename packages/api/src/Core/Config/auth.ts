@@ -7,11 +7,13 @@ import { generateId } from "../DB/utils"
 import { createAuthMiddleware } from "better-auth/api"
 import { apiKey } from "@better-auth/api-key"
 import { organization, anonymous, jwt, bearer, emailOTP } from "better-auth/plugins"
-import { sendEmail } from "../Lib/email"
+import { IEmailProps, sendEmail } from "../Lib/email"
 import { generateAccount, getChain } from "../Lib/wallet/wallet.utils"
 import { useLogger } from "evlog/elysia"
 import { createError } from "evlog"
 import { eq } from "drizzle-orm"
+import { emailQueue } from "../Workers/email.worker"
+import { renderTemplate } from "@baggit/template"
 
 const defaultAuthConfig: BetterAuthOptions = {
   baseURL: {
@@ -146,8 +148,30 @@ export const auth = betterAuth({
     organization({
       allowUserToCreateOrganization(user) {
         return user.emailVerified
-      },
-      organizationHooks: {
+			},
+			sendInvitationEmail: async (data) => {
+				const log = useLogger()
+				const email = data.email.trim()
+
+				await emailQueue.enqueue<IEmailProps>('send', {
+					to: email,
+					subject: `Baggit - Organization team invite`,
+					body: await renderTemplate({
+						name: "merchantTeamInvite",
+						props: {
+							invitedByEmail: data.inviter.user.email,
+							invitedByUsername: data.inviter.user.name,
+							userEmail: email,
+							teamName: data.organization.name,
+							inviteLink: `${env.MERCHANT_CLIENT_URL}/settings/general` // Go to general settings to view invite and accept
+						}
+					})
+				}).catch((error) => log.error(error, {message: 'Failed to enqueue email on email queue'}));
+			},
+			organizationHooks: {
+				async afterAddMember(data) {
+					// TODO: send welcome to organization email
+				},
         async afterCreateOrganization({ organization }) {
           const log = useLogger()
           try {
