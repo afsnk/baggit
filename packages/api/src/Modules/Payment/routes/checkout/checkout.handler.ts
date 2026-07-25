@@ -92,7 +92,9 @@ export const verifyCheckoutStatus: AppRouteHandler<VerifyCheckoutStatusRoute, 'a
 				message: "Transaction not initialised or not found",
 				code: "NOT_FOUND"
       })
-    }
+		}
+
+		log.set({transaction: transactionWithStatus})
 
     return status(200, {
       ...order,

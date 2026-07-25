@@ -16,8 +16,9 @@ import {
   Text,
 } from 'react-email';
 
-interface MerchantInviteUserEmailProps {
-  username?: string;
+export interface MerchantInviteUserEmailProps {
+	username?: string;
+	userEmail?: string;
   userImage?: string;
   invitedByUsername?: string;
   invitedByEmail?: string;
@@ -33,7 +34,8 @@ const baseUrl = process.env.VERCEL_URL
   : '';
 
 export const MerchantInviteUserEmail = ({
-  username,
+	username,
+	userEmail,
   userImage,
   invitedByUsername,
   invitedByEmail,
@@ -65,10 +67,10 @@ export const MerchantInviteUserEmail = ({
               />*/}
             </Section>
             <Heading className="mx-0 my-[30px] p-0 text-center font-normal text-[24px] text-black">
-              Join <strong>{teamName}</strong> on <strong>Baggit Merchant</strong>
+              Join <strong>{teamName}</strong> on <strong>Baggit's Merchant Dashboard</strong>
             </Heading>
             <Text className="text-[14px] text-black leading-[24px]">
-              Hello {username},
+              Hello,
             </Text>
             <Text className="text-[14px] text-black leading-[24px]">
               <strong>{invitedByUsername}</strong> (
@@ -78,37 +80,10 @@ export const MerchantInviteUserEmail = ({
               >
                 {invitedByEmail}
               </Link>
-              ) has invited you to the <strong>{teamName}</strong> team on{' '}
-              <strong>Baggit Merchant</strong>.
+              ) has invited you to the <strong>{teamName}</strong> team on the{' '}
+              <strong>Baggit's Merchant Dashboard</strong>.
             </Text>
-            <Section>
-              <Row>
-                <Column align="right">
-                  <Img
-                    className="rounded-full"
-                    src={userImage}
-                    width="64"
-                    height="64"
-                  />
-                </Column>
-                <Column align="center">
-                  <Img
-                    src={`${baseUrl}/static/vercel-arrow.png`}
-                    width="12"
-                    height="9"
-                    alt="invited you to"
-                  />
-                </Column>
-                <Column align="left">
-                  <Img
-                    className="rounded-full"
-                    src={teamImage}
-                    width="64"
-                    height="64"
-                  />
-                </Column>
-              </Row>
-            </Section>
+
             <Section className="mt-[32px] mb-[32px] text-center">
               <Button
                 className="rounded bg-[#000000] px-5 py-3 text-center font-semibold text-[12px] text-white no-underline"
@@ -126,7 +101,7 @@ export const MerchantInviteUserEmail = ({
             <Hr className="mx-0 my-[26px] w-full border border-[#eaeaea] border-solid" />
             <Text className="text-[#666666] text-[12px] leading-[24px]">
               This invitation was intended for{' '}
-              <span className="text-black">{username}</span>. If you
+              <span className="text-black">{userEmail}</span>. If you
               were not expecting this invitation, you can ignore this email. If
               you are concerned about your account's safety, please reply to
               this email to get in touch with us.
@@ -139,7 +114,8 @@ export const MerchantInviteUserEmail = ({
 };
 
 MerchantInviteUserEmail.PreviewProps = {
-  username: 'alanturing',
+	username: 'alanturing',
+	userEmail: 'test@gmail.com',
   userImage: `${baseUrl}/static/vercel-user.png`,
   invitedByUsername: 'Alan',
   invitedByEmail: 'alan.turing@example.com',

@@ -2,6 +2,7 @@ import {
   HeadContent,
   Scripts,
   createRootRouteWithContext,
+	useNavigate,
 } from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
@@ -19,6 +20,9 @@ import { Toaster } from '#/components/ui/sonner'
 import NiceModal from '@ebay/nice-modal-react'
 import { ThemeProvider } from '#/components/theme-provider'
 import type { MyRouterContext } from '#/integrations/tanstack-query/root-provider'
+import { AuthProvider } from '@better-auth-ui/react'
+import { authClient } from '#/lib/auth-client'
+import { organizationPlugin } from '#/lib/auth/organization-plugin'
 
 export const Route = createRootRouteWithContext<MyRouterContext>()({
   beforeLoad: async () => {
@@ -53,6 +57,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 })
 
 function RootDocument({ children }: { children: React.ReactNode }) {
+	const navigate = useNavigate()
   return (
     <NiceModal.Provider>
       <html lang={getLocale()}>
@@ -60,24 +65,28 @@ function RootDocument({ children }: { children: React.ReactNode }) {
           <HeadContent />
         </head>
         <body>
-          {/*<PostHogProvider>*/}
-            <ThemeProvider defaultTheme="system" storageKey="theme">
+          <ThemeProvider defaultTheme="system" storageKey="theme">
+            <AuthProvider
+              authClient={authClient}
+							plugins={[organizationPlugin()]}
+							navigate={navigate}
+            >
               <TooltipProvider>{children}</TooltipProvider>
-                <Toaster position="top-center" />
-            </ThemeProvider>
-            <TanStackDevtools
-              config={{
-                position: 'bottom-right',
-              }}
-              plugins={[
-                {
-                  name: 'Tanstack Router',
-                  render: <TanStackRouterDevtoolsPanel />,
-                },
-                TanStackQueryDevtools,
-              ]}
-            />
-          {/*</PostHogProvider>*/}
+              <Toaster position="top-center" />
+            </AuthProvider>
+          </ThemeProvider>
+          <TanStackDevtools
+            config={{
+              position: 'bottom-right',
+            }}
+            plugins={[
+              {
+                name: 'Tanstack Router',
+                render: <TanStackRouterDevtoolsPanel />,
+              },
+              TanStackQueryDevtools,
+            ]}
+          />
           <Scripts />
         </body>
       </html>

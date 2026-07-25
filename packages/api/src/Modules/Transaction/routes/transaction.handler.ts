@@ -10,6 +10,9 @@ import { asc, eq } from "drizzle-orm";
 import transactionService from "../services/transaction.service"
 import { TTransaction } from "@/Core/DB/schema/transaction";
 import cache from "@/Core/Lib/cache/cache.service";
+import { emailQueue } from "@/Core/Workers/email.worker";
+import { IEmailProps } from "@/Core/Lib/email";
+import {renderTemplate} from "@baggit/template"
 
 
 export const init: AppRouteHandler<InitTransactionRoute> = async ({ body, log, status }) => {
@@ -189,11 +192,15 @@ export const switchWebhook: AppRouteHandler<SwitchWebhookRoute> = async ({ log, 
 
     const transaction = await db.query.transactions.findFirst({
       where: (fields, ops) => ops.eq(fields.paymentId, paymentId),
+		})
+
+		const invoice = await db.query.invoice.findFirst({
+			where: (fields, ops) => ops.eq(fields.id, payment?.invoiceId!)
     })
 
-    if (!payment || !transaction) {
+    if (!payment || !transaction || !invoice) {
       return status(404, {
-        message: "Payment not found"
+        message: "Payment, transaction or invoice not found"
       })
     }
     log.set({ payment, transaction })
@@ -215,7 +222,26 @@ export const switchWebhook: AppRouteHandler<SwitchWebhookRoute> = async ({ log, 
       }).then(() => console.log("Webhook transaction sent")).catch(error => console.log("failed to sent webhook", { error }));
 
       await cache.transaction.set(`transaction.tracker.${paymentId}`, 'complete', '5m')
-        .catch(log.error)
+				.catch(log.error)
+
+			await emailQueue.enqueue<IEmailProps>('send', {
+				to: invoice?.metadata?.consumer?.email.trim(),
+				subject: `Baggit - Invoice Payment successful`,
+				body: (await renderTemplate({
+					name: "successPayment", props: {
+						paymentMethod: payment.method,
+						invoiceNumber: invoice.id,
+						userName: invoice.metadata.consumer?.name,
+						status: "success",
+						usdAmount: payment.amount,
+						ngnAmount: payment.amount,
+						merchantName: payment.organization?.name,
+						date: transaction.createdAt!,
+						currency: payment.currency,
+						receiptLink: ``, //TODO: create downloadable pdf receipt link,
+					}
+				}))
+			}).catch((error) => log.error(error, {message: 'Failed to enqueue email on email queue'}));
 
       return status(200, {
         message: `Webhook resent transaction completed`,
@@ -240,7 +266,26 @@ export const switchWebhook: AppRouteHandler<SwitchWebhookRoute> = async ({ log, 
         log.set({completeTransaction: updatedTransaction})
 
         await cache.transaction.set(`transaction.tracker.${paymentId}`, 'complete', '5m')
-          .catch(log.error)
+					.catch(log.error)
+
+        await emailQueue.enqueue<IEmailProps>('send', {
+					to: invoice?.metadata?.consumer?.email.trim(),
+					subject: `Baggit - Invoice Payment successful`,
+					body: (await renderTemplate({
+						name: "successPayment", props: {
+							paymentMethod: payment.method,
+							invoiceNumber: invoice.id,
+							userName: invoice.metadata.consumer?.name,
+							status: "success",
+							usdAmount: payment.amount,
+							ngnAmount: payment.amount,
+							merchantName: payment.organization?.name,
+							date: transaction.createdAt!,
+							currency: payment.currency,
+							receiptLink: ``, //TODO: create downloadable pdf receipt link,
+						}
+					}))
+				}).catch((error) => log.error(error, {message: 'Failed to enqueue email on email queue'}));
 
         await transactionService.collectFeeAndPayout(transaction.metadata.pk!, transaction, payment.id, transaction.metadata.receiveAddress, payment.organization.metadata?.address)
           .then(() => log.set({amounCollectionDone: true}))
@@ -300,7 +345,11 @@ export const confirm: AppRouteHandler<ConfirmTransactionRoute> = async ({ log, s
       where: (fields, ops) => ops.eq(fields.paymentId, paymentId)
     })
 
-    if (!payment || !transaction) {
+    const invoice = await db.query.invoice.findFirst({
+			where: (fields, ops) => ops.eq(fields.id, payment?.invoiceId!)
+    })
+
+    if (!payment || !transaction || !invoice) {
       return status(404, {
         message: "Payment and transaction not found"
       })
@@ -309,8 +358,28 @@ export const confirm: AppRouteHandler<ConfirmTransactionRoute> = async ({ log, s
     log.set({ payment, transaction })
 
     if (transaction.status === "complete") {
-      await cache.transaction.set(`transaction.tracker.${paymentId}`, 'complete', '5m')
-      Webhook.trigger(payment.callbackUrl, payment.invoice.reference, {
+			await cache.transaction.set(`transaction.tracker.${paymentId}`, 'complete', '5m')
+
+			await emailQueue.enqueue<IEmailProps>('send', {
+				to: invoice?.metadata?.consumer?.email.trim(),
+				subject: `Baggit - Invoice Payment Successful`,
+				body: (await renderTemplate({
+					name: "successPayment", props: {
+						paymentMethod: payment.method,
+						invoiceNumber: invoice.id,
+						userName: invoice.metadata.consumer?.name,
+						status: "success",
+						usdAmount: payment.amount,
+						ngnAmount: payment.amount,
+						merchantName: payment.organization?.name,
+						date: transaction.createdAt!,
+						currency: payment.currency,
+						receiptLink: ``, //TODO: create downloadable pdf receipt link,
+					}
+				}))
+			}).catch((error) => log.error(error, {message: 'Failed to enqueue email on email queue'}));
+
+			Webhook.trigger(payment.callbackUrl, payment.invoice.reference, {
         reference: payment.invoice.reference,
         hash: transaction.metadata?.collectionHash,
         to: transaction.metadata.address,
@@ -322,7 +391,8 @@ export const confirm: AppRouteHandler<ConfirmTransactionRoute> = async ({ log, s
         asset: transaction.asset,
         network: transaction.network,
         status: transaction.metadata?.collectionHash ? "completed" : "failed",
-      }).then(() => console.log("Webhook transaction sent")).catch(error => console.log("failed to sent webhook", { error }));
+			}).then(() => console.log("Webhook transaction sent")).catch(error => console.log("failed to sent webhook", { error }));
+
 
       return status(200, {
         message: `Webhook resent transaction completed`,
@@ -345,7 +415,26 @@ export const confirm: AppRouteHandler<ConfirmTransactionRoute> = async ({ log, s
         })
         .where(eq(transactions.paymentId, payment.id!))
         .returning();
-      await cache.transaction.set(`transaction.tracker.${payment.id}`, 'complete', '5m')
+			await cache.transaction.set(`transaction.tracker.${payment.id}`, 'complete', '5m')
+
+			await emailQueue.enqueue<IEmailProps>('send', {
+				to: invoice?.metadata?.consumer?.email.trim(),
+				subject: `Baggit - Invoice Payment Successful`,
+				body: (await renderTemplate({
+					name: "successPayment", props: {
+						paymentMethod: payment.method,
+						invoiceNumber: invoice.id,
+						userName: invoice.metadata.consumer?.name,
+						status: "success",
+						usdAmount: payment.amount,
+						ngnAmount: payment.amount,
+						merchantName: payment.organization?.name,
+						date: transaction.createdAt!,
+						currency: payment.currency,
+						receiptLink: ``, //TODO: create downloadable pdf receipt link,
+					}
+				}))
+			}).catch((error) => log.error(error, {message: 'Failed to enqueue email on email queue'}));
 
       await transactionService.collectFeeAndPayout(transaction.metadata.pk!, transaction, payment.id, transaction.metadata.receiveAddress, payment.organization.metadata?.address)
         .then(() => log.set({amountCollectionDone: true}))

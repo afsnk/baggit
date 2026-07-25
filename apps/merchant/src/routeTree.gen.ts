@@ -9,26 +9,26 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as PlatformRouteRouteImport } from './routes/_platform/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as PlatformRouteRouteImport } from './routes/_platform/route'
 import { Route as AuthAuthRouteImport } from './routes/_auth/auth'
-import { Route as PlatformSettingsTeamRouteImport } from './routes/_platform/settings.team'
-import { Route as PlatformSettingsLimitsRouteImport } from './routes/_platform/settings.limits'
-import { Route as PlatformSettingsGeneralRouteImport } from './routes/_platform/settings.general'
-import { Route as PlatformDeveloperObservabilityRouteImport } from './routes/_platform/developer.observability'
-import { Route as PlatformDeveloperConfigurationRouteImport } from './routes/_platform/developer.configuration'
-import { Route as PlatformDeveloperApiKeysRouteImport } from './routes/_platform/developer.api-keys'
-import { Route as PlatformOrchestraOverviewRouteImport } from './routes/_platform/_orchestra/overview'
-import { Route as PlatformOrchestraAuditLogsRouteImport } from './routes/_platform/_orchestra/audit-logs'
 import { Route as PlatformOrchestraAnalyticsRouteImport } from './routes/_platform/_orchestra/analytics'
+import { Route as PlatformOrchestraAuditLogsRouteImport } from './routes/_platform/_orchestra/audit-logs'
+import { Route as PlatformOrchestraOverviewRouteImport } from './routes/_platform/_orchestra/overview'
+import { Route as PlatformDeveloperApiKeysRouteImport } from './routes/_platform/developer.api-keys'
+import { Route as PlatformDeveloperConfigurationRouteImport } from './routes/_platform/developer.configuration'
+import { Route as PlatformDeveloperObservabilityRouteImport } from './routes/_platform/developer.observability'
+import { Route as PlatformSettingsGeneralRouteImport } from './routes/_platform/settings.general'
+import { Route as PlatformSettingsLimitsRouteImport } from './routes/_platform/settings.limits'
+import { Route as PlatformSettingsTeamRouteImport } from './routes/_platform/settings.team'
 
-const PlatformRouteRoute = PlatformRouteRouteImport.update({
-  id: '/_platform',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PlatformRouteRoute = PlatformRouteRouteImport.update({
+  id: '/_platform',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthAuthRoute = AuthAuthRouteImport.update({
@@ -36,43 +36,10 @@ const AuthAuthRoute = AuthAuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PlatformSettingsTeamRoute = PlatformSettingsTeamRouteImport.update({
-  id: '/settings/team',
-  path: '/settings/team',
-  getParentRoute: () => PlatformRouteRoute,
-} as any)
-const PlatformSettingsLimitsRoute = PlatformSettingsLimitsRouteImport.update({
-  id: '/settings/limits',
-  path: '/settings/limits',
-  getParentRoute: () => PlatformRouteRoute,
-} as any)
-const PlatformSettingsGeneralRoute = PlatformSettingsGeneralRouteImport.update({
-  id: '/settings/general',
-  path: '/settings/general',
-  getParentRoute: () => PlatformRouteRoute,
-} as any)
-const PlatformDeveloperObservabilityRoute =
-  PlatformDeveloperObservabilityRouteImport.update({
-    id: '/developer/observability',
-    path: '/developer/observability',
-    getParentRoute: () => PlatformRouteRoute,
-  } as any)
-const PlatformDeveloperConfigurationRoute =
-  PlatformDeveloperConfigurationRouteImport.update({
-    id: '/developer/configuration',
-    path: '/developer/configuration',
-    getParentRoute: () => PlatformRouteRoute,
-  } as any)
-const PlatformDeveloperApiKeysRoute =
-  PlatformDeveloperApiKeysRouteImport.update({
-    id: '/developer/api-keys',
-    path: '/developer/api-keys',
-    getParentRoute: () => PlatformRouteRoute,
-  } as any)
-const PlatformOrchestraOverviewRoute =
-  PlatformOrchestraOverviewRouteImport.update({
-    id: '/_orchestra/overview',
-    path: '/overview',
+const PlatformOrchestraAnalyticsRoute =
+  PlatformOrchestraAnalyticsRouteImport.update({
+    id: '/_orchestra/analytics',
+    path: '/analytics',
     getParentRoute: () => PlatformRouteRoute,
   } as any)
 const PlatformOrchestraAuditLogsRoute =
@@ -81,12 +48,45 @@ const PlatformOrchestraAuditLogsRoute =
     path: '/audit-logs',
     getParentRoute: () => PlatformRouteRoute,
   } as any)
-const PlatformOrchestraAnalyticsRoute =
-  PlatformOrchestraAnalyticsRouteImport.update({
-    id: '/_orchestra/analytics',
-    path: '/analytics',
+const PlatformOrchestraOverviewRoute =
+  PlatformOrchestraOverviewRouteImport.update({
+    id: '/_orchestra/overview',
+    path: '/overview',
     getParentRoute: () => PlatformRouteRoute,
   } as any)
+const PlatformDeveloperApiKeysRoute =
+  PlatformDeveloperApiKeysRouteImport.update({
+    id: '/developer/api-keys',
+    path: '/developer/api-keys',
+    getParentRoute: () => PlatformRouteRoute,
+  } as any)
+const PlatformDeveloperConfigurationRoute =
+  PlatformDeveloperConfigurationRouteImport.update({
+    id: '/developer/configuration',
+    path: '/developer/configuration',
+    getParentRoute: () => PlatformRouteRoute,
+  } as any)
+const PlatformDeveloperObservabilityRoute =
+  PlatformDeveloperObservabilityRouteImport.update({
+    id: '/developer/observability',
+    path: '/developer/observability',
+    getParentRoute: () => PlatformRouteRoute,
+  } as any)
+const PlatformSettingsGeneralRoute = PlatformSettingsGeneralRouteImport.update({
+  id: '/settings/general',
+  path: '/settings/general',
+  getParentRoute: () => PlatformRouteRoute,
+} as any)
+const PlatformSettingsLimitsRoute = PlatformSettingsLimitsRouteImport.update({
+  id: '/settings/limits',
+  path: '/settings/limits',
+  getParentRoute: () => PlatformRouteRoute,
+} as any)
+const PlatformSettingsTeamRoute = PlatformSettingsTeamRouteImport.update({
+  id: '/settings/team',
+  path: '/settings/team',
+  getParentRoute: () => PlatformRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -180,18 +180,18 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/_platform': {
-      id: '/_platform'
-      path: ''
-      fullPath: '/'
-      preLoaderRoute: typeof PlatformRouteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/': {
       id: '/'
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_platform': {
+      id: '/_platform'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof PlatformRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_auth/auth': {
@@ -201,53 +201,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthAuthRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_platform/settings/team': {
-      id: '/_platform/settings/team'
-      path: '/settings/team'
-      fullPath: '/settings/team'
-      preLoaderRoute: typeof PlatformSettingsTeamRouteImport
-      parentRoute: typeof PlatformRouteRoute
-    }
-    '/_platform/settings/limits': {
-      id: '/_platform/settings/limits'
-      path: '/settings/limits'
-      fullPath: '/settings/limits'
-      preLoaderRoute: typeof PlatformSettingsLimitsRouteImport
-      parentRoute: typeof PlatformRouteRoute
-    }
-    '/_platform/settings/general': {
-      id: '/_platform/settings/general'
-      path: '/settings/general'
-      fullPath: '/settings/general'
-      preLoaderRoute: typeof PlatformSettingsGeneralRouteImport
-      parentRoute: typeof PlatformRouteRoute
-    }
-    '/_platform/developer/observability': {
-      id: '/_platform/developer/observability'
-      path: '/developer/observability'
-      fullPath: '/developer/observability'
-      preLoaderRoute: typeof PlatformDeveloperObservabilityRouteImport
-      parentRoute: typeof PlatformRouteRoute
-    }
-    '/_platform/developer/configuration': {
-      id: '/_platform/developer/configuration'
-      path: '/developer/configuration'
-      fullPath: '/developer/configuration'
-      preLoaderRoute: typeof PlatformDeveloperConfigurationRouteImport
-      parentRoute: typeof PlatformRouteRoute
-    }
-    '/_platform/developer/api-keys': {
-      id: '/_platform/developer/api-keys'
-      path: '/developer/api-keys'
-      fullPath: '/developer/api-keys'
-      preLoaderRoute: typeof PlatformDeveloperApiKeysRouteImport
-      parentRoute: typeof PlatformRouteRoute
-    }
-    '/_platform/_orchestra/overview': {
-      id: '/_platform/_orchestra/overview'
-      path: '/overview'
-      fullPath: '/overview'
-      preLoaderRoute: typeof PlatformOrchestraOverviewRouteImport
+    '/_platform/_orchestra/analytics': {
+      id: '/_platform/_orchestra/analytics'
+      path: '/analytics'
+      fullPath: '/analytics'
+      preLoaderRoute: typeof PlatformOrchestraAnalyticsRouteImport
       parentRoute: typeof PlatformRouteRoute
     }
     '/_platform/_orchestra/audit-logs': {
@@ -257,11 +215,53 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PlatformOrchestraAuditLogsRouteImport
       parentRoute: typeof PlatformRouteRoute
     }
-    '/_platform/_orchestra/analytics': {
-      id: '/_platform/_orchestra/analytics'
-      path: '/analytics'
-      fullPath: '/analytics'
-      preLoaderRoute: typeof PlatformOrchestraAnalyticsRouteImport
+    '/_platform/_orchestra/overview': {
+      id: '/_platform/_orchestra/overview'
+      path: '/overview'
+      fullPath: '/overview'
+      preLoaderRoute: typeof PlatformOrchestraOverviewRouteImport
+      parentRoute: typeof PlatformRouteRoute
+    }
+    '/_platform/developer/api-keys': {
+      id: '/_platform/developer/api-keys'
+      path: '/developer/api-keys'
+      fullPath: '/developer/api-keys'
+      preLoaderRoute: typeof PlatformDeveloperApiKeysRouteImport
+      parentRoute: typeof PlatformRouteRoute
+    }
+    '/_platform/developer/configuration': {
+      id: '/_platform/developer/configuration'
+      path: '/developer/configuration'
+      fullPath: '/developer/configuration'
+      preLoaderRoute: typeof PlatformDeveloperConfigurationRouteImport
+      parentRoute: typeof PlatformRouteRoute
+    }
+    '/_platform/developer/observability': {
+      id: '/_platform/developer/observability'
+      path: '/developer/observability'
+      fullPath: '/developer/observability'
+      preLoaderRoute: typeof PlatformDeveloperObservabilityRouteImport
+      parentRoute: typeof PlatformRouteRoute
+    }
+    '/_platform/settings/general': {
+      id: '/_platform/settings/general'
+      path: '/settings/general'
+      fullPath: '/settings/general'
+      preLoaderRoute: typeof PlatformSettingsGeneralRouteImport
+      parentRoute: typeof PlatformRouteRoute
+    }
+    '/_platform/settings/limits': {
+      id: '/_platform/settings/limits'
+      path: '/settings/limits'
+      fullPath: '/settings/limits'
+      preLoaderRoute: typeof PlatformSettingsLimitsRouteImport
+      parentRoute: typeof PlatformRouteRoute
+    }
+    '/_platform/settings/team': {
+      id: '/_platform/settings/team'
+      path: '/settings/team'
+      fullPath: '/settings/team'
+      preLoaderRoute: typeof PlatformSettingsTeamRouteImport
       parentRoute: typeof PlatformRouteRoute
     }
   }
