@@ -1,15 +1,21 @@
-import { UnderConstruction } from '#/components/under-construction'
+import { LinkedAccounts } from '#/components/auth/settings/security/linked-accounts'
+import { UserInvitations } from '#/components/auth/organization/user-invitations'
 import { createFileRoute } from '@tanstack/react-router'
+import { OrganizationDangerZone } from '#/components/auth/organization/organization-danger-zone'
 
 export const Route = createFileRoute('/_platform/settings/general')({
+  beforeLoad: () => ({ isUnderConstruction: true }),
   component: RouteComponent,
 })
 
 function RouteComponent() {
   return (
-    <UnderConstruction
-      title="General settings page under construction"
-      description="Change the look and feel of your dashboard for improved productivity"
-    />
+    <div className="grid gap-4">
+      <LinkedAccounts />
+
+			<UserInvitations />
+
+			<OrganizationDangerZone />
+    </div>
   )
 }

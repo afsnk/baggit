@@ -2,10 +2,8 @@
 import { betterFetch } from "@better-fetch/fetch";
 
 import env from "@/Core/Config/env";
-import { useLogger } from "evlog/elysia";
-import { any } from "zod";
 
-interface IEmailProps {
+export interface IEmailProps {
   to: string;
   subject: string;
   body: string;
@@ -15,7 +13,6 @@ interface IEmailProps {
   attachments?: Array<{ filename: string; content: any; contentType: string}>;
 }
 export async function sendEmail({ to, subject, body, data, from = "hello@baggit.link", name = "Baggit Services", attachments }: IEmailProps) {
-  const log = useLogger()
   const { data: responseData, error } = await betterFetch<{
     success: boolean;
     data: any;
@@ -41,10 +38,10 @@ export async function sendEmail({ to, subject, body, data, from = "hello@baggit.
     },
   });
 
-  log.set({emailSent: true, to, subject, body, name})
+  console.error({emailSent: true, to, subject, body, name})
 
   if (error) {
-    log.set({error});
+    console.log(`Failed to send email`, {error});
     throw error;
   }
   return responseData;

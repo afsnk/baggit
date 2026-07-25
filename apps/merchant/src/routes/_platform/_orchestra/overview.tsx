@@ -45,8 +45,6 @@ const pieData = [
 function RouteComponent() {
   const { data: orgList } = authClient.useListOrganizations()
 
-  console.log(`Org list`, { orgList })
-
   if (!orgList) {
     return (
       <div className="w-full flex items-center justify-center">

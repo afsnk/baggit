@@ -24,8 +24,6 @@ export function OrgSwitcher() {
   const { data: orgList } = authClient.useListOrganizations()
   const { data: activeOrg } = authClient.useActiveOrganization()
 
-  console.log(`Active org`, { activeOrg })
-
   const setActiveOrg = useMutation({
     mutationKey: ['setActive'],
     mutationFn: async (values: { orgId: string; orgSlug: string }) => {

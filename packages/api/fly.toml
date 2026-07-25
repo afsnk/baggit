@@ -10,12 +10,13 @@ primary_region = 'lhr'
   dockerfile = './Dockerfile'
 
 [deploy]
-    release_command = "./packages/api/app-db-migrations.sh"
+	release_command = "./packages/api/app-db-migrations.sh"
 
 [processes]
   api = 'bun run start:packages:api'
   auth = 'bun run start:packages:auth'
-  caddy = "caddy run --config /etc/caddy/Caddyfile"
+  caddy = 'caddy run --config /etc/caddy/Caddyfile'
+  worker-email = 'bun run start:worker:email'
 
 [[service]]
   auto_stop_machines = 'suspend'
@@ -51,3 +52,9 @@ primary_region = 'lhr'
   cpus = 1
   memory_mb = 256
   processes = ['auth']
+
+[[vm]]
+	memory = '256mb'
+	cpus = 1
+	memory_mb = 256
+	processes = ['worker-email']

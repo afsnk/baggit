@@ -8,6 +8,7 @@
     "dev:api": "PORTLESS_NGROK=1 portless api.baggit --app-port 8001 bun --bun run --watch src/api.app.ts",
     "start:auth": "bun --bun run dist/src/auth.app.js",
     "start:api": "bun --bun run dist/src/api.app.js",
+    "start:worker:email": "bun --bun run dist/src/Core/Workers/email.worker.js",
     "db:generate": "npx drizzle-kit generate --config ./dist/drizzle.config.js",
     "db:migrate": "npx drizzle-kit migrate --config ./dist/drizzle.config.js",
     "db:push": "npx drizzle-kit push --config ./dist/drizzle.config.js",
@@ -21,6 +22,7 @@
     }
   },
   "dependencies": {
+  	"@baggit/template": "workspace:*",
     "@better-auth/api-key": "^1.6.22",
     "@elysia/cors": "^1.4.2",
     "@elysia/openapi": "^1.4.15",

@@ -14,6 +14,7 @@
     "build:packages:api": "bun run --filter @baggit/api build",
     "start:packages:api": "bun run --filter @baggit/api start:api",
     "start:packages:auth": "bun run --filter @baggit/api start:auth",
+    "start:worker:email": "bun run --filter @baggit/api start:worker:email",
     "start": "pnpm -C packages/demo start",
     "lint": "pnpm -r lint",
     "publish:npm": "pnpm -C packages/npm publish --access public",
