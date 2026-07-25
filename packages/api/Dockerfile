@@ -12,13 +12,11 @@ COPY /packages/api/package.json ./packages/api/package.json
 COPY /packages/api ./packages/api
 COPY /packages/templates ./packages/templates
 
-RUN bun run build:packages:templates
-
 RUN bun install
-
 
 ENV NODE_ENV=production
 
+RUN bun run build:packages:templates
 RUN bun run build:packages:api
 
 FROM oven/bun:canary as runner
