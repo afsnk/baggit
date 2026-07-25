@@ -10,6 +10,9 @@ COPY tsconfig.base.json tsconfig.base.json
 
 COPY /packages/api/package.json ./packages/api/package.json
 COPY /packages/api ./packages/api
+COPY /packages/templates ./packages/templates
+
+RUN bun run build:packages:templates
 
 RUN bun install
 
