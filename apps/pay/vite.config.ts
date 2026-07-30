@@ -23,11 +23,6 @@ const config = defineConfig(({command}) => ({
 		nitro({
 			preset: command === "serve"? undefined : "cloudflare-pages"
     }),
-    // cloudflare({
-    //   viteEnvironment: {
-    //     name: 'ssr'
-    //   }
-    // }),
     tailwindcss(),
     tanstackStart(),
     viteReact(),
