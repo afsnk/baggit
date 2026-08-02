@@ -41,7 +41,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
         content: 'width=device-width, initial-scale=1',
       },
       {
-        title: 'TanStack Start Starter',
+        title: 'Baggit - Checkout',
       },
     ],
     links: [
@@ -61,7 +61,6 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        {/*<PostHogProvider>*/}
         <Web3Provider>
           {children}
           <TanStackDevtools
@@ -79,7 +78,6 @@ function RootDocument({ children }: { children: React.ReactNode }) {
           />
         </Web3Provider>
         <Toaster />
-        {/*</PostHogProvider>*/}
         <Scripts />
       </body>
     </html>
