@@ -7,7 +7,7 @@ import { tanstackStart } from '@tanstack/react-start/plugin/vite'
 import viteReact, { reactCompilerPreset } from '@vitejs/plugin-react'
 import babel from '@rolldown/plugin-babel'
 import tailwindcss from '@tailwindcss/vite'
-import {nitro} from "nitro/vite"
+import {cloudflare} from "@cloudflare/vite-plugin"
 
 const config = defineConfig(({command}) => ({
   resolve: { tsconfigPaths: true },
@@ -19,9 +19,7 @@ const config = defineConfig(({command}) => ({
       outdir: './src/paraglide',
       strategy: ['url', 'baseLocale'],
 		}),
-		nitro({
-			preset: command === "serve"? undefined : "cloudflare-pages"
-    }),
+		cloudflare({ viteEnvironment: {name: 'ssr'} }),
     tailwindcss(),
     tanstackStart(),
     viteReact(),
