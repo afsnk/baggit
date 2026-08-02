@@ -15,3 +15,5 @@ todos.json
 .dev.vars
 .dev*
 .dev.vars*
+/src/lib/web3
+src/lib/web3
