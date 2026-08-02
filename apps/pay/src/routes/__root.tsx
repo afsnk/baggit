@@ -7,7 +7,6 @@ import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
 
 // import PostHogProvider from '../integrations/posthog/provider'
-import { Web3Provider } from '#/lib/web3'
 
 import TanStackQueryDevtools from '../integrations/tanstack-query/devtools'
 
@@ -61,22 +60,20 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        <Web3Provider>
-          {children}
-          <TanStackDevtools
-            config={{
-              position: 'bottom-right',
-              hideUntilHover: true,
-            }}
-            plugins={[
-              {
-                name: 'Tanstack Router',
-                render: <TanStackRouterDevtoolsPanel />,
-              },
-              TanStackQueryDevtools,
-            ]}
-          />
-        </Web3Provider>
+        {children}
+        <TanStackDevtools
+          config={{
+            position: 'bottom-right',
+            hideUntilHover: true,
+          }}
+          plugins={[
+            {
+              name: 'Tanstack Router',
+              render: <TanStackRouterDevtoolsPanel />,
+            },
+            TanStackQueryDevtools,
+          ]}
+        />
         <Toaster />
         <Scripts />
       </body>
