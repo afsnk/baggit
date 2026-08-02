@@ -13,11 +13,8 @@ export const env = createEnv({
   clientPrefix: 'VITE_',
 
   client: {
-    VITE_APP_TITLE: z.string().min(1).optional(),
-    /** Optional custom RPC endpoint for Base mainnet; falls back to the chain default. */
-    VITE_BASE_RPC_URL: z.string().url().optional(),
-    /** Optional custom RPC endpoint for BNB Smart Chain; falls back to the chain default. */
-    VITE_BSC_RPC_URL: z.string().url().optional(),
+    VITE_APP_TITLE: z.string().min(1).optional().nullable(),
+
     VITE_API_URL: z.string().url(),
     VITE_BETTER_AUTH_URL: z.url(),
     VITE_NATS_CON_URL: z.url(),
