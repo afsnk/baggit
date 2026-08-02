@@ -9,7 +9,7 @@ import babel from '@rolldown/plugin-babel'
 import tailwindcss from '@tailwindcss/vite'
 import {cloudflare} from "@cloudflare/vite-plugin"
 
-const config = defineConfig(({command}) => ({
+const config = defineConfig({
   resolve: { tsconfigPaths: true },
   logLevel: "error",
   plugins: [
@@ -25,6 +25,6 @@ const config = defineConfig(({command}) => ({
     viteReact(),
     babel({ presets: [reactCompilerPreset()] }),
   ],
-}))
+})
 
 export default config
