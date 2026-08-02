@@ -9,3 +9,6 @@ tsconfig.tsbuildinfo
 */.DS_Store
 .vercel
 .env*
+apps/demo
+./apps/demo
+apps/demo/
