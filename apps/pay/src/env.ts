@@ -2,23 +2,23 @@ import { createEnv } from '@t3-oss/env-core'
 import { z } from 'zod'
 
 export const env = createEnv({
-  server: {
-    SERVER_URL: z.string().url().default('https://api.baggit.dev'),
-  },
+	server: {
+		SERVER_URL: z.string().url().default('https://api.baggit.link'),
+	},
 
-  /**
-   * The prefix that client-side variables must have. This is enforced both at
-   * a type-level and at runtime.
-   */
-  clientPrefix: 'VITE_',
+	/**
+	 * The prefix that client-side variables must have. This is enforced both at
+	 * a type-level and at runtime.
+	 */
+	clientPrefix: 'VITE_',
 
-  client: {
-    VITE_API_URL: z.string().url(),
-    VITE_BETTER_AUTH_URL: z.url(),
-    VITE_NATS_CON_URL: z.url(),
-    VITE_NATS_KV_KEY: z.string(),
-    VITE_NATS_USER_JWT: z.string(),
-    VITE_NATS_USER_NKEY: z.string(),
+	client: {
+		VITE_API_URL: z.string().url().optional().default('https://api.baggit.link'),
+		VITE_BETTER_AUTH_URL: z.url().optional().default('https://auth.baggit.link'),
+		VITE_NATS_CON_URL: z.url().optional().default('wss://connect.ngs.global'),
+    VITE_NATS_KV_KEY: z.string().optional(),
+    VITE_NATS_USER_JWT: z.string().optional(),
+    VITE_NATS_USER_NKEY: z.string().optional(),
   },
 
   /**
