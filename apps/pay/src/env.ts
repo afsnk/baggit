@@ -15,10 +15,10 @@ export const env = createEnv({
 	client: {
 		VITE_API_URL: z.string().url().optional().default('https://api.baggit.link'),
 		VITE_BETTER_AUTH_URL: z.url().optional().default('https://auth.baggit.link'),
-		VITE_NATS_CON_URL: z.url().optional().default('wss://connect.ngs.global'),
-    VITE_NATS_KV_KEY: z.string().optional(),
-    VITE_NATS_USER_JWT: z.string().optional(),
-    VITE_NATS_USER_NKEY: z.string().optional(),
+		VITE_NATS_CON_URL: z.url().default('wss://connect.ngs.global'),
+    VITE_NATS_KV_KEY: z.string(),
+    VITE_NATS_USER_JWT: z.string(),
+    VITE_NATS_USER_NKEY: z.string(),
   },
 
   /**
