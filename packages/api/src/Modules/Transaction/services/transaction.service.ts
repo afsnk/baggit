@@ -34,14 +34,13 @@ class Transaction {
   //   }
   // }
 
-  async collectFeeAndPayout(pk: string, transaction: TTransaction, key: string, trxAddress: Address, merchantAddress: Address) {
-
+  async collectFeeAndPayout(pk: string, transaction: TTransaction, key: string, trxAddress: Address, recipientAddress: Address, amount?: number) {
     const chain = getChain(transaction.network);
     const asset = transaction.asset as "usdt" | "usdc" | "cngn";
     const token = TOKEN_ADDRESSES[chain.id][asset];
     const balance = await getBalance(transaction.network as "base" | "bsc", trxAddress, asset)
 
-    if (balance > 0) {
+    if (balance > 0 || typeof amount !== "undefined") {
       return await runTransaction(
         Cypher.decrypt(pk, key || env.ENC_KEY) as Hex,
         chain,
@@ -53,8 +52,8 @@ class Transaction {
             ]),
             functionName: "transfer",
             args: [
-              merchantAddress, // Send to mercahnt
-              parseUnits(balance.toString(), token.decimal),
+              recipientAddress, // Send to mercahnt
+              parseUnits(amount? amount.toString() : balance.toString(), token.decimal),
             ],
           }),
           // encodeFunctionData({
@@ -101,7 +100,7 @@ class Transaction {
     return data;
 	}
 
-	async getPayoutDetails(ngnAmount: number, options: {
+	async getPayoutDetails(usdAmount: number, options: {
 		accountNumber: string;
 		bankCode: string;
 		accountName?: string;
@@ -153,7 +152,7 @@ class Transaction {
     }>(`${env.SWITCH_API_URL}/offramp/initiate`, {
       method: "post",
 			body: JSON.stringify({
-				amount: ngnAmount,
+				amount: usdAmount,
 				country: "NG",
 				asset: "bsc:usdc",
 				beneficiary: {
@@ -337,7 +336,7 @@ class Transaction {
     return existingResponse.data;
   }
 
-  async getSwitchRate() {
+  async getSwitchRate(type: 'onramp' | 'offramp' = 'onramp') {
     const { data: rateData, error} = await betterFetch<{
       success: boolean
       message: string
@@ -345,13 +344,13 @@ class Transaction {
       data: {
         rate: number
       }
-    }>(`${env.SWITCH_API_URL}/onramp/rate`, {
+    }>(`${env.SWITCH_API_URL}/${type}/rate`, {
       headers: {
         "x-service-key": env.SWITCH_API_KEY,
         "content-type": "application/json"
       },
       body: JSON.stringify({
-        asset: "base:usdc",
+        asset: "bsc:usdc",
         country: "NG",
         currency: "NGN"
       })

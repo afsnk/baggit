@@ -1,5 +1,5 @@
 import { env } from '#/env'
-import { getBanks, lookupBank } from '#/server/api'
+import { createPayout, getBanks, lookupBank } from '#/server/api'
 import type { APIApp } from '@baggit/api/app'
 import { edenFetch } from '@elysia/eden'
 import { mutationOptions, QueryClient, queryOptions } from '@tanstack/react-query'
@@ -159,4 +159,15 @@ export const banks = queryOptions({
 	refetchOnMount: true,
   retryOnMount: true,
   refetchOnWindowFocus: true,
+})
+
+export const initPayoutOptions = mutationOptions({
+	mutationKey: ['createPayout'],
+	mutationFn: async (values: {
+		accountNumber: string;
+		accountName: string;
+		bankCode: string;
+		amount: number
+		reference: string
+	}) => createPayout({data: {...values}})
 })

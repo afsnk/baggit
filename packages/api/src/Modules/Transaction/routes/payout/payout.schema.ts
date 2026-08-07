@@ -17,10 +17,11 @@ export const createPayoutRequestSchema = {
 		}),
 	},
 	body: z.object({
-		bankCode: z.string(),
-		accountNumber: z.string(),
-		accountName: z.string(),
-		amount: z.number(),
+		bankCode: z.string().describe('Bank code for recipients bank'),
+		accountNumber: z.string().describe('Account number of recipient'),
+		accountName: z.string().describe('Account name from lookup'),
+		amount: z.number().describe('Amount to send to recipient'),
+		reference: z.string().describe('Reference for the transaction')
 	}),
 	headers: z.object({
 		'Baggit-Public-Key': z.string().optional().describe('Merchant public key required for routes like /checkout'),
@@ -127,6 +128,9 @@ export const switchWebhookSchema = {
 		})
 	},
 	body: z.any(),
+	params: z.object({
+		transactionId: z.string()
+	}),
 	detail: {
 		tags,
 		summary: 'Payout API route webhook',
