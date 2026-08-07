@@ -1,15 +1,17 @@
-"use client"
+'use client'
 
 import type {
   ColumnDef,
   PaginationState,
   SortingState,
-} from "@tanstack/react-table"
-import {flexRender,
-getCoreRowModel,
-getPaginationRowModel,
-getSortedRowModel,
-useReactTable,} from "@tanstack/react-table"
+} from '@tanstack/react-table'
+import {
+  flexRender,
+  getCoreRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from '@tanstack/react-table'
 
 import {
   Table,
@@ -18,12 +20,18 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
-import { ChevronLeft, ChevronRight } from "lucide-react"
-import { Button } from "./ui/button"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select"
-import { Label } from "./ui/label"
-import { useState } from "react"
+} from '@/components/ui/table'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { Button } from './ui/button'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from './ui/select'
+import { Label } from './ui/label'
+import { useState } from 'react'
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -75,7 +83,7 @@ export function DataTable<TData, TValue>({
                       ? null
                       : flexRender(
                           header.column.columnDef.header,
-                          header.getContext()
+                          header.getContext(),
                         )}
                   </TableHead>
                 )
@@ -88,7 +96,7 @@ export function DataTable<TData, TValue>({
             table.getRowModel().rows.map((row) => (
               <TableRow
                 key={row.id}
-                data-state={row.getIsSelected() && "selected"}
+                data-state={row.getIsSelected() && 'selected'}
               >
                 {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id}>
