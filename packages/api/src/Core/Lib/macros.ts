@@ -59,7 +59,10 @@ export const appMacro = {
     async resolve({ status, request: {headers}}: Context) {
       const session = await betterAuth.api.getSession({
         headers
-      })
+			})
+
+			if (headers.get('baggit-public-key') || headers.get('baggit-secret-key')) return;
+
       if (!session) return status(401, `Unauthorized access`)
       return {
         user: session.user,
@@ -79,7 +82,9 @@ export const appMacro = {
       const publicKey = headers.get('baggit-public-key')
       const secretKey = headers.get('baggit-secret-key')
 
-      console.log(`KEys`, {publicKey, secretKey})
+      const isAuth = headers.get('Cookie')?.includes('__Secure-baggit-dev-auth.session_token')
+
+			if (isAuth) return;
 
       if (!publicKey && !secretKey) {
         return status(401, `No public or secret key passed`)

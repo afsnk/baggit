@@ -34,14 +34,13 @@ class Transaction {
   //   }
   // }
 
-  async collectFeeAndPayout(pk: string, transaction: TTransaction, key: string, trxAddress: Address, merchantAddress: Address) {
-
+  async collectFeeAndPayout(pk: string, transaction: TTransaction, key: string, trxAddress: Address, recipientAddress: Address, amount?: number) {
     const chain = getChain(transaction.network);
     const asset = transaction.asset as "usdt" | "usdc" | "cngn";
     const token = TOKEN_ADDRESSES[chain.id][asset];
     const balance = await getBalance(transaction.network as "base" | "bsc", trxAddress, asset)
 
-    if (balance > 0) {
+    if (balance > 0 || typeof amount !== "undefined") {
       return await runTransaction(
         Cypher.decrypt(pk, key || env.ENC_KEY) as Hex,
         chain,
@@ -53,8 +52,8 @@ class Transaction {
             ]),
             functionName: "transfer",
             args: [
-              merchantAddress, // Send to mercahnt
-              parseUnits(balance.toString(), token.decimal),
+              recipientAddress, // Send to mercahnt
+              parseUnits(amount? amount.toString() : balance.toString(), token.decimal),
             ],
           }),
           // encodeFunctionData({
@@ -99,7 +98,155 @@ class Transaction {
     }
 
     return data;
-  }
+	}
+
+	async getPayoutDetails(usdAmount: number, options: {
+		accountNumber: string;
+		bankCode: string;
+		accountName?: string;
+		reference: string;
+		callbackUrl: string;
+		static?: boolean;
+		senderName?: string;
+	}) {
+		const lookupResult = await this.getAccountName(options.accountNumber, options.bankCode)
+
+		const { data: payoutResponse, error } = await betterFetch<{
+      success: boolean;
+      message: string;
+      timestamp: string;
+      data: {
+      	status: string
+        type: string
+        reference: string
+        beneficiary: string
+        rate: number
+        developer_fee: {
+          amount: number
+          amount_usd: number
+          currency: string
+          network: string
+        },
+        source: {
+          amount: number
+          amount_usd: number
+          network: string
+          currency: string
+        },
+        destination: {
+          amount: number
+          amount_usd: number
+          network: string
+          currency: string
+        },
+        deposit: {
+          amount: number
+          address: string
+          asset: string
+          note: Array<string>
+        },
+        meta: any
+        created_at: string
+        updated_at: string
+      }
+    }>(`${env.SWITCH_API_URL}/offramp/initiate`, {
+      method: "post",
+			body: JSON.stringify({
+				amount: usdAmount,
+				country: "NG",
+				asset: "bsc:usdc",
+				beneficiary: {
+					holder_type: "INDIVIDUAL",
+					holder_name: options.accountName? options.accountName : lookupResult.account_name,
+					account_number: options.accountNumber,
+					bank_code: options.bankCode,
+				},
+				currency: "NGN",
+				sender_name: options.senderName,
+				callback_url: options.callbackUrl,
+				reference: options.reference,
+				reason: "REMITTANCE",
+				developer_fee: 0.5,
+				developer_recipient: env.FEE_COLLECTION_ADDRESS,
+				static: options.static? options.static : false
+      }),
+      headers: {
+        "x-service-key": env.SWITCH_API_KEY,
+        "content-type": "application/json"
+      },
+		});
+
+		if (error) {
+			console.error(`Failed to initiate payout`, { error })
+			throw error;
+		}
+
+		return payoutResponse.data
+	}
+
+	async getAccountName(accountNumber: string, bankCode: string) {
+		const { data: lookupInstitute, error } = await betterFetch<{
+      success: boolean;
+      message: string;
+      timestamp: string;
+      data: {
+				bank_code: string;
+				account_number: string;
+				account_name: string;
+      }
+    }>(`${env.SWITCH_API_URL}/institution/lookup`, {
+      method: "post",
+			body: JSON.stringify({
+				country: "NG",
+			  beneficiary: {
+			    account_number: accountNumber,
+			    bank_code: bankCode
+			  }
+      }),
+      headers: {
+        "x-service-key": env.SWITCH_API_KEY,
+        "content-type": "application/json"
+      },
+    });
+
+		if (error) {
+			console.error(`Failed to get account name`, { error })
+			throw error
+		}
+
+		return lookupInstitute.data
+	}
+
+	async getBankList() {
+		const { data: bankList, error } = await betterFetch<{
+      success: boolean;
+      message: string;
+      timestamp: string;
+			data: Array<{
+				country: string;
+				code: string;
+				name: string;
+      }>
+    }>(`${env.SWITCH_API_URL}/institution`, {
+			method: "get",
+			query: {
+				country: "NG"
+			},
+      headers: {
+        "x-service-key": env.SWITCH_API_KEY,
+        "content-type": "application/json"
+      },
+		});
+
+		if (error) {
+			console.log(`Failed to get bank list`, {
+        error
+      })
+      throw error;
+		}
+
+		return bankList.data
+	}
 
   async getBankTransferDetails(usdAmount: number, reference: string, address: Address, paymentId: string) {
     console.log(`Params`, {usdAmount, reference, address, paymentId})
@@ -189,7 +336,7 @@ class Transaction {
     return existingResponse.data;
   }
 
-  async getSwitchRate() {
+  async getSwitchRate(type: 'onramp' | 'offramp' = 'onramp') {
     const { data: rateData, error} = await betterFetch<{
       success: boolean
       message: string
@@ -197,13 +344,13 @@ class Transaction {
       data: {
         rate: number
       }
-    }>(`${env.SWITCH_API_URL}/onramp/rate`, {
+    }>(`${env.SWITCH_API_URL}/${type}/rate`, {
       headers: {
         "x-service-key": env.SWITCH_API_KEY,
         "content-type": "application/json"
       },
       body: JSON.stringify({
-        asset: "base:usdc",
+        asset: "bsc:usdc",
         country: "NG",
         currency: "NGN"
       })
