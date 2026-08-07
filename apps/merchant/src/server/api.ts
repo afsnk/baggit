@@ -74,3 +74,41 @@ export const getBanks = createServerFn({ method: "GET" })
       throw error
 		}
 	})
+
+
+export const createPayout = createServerFn({ method: "POST" })
+	.validator(z.object({
+		accountNumber: z.string(),
+		accountName: z.string(),
+		bankCode: z.string(),
+		amount: z.number(),
+		reference: z.string()
+	}))
+	.handler(async ({ data }) => {
+		try {
+			const headers = getRequestHeaders()
+			const cookie = headers.get('Cookie')
+			const { data: banks, error } = await fetch(`/v1/payout`, {
+        method: 'POST',
+        headers: {
+					'Content-type': 'application/json',
+          'Cookie': cookie || ''
+        },
+				credentials: 'include',
+				body: {
+					...data
+				} as any
+      })
+
+			if (error) {
+				console.log(`Failed to create payout`, {error})
+        throw error
+      }
+
+      return banks
+		}
+		catch (error: any) {
+			console.log(`Failed to create payout`, { error })
+      throw error
+		}
+	})

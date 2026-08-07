@@ -17,7 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '#/components/ui/select'
-import { banks, checkBank, getBalanceOptions } from '#/lib/api-client'
+import { banks, checkBank, getBalanceOptions, initPayoutOptions } from '#/lib/api-client'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { CheckCheck, Loader2 } from 'lucide-react'
 import { useState } from 'react'
@@ -26,6 +26,7 @@ interface IPayout {
   children: React.ReactNode
 }
 export default function PayoutModal(props: IPayout) {
+	const createPayout = useMutation(initPayoutOptions)
 	const lookupBank = useMutation(checkBank)
 	const getBanks = useQuery(banks)
 	const balance = useQuery(getBalanceOptions)
@@ -132,7 +133,17 @@ export default function PayoutModal(props: IPayout) {
 						</InputGroup>
           </Field>
 				</FieldGroup>
-				<Button size="sm" className="w-full mt-4" disabled={false}>Withdraw</Button>
+				<Button
+					size="sm"
+					className="w-full mt-4"
+					disabled={createPayout.isPending}
+					onClick={() => createPayout.mutate({
+					accountNumber: lookupBank.data?.accountNumber || '',
+					accountName: lookupBank.data?.accountName || '',
+					bankCode: lookupBank.data?.bankCode || '',
+					reference: crypto.randomUUID(),
+					amount: customAmount,
+				})}>Withdraw</Button>
       </PopoverContent>
     </Popover>
   )
