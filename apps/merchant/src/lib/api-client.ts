@@ -1,4 +1,5 @@
 import { env } from '#/env'
+import { getBanks, lookupBank } from '#/server/api'
 import type { APIApp } from '@baggit/api/app'
 import { edenFetch } from '@elysia/eden'
 import { mutationOptions, QueryClient, queryOptions } from '@tanstack/react-query'
@@ -147,32 +148,15 @@ export const updatePayment = (paymentId: string) => mutationOptions({
   }
 })
 
-// export const confirmTransaction = (pk: string, enabled: boolean, id?: string) =>
-//   queryOptions({
-//     enabled: !!id && enabled,
-//     queryKey: ['confirm', { id: id ? id : '' }],
-//     retry: false,
-//     retryOnMount: false,
-//     refetchOnMount: false,
-//     refetchOnWindowFocus: false,
-//     queryFn: async () => {
-//       console.log(`Data for confirm`, { pk })
-//       const { data, error } = await fetch(`/v1/transaction/confirm`, {
-//         method: 'GET',
-//         query: {
-//           id,
-//         },
-//         headers: {
-//           'baggit-public-key': pk,
-//         },
-//       })
+export const checkBank = mutationOptions({
+	mutationKey: ['lookupBank'],
+	mutationFn: async (values: { bankCode: string; accountNumber: string }) => lookupBank({ data: { ...values } }),
+})
 
-//       if (error) {
-//         console.log(`Error from confirm`, { error })
-//         throw new Error(error.message, { cause: error.cause })
-//       }
-
-//       return data
-//     },
-//   })
-//
+export const banks = queryOptions({
+	queryKey: ['getBanks'],
+	queryFn: async () => await getBanks(),
+	refetchOnMount: true,
+  retryOnMount: true,
+  refetchOnWindowFocus: true,
+})

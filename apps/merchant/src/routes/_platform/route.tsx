@@ -1,5 +1,5 @@
 import { AppSidebar } from '#/components/app-sidebar'
-import Balance from '#/components/Balance'
+import Balance from '#/routes/_platform/_orchestra/-components/analytics/Balance'
 import { Container, Main, Section } from '#/components/craft'
 import { SidebarInset, SidebarProvider } from '#/components/ui/sidebar'
 import { Tooltip, TooltipTrigger, TooltipContent } from '#/components/ui/tooltip'
