@@ -67,11 +67,7 @@ export const getBanks = createServerFn({ method: "GET" })
         throw error
       }
 
-      return banks as Array<{
-				code: string;
-				name: string;
-				country?: string;
-      }>
+      return banks
 		}
 		catch (error: any) {
 			console.log(`Failed to get banks`, { error })
