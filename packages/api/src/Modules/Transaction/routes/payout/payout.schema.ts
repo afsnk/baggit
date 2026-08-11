@@ -31,7 +31,7 @@ export const createPayoutRequestSchema = {
 	auth: true,
 	detail: {
 		tags,
-		summary: 'Payout API route',
+		summary: 'Create payout request',
 		operationId: 'payout'
 	}
 } satisfies AppRouteSchema
@@ -63,7 +63,7 @@ export const verifyPayoutRequestSchema = {
 	auth: true,
 	detail: {
 		tags,
-		summary: 'Payout API route',
+		summary: 'Verify payout status',
 		operationId: 'payout'
 	}
 } satisfies AppRouteSchema
@@ -86,7 +86,7 @@ export const bankListSchema = {
 	apiKey: true,
 	detail: {
 		tags,
-		summary: 'Payout API route',
+		summary: 'Get bank list for payout request',
 		operationId: 'payout'
 	}
 } satisfies AppRouteSchema
@@ -111,7 +111,7 @@ export const lookupSchema = {
 	auth: true,
 	detail: {
 		tags,
-		summary: 'Payout API route',
+		summary: 'Get bank account name for payout',
 		operationId: 'payout'
 	}
 } satisfies AppRouteSchema
@@ -133,8 +133,9 @@ export const switchWebhookSchema = {
 	}),
 	detail: {
 		tags,
-		summary: 'Payout API route webhook',
-		operationId: 'payout'
+		summary: 'Webhook route webhook',
+		operationId: 'payout',
+		hide: true,
 	}
 } satisfies AppRouteSchema
 
