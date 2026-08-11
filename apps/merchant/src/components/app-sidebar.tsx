@@ -1,12 +1,5 @@
-'use client'
-
 import * as React from 'react'
-import {
-  ExternalLink,
-  Music2,
-  Settings2,
-  SquareTerminal,
-} from 'lucide-react'
+import { ExternalLink, Music2, Settings2, SquareTerminal } from 'lucide-react'
 
 import { NavMain } from '#/components/nav-main.tsx'
 import { NavDocumentation } from '#/components/nav-documentation'
