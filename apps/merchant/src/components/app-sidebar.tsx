@@ -2,10 +2,7 @@
 
 import * as React from 'react'
 import {
-  AudioWaveform,
-  Command,
   ExternalLink,
-  GalleryVerticalEnd,
   Music2,
   Settings2,
   SquareTerminal,
