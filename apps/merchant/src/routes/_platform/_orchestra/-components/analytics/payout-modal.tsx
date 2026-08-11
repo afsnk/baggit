@@ -1,4 +1,13 @@
 import { Button } from '#/components/ui/button'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuTrigger,
+} from '#/components/ui/dropdown-menu'
 import { Field, FieldGroup, FieldLabel } from '#/components/ui/field'
 import { Input } from '#/components/ui/input'
 import {
@@ -29,8 +38,9 @@ import {
   initPayoutOptions,
 } from '#/lib/api-client'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { CheckCheck, Loader2 } from 'lucide-react'
-import { useState } from 'react'
+import { CheckCheck, ChevronsUpDown, Loader2 } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { toast } from 'sonner'
 
 interface IPayout {
   children: React.ReactNode
@@ -45,7 +55,13 @@ export default function PayoutModal(props: IPayout) {
   const [customAmount, setCustomAmount] = useState<number>(
     balance.data?.totalNgnBalance || 0,
   )
-  const [accountNumber, setAccountNumber] = useState<string | null>(null)
+	const [accountNumber, setAccountNumber] = useState<string | null>(null)
+
+	useEffect(() => {
+		if (withdrawType === "full" && customAmount !== balance.data?.totalNgnBalance) {
+			setCustomAmount(balance.data?.totalNgnBalance || 0)
+		}
+	}, [customAmount, withdrawType])
 
   return (
     <Popover>
@@ -139,8 +155,9 @@ export default function PayoutModal(props: IPayout) {
               <InputGroupInput
                 id="withdraw_type"
                 type="number"
-                placeholder="Amount to withdraw"
+                placeholder="Payout amount"
                 disabled={withdrawType === 'full'}
+                className="border-l"
                 contentEditable={withdrawType !== 'full'}
                 value={customAmount}
                 onChange={(e) => {
@@ -148,20 +165,36 @@ export default function PayoutModal(props: IPayout) {
                 }}
               />
               <InputGroupAddon align="inline-start">
-                <Select
-                  defaultValue="full"
-                  onValueChange={(value: 'full' | 'partial') =>
-                    setWithdrawType(value)
-                  }
-                >
-                  <SelectTrigger size="sm">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="full">Full</SelectItem>
-                    <SelectItem value="partial">Partial</SelectItem>
-                  </SelectContent>
-                </Select>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      size="xs"
+                      variant="ghost"
+                      className="capitalize rounded-sm mr-1.5"
+                    >
+                      {withdrawType} Payout
+                      <ChevronsUpDown className="size-3" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="max-w-sm">
+                    <DropdownMenuGroup>
+                      <DropdownMenuLabel>Payout type</DropdownMenuLabel>
+                      <DropdownMenuRadioGroup
+                        value={withdrawType}
+                        onValueChange={(value) =>
+                          setWithdrawType(value as 'full' | 'partial')
+                        }
+                      >
+                        <DropdownMenuRadioItem value="full">
+                          Full
+                        </DropdownMenuRadioItem>
+                        <DropdownMenuRadioItem value="partial">
+                          Partial
+                        </DropdownMenuRadioItem>
+                      </DropdownMenuRadioGroup>
+                    </DropdownMenuGroup>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </InputGroupAddon>
             </InputGroup>
           </Field>
@@ -169,16 +202,28 @@ export default function PayoutModal(props: IPayout) {
         <Button
           size="sm"
           className="w-full mt-4"
-          disabled={createPayout.isPending || !accountNumber || accountNumber.length !== 10 || !bankCode || !lookupBank.data}
-          onClick={() =>
-            createPayout.mutate({
-              accountNumber: lookupBank.data?.accountNumber || '',
-              accountName: lookupBank.data?.accountName || '',
-              bankCode: lookupBank.data?.bankCode || '',
-              reference: crypto.randomUUID(),
-              amount: customAmount,
-            })
+          disabled={
+            createPayout.isPending ||
+            !accountNumber ||
+            accountNumber.length !== 10 ||
+            !bankCode ||
+            !lookupBank.data
           }
+          onClick={() => {
+            if (customAmount > 0) {
+              createPayout.mutate({
+                accountNumber: lookupBank.data?.accountNumber || '',
+                accountName: lookupBank.data?.accountName || '',
+                bankCode: lookupBank.data?.bankCode || '',
+                reference: crypto.randomUUID(),
+                amount: customAmount,
+              })
+						} else {
+							toast.info(`Cannot process payout at this time.`, {
+								description: `Get successful transaction inflow to enable payout`
+							})
+            }
+          }}
         >
           Withdraw
         </Button>
