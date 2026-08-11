@@ -9,23 +9,18 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as ReferralRouteImport } from './routes/referral'
-import { Route as OnboardingRouteImport } from './routes/onboarding'
-import { Route as BillingRouteImport } from './routes/billing'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as SellIndexRouteImport } from './routes/sell.index'
+import { Route as BillingRouteImport } from './routes/billing'
+import { Route as OnboardingRouteImport } from './routes/onboarding'
+import { Route as ReferralRouteImport } from './routes/referral'
 import { Route as BuyIndexRouteImport } from './routes/buy.index'
-import { Route as SellAssetRouteImport } from './routes/sell.$asset'
 import { Route as BuyAssetRouteImport } from './routes/buy.$asset'
+import { Route as SellIndexRouteImport } from './routes/sell.index'
+import { Route as SellAssetRouteImport } from './routes/sell.$asset'
 
-const ReferralRoute = ReferralRouteImport.update({
-  id: '/referral',
-  path: '/referral',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const OnboardingRoute = OnboardingRouteImport.update({
-  id: '/onboarding',
-  path: '/onboarding',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BillingRoute = BillingRouteImport.update({
@@ -33,14 +28,14 @@ const BillingRoute = BillingRouteImport.update({
   path: '/billing',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const OnboardingRoute = OnboardingRouteImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SellIndexRoute = SellIndexRouteImport.update({
-  id: '/sell/',
-  path: '/sell/',
+const ReferralRoute = ReferralRouteImport.update({
+  id: '/referral',
+  path: '/referral',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BuyIndexRoute = BuyIndexRouteImport.update({
@@ -48,14 +43,19 @@ const BuyIndexRoute = BuyIndexRouteImport.update({
   path: '/buy/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SellAssetRoute = SellAssetRouteImport.update({
-  id: '/sell/$asset',
-  path: '/sell/$asset',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const BuyAssetRoute = BuyAssetRouteImport.update({
   id: '/buy/$asset',
   path: '/buy/$asset',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SellIndexRoute = SellIndexRouteImport.update({
+  id: '/sell/',
+  path: '/sell/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SellAssetRoute = SellAssetRouteImport.update({
+  id: '/sell/$asset',
+  path: '/sell/$asset',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -136,18 +136,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/referral': {
-      id: '/referral'
-      path: '/referral'
-      fullPath: '/referral'
-      preLoaderRoute: typeof ReferralRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/onboarding': {
-      id: '/onboarding'
-      path: '/onboarding'
-      fullPath: '/onboarding'
-      preLoaderRoute: typeof OnboardingRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/billing': {
@@ -157,18 +150,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BillingRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/onboarding': {
+      id: '/onboarding'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof OnboardingRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/sell/': {
-      id: '/sell/'
-      path: '/sell'
-      fullPath: '/sell/'
-      preLoaderRoute: typeof SellIndexRouteImport
+    '/referral': {
+      id: '/referral'
+      path: '/referral'
+      fullPath: '/referral'
+      preLoaderRoute: typeof ReferralRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/buy/': {
@@ -178,18 +171,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BuyIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/sell/$asset': {
-      id: '/sell/$asset'
-      path: '/sell/$asset'
-      fullPath: '/sell/$asset'
-      preLoaderRoute: typeof SellAssetRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/buy/$asset': {
       id: '/buy/$asset'
       path: '/buy/$asset'
       fullPath: '/buy/$asset'
       preLoaderRoute: typeof BuyAssetRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sell/': {
+      id: '/sell/'
+      path: '/sell'
+      fullPath: '/sell/'
+      preLoaderRoute: typeof SellIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sell/$asset': {
+      id: '/sell/$asset'
+      path: '/sell/$asset'
+      fullPath: '/sell/$asset'
+      preLoaderRoute: typeof SellAssetRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
