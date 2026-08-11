@@ -1,12 +1,13 @@
 import { AppSidebar } from '#/components/app-sidebar'
 import Balance from '#/routes/_platform/_orchestra/-components/analytics/Balance'
 import { Container, Main, Section } from '#/components/craft'
-import { SidebarInset, SidebarProvider } from '#/components/ui/sidebar'
+import { SidebarInset, SidebarProvider, SidebarTrigger } from '#/components/ui/sidebar'
 import { Tooltip, TooltipTrigger, TooltipContent } from '#/components/ui/tooltip'
 import { cn } from '#/lib/utils'
 import { authGuard } from '#/server/auth-guard'
 import { createFileRoute, Outlet, useMatch, useRouterState } from '@tanstack/react-router'
 import { Construction } from 'lucide-react'
+import { Separator } from '#/components/ui/separator'
 
 export const Route = createFileRoute('/_platform')({
   component: RouteComponent,
@@ -32,9 +33,14 @@ function RouteComponent() {
       <AppSidebar variant="inset" />
       <SidebarInset>
         <Main>
-          <Section className="p-4!">
+          <Section className="p-4! sticky top-0 dark:bg-black bg-white z-150">
             <Container className="p-0! flex">
-              <div className="capitalize flex items-center gap-2">
+							<div className="capitalize flex items-center gap-2">
+								<SidebarTrigger className='-ml-1' />
+								<Separator
+									orientation='vertical'
+									className="mx-2 data-[orientation=vertical]:h-4"
+								/>
                 {matched?.context.isUnderConstruction &&
                   <Tooltip>
                     <TooltipTrigger>
