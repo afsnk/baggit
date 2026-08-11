@@ -33,7 +33,7 @@ function RouteComponent() {
       <AppSidebar variant="inset" />
       <SidebarInset>
         <Main>
-          <Section className="p-4! sticky top-0 dark:bg-black bg-white z-150">
+          <Section className="p-4! sticky top-0 dark:bg-black bg-white z-50">
             <Container className="p-0! flex">
 							<div className="capitalize flex items-center gap-2">
 								<SidebarTrigger className='-ml-1' />

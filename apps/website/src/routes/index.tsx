@@ -1,4 +1,4 @@
-import { Container, Main, Section } from '#/components/craft'
+import { Container, Section } from '#/components/craft'
 import { CallToAction } from '#/components/cta'
 import { FeatureSection } from '#/components/feature-section'
 import { HeroSection } from '#/components/hero'

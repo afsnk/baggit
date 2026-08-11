@@ -34,7 +34,7 @@ export default function CrossRevenueBarChart({
 
   return (
     <>
-      <h4 className="absolute font-semibold text-muted-foreground group-hover:text-primary transition z-50">
+      <h4 className="absolute font-semibold text-muted-foreground group-hover:text-primary transition z-20">
         Revenue accross currencies
       </h4>
       <BarChart

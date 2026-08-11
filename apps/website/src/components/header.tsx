@@ -30,7 +30,11 @@ export function Header() {
           <DesktopNav />
         </div>
         <div className="hidden items-center gap-2 p-2.5 lg:flex">
-          <Button>Get Started</Button>
+					<Button asChild>
+						<a href='https://merchant.baggit.link' target='_blank'>
+							Get Started
+						</a>
+					</Button>
         </div>
         <MobileNav />
       </nav>
