@@ -43,10 +43,6 @@ export function NavMain({
   const routerState = useRouterState()
 
   useEffect(() => {
-    console.log(`Should be triggered on every render...`, activeTitle)
-  }, [activeTitle])
-
-  useEffect(() => {
     const currentUrl = routerState.location.pathname
     for (const item of items) {
       if (item.items?.some((i) => i.url.includes(currentUrl))) {
