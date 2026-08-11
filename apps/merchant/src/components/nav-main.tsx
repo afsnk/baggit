@@ -15,8 +15,11 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
+  useSidebar,
 } from '#/components/ui/sidebar.tsx'
 import { Link, useMatchRoute, useRouterState } from '@tanstack/react-router'
+import { useIsMobile } from '#/hooks/use-mobile'
+import { useEffect, useState } from 'react'
 
 export function NavMain({
   items,
@@ -31,8 +34,27 @@ export function NavMain({
       url: string
     }[]
   }[]
-  }) {
+}) {
   const match = useMatchRoute()
+  const sidebar = useSidebar()
+  const [activeTitle, setActiveTitle] = useState('')
+  const isMObile = useIsMobile()
+
+  const routerState = useRouterState()
+
+  useEffect(() => {
+    console.log(`Should be triggered on every render...`, activeTitle)
+  }, [activeTitle])
+
+  useEffect(() => {
+    const currentUrl = routerState.location.pathname
+    for (const item of items) {
+      if (item.items?.some((i) => i.url.includes(currentUrl))) {
+        setActiveTitle(item.title)
+        break
+      }
+    }
+  }, [routerState])
 
   return (
     <SidebarGroup>
@@ -40,10 +62,14 @@ export function NavMain({
       <SidebarMenu>
         {items.map((item, index) => (
           <Collapsible
-            key={item.url+index}
-            asChild
-            defaultOpen={item.isActive}
-            className="group/collapsible"
+            key={item.url + index}
+						asChild
+						open={activeTitle === item.title}
+            // defaultOpen={activeTitle.toLowerCase() === item.title.toLowerCase()}
+						className="group/collapsible"
+						onClick={() => {
+							setActiveTitle(item.title)
+						}}
           >
             <SidebarMenuItem>
               <CollapsibleTrigger asChild>
@@ -56,16 +82,30 @@ export function NavMain({
               <CollapsibleContent>
                 <SidebarMenuSub>
                   {item.items?.map((subItem) => {
-                    useRouterState({ select: (s) => s.matches.some((m) => m.routeId === subItem.url) })
+                    useRouterState({
+                      select: (s) =>
+                        s.matches.some((m) => m.routeId === subItem.url),
+                    })
                     return (
-                      <SidebarMenuSubItem key={subItem.title}>
-                        <SidebarMenuSubButton asChild isActive={!!match({to: subItem.url})}>
+                      <SidebarMenuSubItem
+                        key={subItem.title}
+                        onClick={() => {
+                          if (isMObile) {
+                            sidebar.toggleSidebar()
+                          }
+                        }}
+                      >
+                        <SidebarMenuSubButton
+                          asChild
+                          isActive={!!match({ to: subItem.url })}
+                        >
                           <Link to={subItem.url} preload="intent">
                             <span>{subItem.title}</span>
                           </Link>
                         </SidebarMenuSubButton>
                       </SidebarMenuSubItem>
-                    )})}
+                    )
+                  })}
                 </SidebarMenuSub>
               </CollapsibleContent>
             </SidebarMenuItem>

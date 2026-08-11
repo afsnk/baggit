@@ -20,7 +20,7 @@ function RouteComponent() {
   const { data: apiKeys, error: _apiKeysError } = useQuery({
     gcTime: 30_000,
     enabled: !!session,
-    queryKey: ['getKeys'],
+    queryKey: ['getKeys', {orgId: session?.session.activeOrganizationId}],
     queryFn: async () => {
       const { data, error } = await authClient.apiKey.list({
         query: {
