@@ -1,6 +1,5 @@
 // import { DecorIcon } from '#/components/ui/decor-icon'
 import { Button } from '#/components/ui/button'
-import { Link } from '@tanstack/react-router'
 import { ArrowRightIcon } from 'lucide-react'
 
 export function CallToAction() {
@@ -25,9 +24,15 @@ export function CallToAction() {
       </p>
 
       <div className="flex items-center justify-center gap-2">
-        <Button variant="outline">Documentation</Button>
-        <Button>
-          Get Started <ArrowRightIcon data-icon="inline-end" />
+				<Button variant="outline" asChild>
+					<a href='https://docs.baggit.link' target='_blank'>
+						Documentation
+					</a>
+				</Button>
+				<Button asChild>
+					<a href="https://merchant.baggit.link" target='_blank'>
+						Get Started <ArrowRightIcon data-icon="inline-end" />
+					</a>
         </Button>
       </div>
     </div>
