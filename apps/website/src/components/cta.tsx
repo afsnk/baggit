@@ -29,8 +29,8 @@ export function CallToAction() {
 						Documentation
 					</a>
 				</Button>
-				<Button asChild>
-					<a href="https://merchant.baggit.link" target='_blank'>
+				<Button asChild className='text-black'>
+					<a href="https://merchant.baggit.link" target='_blank' className='text-black'>
 						Get Started <ArrowRightIcon data-icon="inline-end" />
 					</a>
         </Button>
