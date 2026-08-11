@@ -23,10 +23,10 @@ export const getBalanceSchema = {
   auth: true,
   detail: {
     tags: ['Balance'],
-    summary: "Balance API routes",
+    summary: "Get organization balance",
     description: "Get balance of an organization wallet",
 		operationId: 'balance',
-    hide: true
+    hide: false
   }
 } satisfies AppRouteSchema
 

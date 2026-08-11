@@ -10,12 +10,12 @@ import transactionService from "../../services/transaction.service";
 import { Cypher } from "@/Core/Lib/wallet/cypher.utils";
 
 
-export const getBalances: AppRouteHandler<GetBalanceRoute, 'auth'> = async ({ log, session, status }) => {
+export const getBalances: AppRouteHandler<GetBalanceRoute, 'auth' | 'apiKey'> = async ({ log, session, status, organization: org }) => {
   try {
-    log.set({ session })
+    log.set({ session, org })
 
     const organization = await db.query.organization.findFirst({
-      where: (fields, ops) => ops.eq(fields.id, session?.activeOrganizationId)
+      where: (fields, ops) => ops.eq(fields.id, (session?.activeOrganizationId || org?.id))
     })
 
     if (!organization) {
