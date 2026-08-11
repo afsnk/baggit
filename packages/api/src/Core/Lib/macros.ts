@@ -82,7 +82,8 @@ export const appMacro = {
       const publicKey = headers.get('baggit-public-key')
       const secretKey = headers.get('baggit-secret-key')
 
-      const isAuth = headers.get('Cookie')?.includes('__Secure-baggit-dev-auth.session_token')
+			const isAuth = headers.get('Cookie')?.includes('__Secure-baggit-dev-auth.session_token')
+				|| headers.get('Cookie')?.includes('__Secure-baggit-auth.session_token')
 
 			if (isAuth) return;
 
