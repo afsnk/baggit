@@ -5,7 +5,6 @@ import {z} from "zod";
 
 const DETAILS = {
   tags: ["Checkout"],
-  summary: "Checkout API routes",
   operationId: 'checkout'
 }
 
@@ -46,7 +45,8 @@ export const createCheckoutOrder = {
 		'Baggit-Secret-Key': z.string().optional()
 	}).optional(),
   detail: {
-    ...DETAILS,
+		...DETAILS,
+    summary: "Create a checkout",
     description: "Checkout a user to make payment",
   }
 } satisfies AppRouteSchema
@@ -73,7 +73,8 @@ export const verifyCheckoutStatus = {
 		'Baggit-Secret-Key': z.string().optional()
 	}).optional(),
   detail: {
-    ...DETAILS,
+		...DETAILS,
+    summary: "Verify checkout status",
     description: "Verify checkout status by order"
   }
 } satisfies AppRouteSchema
