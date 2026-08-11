@@ -5,6 +5,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import CheckoutRevenuePieChart from './-components/analytics/checkout-revenue'
 import WidgetRevenuePieChart from './-components/analytics/widget-revenue'
 import CrossRevenueBarChart from './-components/analytics/cross-revenue'
+import { authClient } from '#/lib/auth-client'
 
 export const Route = createFileRoute('/_platform/_orchestra/analytics')({
   beforeLoad: () => ({isUnderConstruction: true}),
@@ -12,8 +13,8 @@ export const Route = createFileRoute('/_platform/_orchestra/analytics')({
 })
 
 function RouteComponent() {
-  // const {data: activeOrg} = authClient.useActiveOrganization()
-	const { data: transactionData, isLoading } = useQuery(getTransactions)
+  const {data: activeOrg} = authClient.useActiveOrganization()
+	const { data: transactionData, isLoading } = useQuery(getTransactions(activeOrg?.id))
 	useQuery(clawfundsOptions) // Triggers on page enter to any hanging transaction completed but not clawed to merchant address
 
   return (
@@ -27,7 +28,7 @@ function RouteComponent() {
         <CheckoutRevenuePieChart transactionData={transactionData} />
       </div>
 
-      <AnalyticsTable data={transactionData || []} />
+      <AnalyticsTable data={transactionData} />
     </div>
   )
 }

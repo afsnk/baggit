@@ -16,8 +16,11 @@ import {
   useSidebar,
 } from '#/components/ui/sidebar.tsx'
 import { authClient } from '#/lib/auth-client'
-import { useMutation } from '@tanstack/react-query'
+import { QueryClient, useMutation } from '@tanstack/react-query'
 import { showCreateOrgModal } from './create-org-modal'
+import { cn } from '#/lib/utils'
+
+const queryClient = new QueryClient()
 
 export function OrgSwitcher() {
   const { isMobile } = useSidebar()
@@ -37,9 +40,15 @@ export function OrgSwitcher() {
         throw error
       }
 
+      // Reset all query data
+      queryClient.clear()
+      queryClient.resetQueries()
+      queryClient.invalidateQueries({ queryKey: ['getTransactions'] })
       return data
     },
   })
+
+  const { toggleSidebar } = useSidebar()
 
   if (!activeOrg) {
     return (
@@ -80,7 +89,7 @@ export function OrgSwitcher() {
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
-            className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
+            className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg z-200"
             align="start"
             side={isMobile ? 'bottom' : 'right'}
             sideOffset={4}
@@ -92,19 +101,35 @@ export function OrgSwitcher() {
               orgList.map((org, index) => (
                 <DropdownMenuItem
                   key={org.name}
-                  onClick={() =>
+                  onClick={() => {
                     setActiveOrg.mutate({
                       orgId: org.id,
                       orgSlug: org.slug,
                     })
-                  }
+                    if (isMobile) {
+                      toggleSidebar()
+                    }
+                  }}
                   className="gap-2 p-2"
                 >
-                  <div className="flex size-6 items-center justify-center rounded-md border">
+                  <div
+                    className={cn(
+                      'flex size-6 items-center justify-center rounded-md border',
+                      {
+                        'bg-sidebar-primary': activeOrg.id === org.id,
+                      },
+                    )}
+                  >
                     <FolderClosed className="size-3.5 shrink-0" />
                   </div>
                   {org.name}
-                  <DropdownMenuShortcut>⌘{index + 1}</DropdownMenuShortcut>
+                  <DropdownMenuShortcut
+                    className={cn({
+                      'text-sidebar-primary': activeOrg.id === org.id,
+                    })}
+                  >
+                    ⌘{index + 1}
+                  </DropdownMenuShortcut>
                 </DropdownMenuItem>
               ))}
             <DropdownMenuSeparator />

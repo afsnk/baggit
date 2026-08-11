@@ -2,7 +2,11 @@ import { env } from '#/env'
 import { createPayout, getBanks, lookupBank } from '#/server/api'
 import type { APIApp } from '@baggit/api/app'
 import { edenFetch } from '@elysia/eden'
-import { mutationOptions, QueryClient, queryOptions } from '@tanstack/react-query'
+import {
+  mutationOptions,
+  QueryClient,
+  queryOptions,
+} from '@tanstack/react-query'
 
 const queryClient = new QueryClient()
 
@@ -18,7 +22,7 @@ const queryClient = new QueryClient()
 // }
 
 // async function mint(): Promise<{ token: string; expMs: number }> {
-  // cookie-based session is sent automatically with credentials: "include"
+// cookie-based session is sent automatically with credentials: "include"
 //   const res = await fetch("/api/auth/token", { credentials: "include" });
 //   if (!res.ok) throw new Error(`token mint failed: ${res.status}`);
 //   const { token } = await res.json();
@@ -52,31 +56,35 @@ const queryClient = new QueryClient()
 //   return res;
 // }
 
-
 export const fetch = edenFetch<APIApp>(env.VITE_API_URL, {
-  credentials: "include"
+  credentials: 'include',
 })
 
-export const getTransactions =
-  queryOptions({
-    queryKey: ['getTransactions'],
-    queryFn: async () => {
-      const { data, error } = await fetch(`/v1/transaction/all`, {
-        method: 'GET',
-        headers: {
-          'content-type': 'application/json',
-        },
-        credentials: "include",
-      })
+export const getTransactions = (orgId?: string) => queryOptions({
+  refetchOnMount: true,
+  retryOnMount: true,
+	refetchOnWindowFocus: true,
+	retry: true,
+	staleTime: 0,
+  queryKey: ['getTransactions', {orgId}],
+  queryFn: async () => {
+    const { data, error } = await fetch(`/v1/transaction/all`, {
+      method: 'GET',
+      headers: {
+        'content-type': 'application/json',
+      },
+      credentials: 'include',
+    })
 
-      if (error) {
-        console.log(`Error from init`, { error: JSON.stringify(error, null, 2) })
-        throw error
-      }
+    if (error) {
+      console.log(`Error from init`, { error: JSON.stringify(error, null, 2) })
+      throw error
+    }
 
-      return data.map((trx) => ({...trx, date: trx.createdAt}))
-    },
-  })
+    return data.map((trx) => ({ ...trx, date: trx.createdAt }))
+	},
+	initialData: [],
+})
 
 export const getBalanceOptions = queryOptions({
   refetchOnMount: true,
@@ -90,7 +98,7 @@ export const getBalanceOptions = queryOptions({
       headers: {
         'content-type': 'application/json',
       },
-      credentials: "include",
+      credentials: 'include',
     })
 
     if (error) {
@@ -114,7 +122,7 @@ export const clawfundsOptions = queryOptions({
       headers: {
         'content-type': 'application/json',
       },
-      credentials: "include",
+      credentials: 'include',
     })
 
     if (error) {
@@ -125,49 +133,51 @@ export const clawfundsOptions = queryOptions({
   },
 })
 
-export const updatePayment = (paymentId: string) => mutationOptions({
-  mutationKey: ['updatePayment', {paymentId}],
-  mutationFn: async (values: any) => {
-    const { data, error } = await fetch(`/v1/payment/${paymentId}`, {
-      method: "POST",
-      body: { ...values },
-      headers: {
-        'Content-type': `application/json`
+export const updatePayment = (paymentId: string) =>
+  mutationOptions({
+    mutationKey: ['updatePayment', { paymentId }],
+    mutationFn: async (values: any) => {
+      const { data, error } = await fetch(`/v1/payment/${paymentId}`, {
+        method: 'POST',
+        body: { ...values },
+        headers: {
+          'Content-type': `application/json`,
+        },
+      })
+
+      if (error) {
+        console.log(`Error from init`, { error })
+        throw error
       }
-    })
 
-    if (error) {
-      console.log(`Error from init`, { error })
-      throw error
-    }
-
-    return data
-  },
-  onSuccess: () => {
-    queryClient.invalidateQueries({queryKey: ['getInvoice']})
-  }
-})
+      return data
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['getInvoice'] })
+    },
+  })
 
 export const checkBank = mutationOptions({
-	mutationKey: ['lookupBank'],
-	mutationFn: async (values: { bankCode: string; accountNumber: string }) => lookupBank({ data: { ...values } }),
+  mutationKey: ['lookupBank'],
+  mutationFn: async (values: { bankCode: string; accountNumber: string }) =>
+    lookupBank({ data: { ...values } }),
 })
 
 export const banks = queryOptions({
-	queryKey: ['getBanks'],
-	queryFn: async () => await getBanks(),
-	refetchOnMount: true,
+  queryKey: ['getBanks'],
+  queryFn: async () => await getBanks(),
+  refetchOnMount: true,
   retryOnMount: true,
   refetchOnWindowFocus: true,
 })
 
 export const initPayoutOptions = mutationOptions({
-	mutationKey: ['createPayout'],
-	mutationFn: async (values: {
-		accountNumber: string;
-		accountName: string;
-		bankCode: string;
-		amount: number
-		reference: string
-	}) => createPayout({data: {...values}})
+  mutationKey: ['createPayout'],
+  mutationFn: async (values: {
+    accountNumber: string
+    accountName: string
+    bankCode: string
+    amount: number
+    reference: string
+  }) => createPayout({ data: { ...values } }),
 })

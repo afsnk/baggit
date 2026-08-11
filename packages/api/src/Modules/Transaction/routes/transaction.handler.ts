@@ -478,7 +478,6 @@ export const getAll: AppRouteHandler<GetAllRoute, 'auth'> = async ({ log, query,
       where: (fields, ops) => ops.eq(fields.orgId, session.activeOrganizationId),
       orderBy: [asc(transactions.createdAt)],
       with: {
-        ramp: true,
         payment: true,
       }
     });
