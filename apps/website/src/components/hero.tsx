@@ -71,10 +71,10 @@ export function HeroSection() {
               </a>
             </Button>
             <Button variant="default" asChild>
-              <Link to="#" className="flex items-center">
+              <a href="https://merchant.baggit.link" target='_blank' className="flex items-center">
                 <span className="text-black">Get started</span>{' '}
                 <ArrowRightIcon className="inline-end text-black" />
-              </Link>
+              </a>
             </Button>
           </div>
         </div>

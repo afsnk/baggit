@@ -28,9 +28,9 @@ export function Integrations() {
           today.
         </p>
         <Button size="lg" asChild variant="outline" className="mt-4">
-          <Link to="/docs" className="block ">
+          <a href="https://docs.baggit.link" target='_blank' className="block">
             Explore integration <ArrowUpRight />
-          </Link>
+          </a>
         </Button>
       </div>
 
