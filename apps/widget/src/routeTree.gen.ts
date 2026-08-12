@@ -9,22 +9,27 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as SpaRouteImport } from './routes/spa'
 import { Route as MainRouteRouteImport } from './routes/_main/route'
-import { Route as MainIndexRouteImport } from './routes/_main/index'
-import { Route as MicroRampRouteImport } from './routes/micro/ramp'
-import { Route as ApiReferralRouteImport } from './routes/api/referral'
-import { Route as MainSellRouteImport } from './routes/_main/sell'
-import { Route as MainBuyRouteImport } from './routes/_main/buy'
+import { Route as SpaRouteImport } from './routes/spa'
 import { Route as walletWalletRouteImport } from './routes/(wallet)/wallet'
+import { Route as MainIndexRouteImport } from './routes/_main/index'
+import { Route as MainBuyRouteImport } from './routes/_main/buy'
+import { Route as MainSellRouteImport } from './routes/_main/sell'
+import { Route as ApiReferralRouteImport } from './routes/api/referral'
+import { Route as MicroRampRouteImport } from './routes/micro/ramp'
 
+const MainRouteRoute = MainRouteRouteImport.update({
+  id: '/_main',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SpaRoute = SpaRouteImport.update({
   id: '/spa',
   path: '/spa',
   getParentRoute: () => rootRouteImport,
 } as any)
-const MainRouteRoute = MainRouteRouteImport.update({
-  id: '/_main',
+const walletWalletRoute = walletWalletRouteImport.update({
+  id: '/(wallet)/wallet',
+  path: '/wallet',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MainIndexRoute = MainIndexRouteImport.update({
@@ -32,29 +37,24 @@ const MainIndexRoute = MainIndexRouteImport.update({
   path: '/',
   getParentRoute: () => MainRouteRoute,
 } as any)
-const MicroRampRoute = MicroRampRouteImport.update({
-  id: '/micro/ramp',
-  path: '/micro/ramp',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiReferralRoute = ApiReferralRouteImport.update({
-  id: '/api/referral',
-  path: '/api/referral',
-  getParentRoute: () => rootRouteImport,
+const MainBuyRoute = MainBuyRouteImport.update({
+  id: '/buy',
+  path: '/buy',
+  getParentRoute: () => MainRouteRoute,
 } as any)
 const MainSellRoute = MainSellRouteImport.update({
   id: '/sell',
   path: '/sell',
   getParentRoute: () => MainRouteRoute,
 } as any)
-const MainBuyRoute = MainBuyRouteImport.update({
-  id: '/buy',
-  path: '/buy',
-  getParentRoute: () => MainRouteRoute,
+const ApiReferralRoute = ApiReferralRouteImport.update({
+  id: '/api/referral',
+  path: '/api/referral',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const walletWalletRoute = walletWalletRouteImport.update({
-  id: '/(wallet)/wallet',
-  path: '/wallet',
+const MicroRampRoute = MicroRampRouteImport.update({
+  id: '/micro/ramp',
+  path: '/micro/ramp',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -128,6 +128,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/_main': {
+      id: '/_main'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof MainRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/spa': {
       id: '/spa'
       path: '/spa'
@@ -135,11 +142,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SpaRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_main': {
-      id: '/_main'
-      path: ''
-      fullPath: '/'
-      preLoaderRoute: typeof MainRouteRouteImport
+    '/(wallet)/wallet': {
+      id: '/(wallet)/wallet'
+      path: '/wallet'
+      fullPath: '/wallet'
+      preLoaderRoute: typeof walletWalletRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_main/': {
@@ -149,19 +156,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MainIndexRouteImport
       parentRoute: typeof MainRouteRoute
     }
-    '/micro/ramp': {
-      id: '/micro/ramp'
-      path: '/micro/ramp'
-      fullPath: '/micro/ramp'
-      preLoaderRoute: typeof MicroRampRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/referral': {
-      id: '/api/referral'
-      path: '/api/referral'
-      fullPath: '/api/referral'
-      preLoaderRoute: typeof ApiReferralRouteImport
-      parentRoute: typeof rootRouteImport
+    '/_main/buy': {
+      id: '/_main/buy'
+      path: '/buy'
+      fullPath: '/buy'
+      preLoaderRoute: typeof MainBuyRouteImport
+      parentRoute: typeof MainRouteRoute
     }
     '/_main/sell': {
       id: '/_main/sell'
@@ -170,18 +170,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MainSellRouteImport
       parentRoute: typeof MainRouteRoute
     }
-    '/_main/buy': {
-      id: '/_main/buy'
-      path: '/buy'
-      fullPath: '/buy'
-      preLoaderRoute: typeof MainBuyRouteImport
-      parentRoute: typeof MainRouteRoute
+    '/api/referral': {
+      id: '/api/referral'
+      path: '/api/referral'
+      fullPath: '/api/referral'
+      preLoaderRoute: typeof ApiReferralRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/(wallet)/wallet': {
-      id: '/(wallet)/wallet'
-      path: '/wallet'
-      fullPath: '/wallet'
-      preLoaderRoute: typeof walletWalletRouteImport
+    '/micro/ramp': {
+      id: '/micro/ramp'
+      path: '/micro/ramp'
+      fullPath: '/micro/ramp'
+      preLoaderRoute: typeof MicroRampRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
