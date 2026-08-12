@@ -140,7 +140,7 @@ export function TradeProvider({ children }: TradeProviderProps) {
         }}
       />
       {/* Routes modal with route function and picker input options */}
-      <RoutesModal routes={state.routes} open={true} />
+      <RoutesModal routes={state.routes} open={false} />
       <Drawer open={!!routeError}>
         <DrawerContent className="max-w-sm w-full p-4 items-center mx-auto mb-4">
           <DrawerHeader>

@@ -4,7 +4,7 @@ import { z } from 'zod'
 export const env = createEnv({
   server: {
     SERVER_URL: z.string().url().optional(),
-    SWITCH_SERVICE_KEY: z.string(),
+    SWITCH_SERVICE_KEY: z.string().optional(),
   },
 
   /**
