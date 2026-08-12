@@ -489,7 +489,7 @@ export const getAll: AppRouteHandler<GetAllRoute, 'auth'> = async ({ log, query,
       });
     }
 
-    return status(200, transactionList.map(t => ({ ...t, vAddress: t.metadata?.address })));
+    return status(200, transactionList.map(t => ({ ...t, vAddress: t?.metadata?.address })));
   }
   catch (error: any) {
     log.error(error);
