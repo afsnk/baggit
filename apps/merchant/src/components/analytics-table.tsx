@@ -53,7 +53,7 @@ const columns: ColumnDef<Transaction>[] = [
     accessorKey: 'id',
     cell: ({ row }) => (
       <div className="font-medium font-mono text-muted-foreground">
-        {(row.getValue('id') as string).slice(0, 12)}
+        {(row.getValue('id') as unknown as string).slice(0, 12)}
       </div>
     ),
     header: 'Transaction ID',
@@ -91,12 +91,12 @@ const columns: ColumnDef<Transaction>[] = [
     size: 80,
   },
   {
-    accessorFn: (prop) => prop.payment.currency,
+    accessorFn: (prop) => prop?.payment?.currency || prop.asset,
     header: 'Asset',
     size: 50,
   },
   {
-    accessorFn: (prop) => prop.payment.amount,
+    accessorFn: (prop) => prop?.payment?.amount || prop?.ramp?.amount,
     header: 'Amount',
     size: 80
   },
