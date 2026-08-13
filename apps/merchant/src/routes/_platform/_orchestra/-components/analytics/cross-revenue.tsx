@@ -17,17 +17,17 @@ export default function CrossRevenueBarChart({
       new Date(trx.createdAt!),
     ),
     usdt:
-      (trx as unknown as { payment: any }).payment.currency === 'usdt'
+      (trx as unknown as { payment: any }).payment?.currency === 'usdt'
         ? (trx as unknown as { payment: any }).payment?.amount *
           (trx as unknown as { payment: any }).payment?.rate
         : 0,
     usdc:
-      (trx as unknown as { payment: any }).payment.currency === 'usdc'
+      (trx as unknown as { payment: any }).payment?.currency === 'usdc'
         ? (trx as unknown as { payment: any }).payment?.amount *
           (trx as unknown as { payment: any }).payment?.rate
         : 0,
     ngn:
-      (trx as unknown as { payment: any }).payment.currency === 'ngn'
+      (trx as unknown as { payment: any }).payment?.currency === 'ngn'
         ? (trx as unknown as { payment: any }).payment?.amount
         : 0,
   }))

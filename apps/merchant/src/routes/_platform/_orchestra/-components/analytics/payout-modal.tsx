@@ -210,7 +210,7 @@ export default function PayoutModal(props: IPayout) {
             !lookupBank.data
           }
           onClick={() => {
-            if (customAmount > 0) {
+            // if (customAmount > 0) {
               createPayout.mutate({
                 accountNumber: lookupBank.data?.accountNumber || '',
                 accountName: lookupBank.data?.accountName || '',
@@ -218,11 +218,11 @@ export default function PayoutModal(props: IPayout) {
                 reference: crypto.randomUUID(),
                 amount: customAmount,
               })
-						} else {
-							toast.info(`Cannot process payout at this time.`, {
-								description: `Get successful transaction inflow to enable payout`
-							})
-            }
+						// } else {
+						// 	toast.info(`Cannot process payout at this time.`, {
+						// 		description: `Get successful transaction inflow to enable payout`
+						// 	})
+      //       }
           }}
         >
           Withdraw

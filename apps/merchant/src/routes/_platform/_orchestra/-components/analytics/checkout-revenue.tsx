@@ -11,9 +11,9 @@ import type { Transaction } from "@baggit/api/app";
 export default function CheckoutRevenuePieChart({ transactionData }: {transactionData?: Transaction[]}) {
 	const computedData = transactionData?.map((trx) => ({
     date: new Intl.DateTimeFormat('en-US', {dateStyle: "medium"}).format(new Date(trx.createdAt!)),
-    'usdt': (trx as unknown as { payment: any }).payment.currency === 'usdt'? ((trx as unknown as { payment: any }).payment?.amount * (trx as unknown as { payment: any }).payment?.rate) : 0,
-    'usdc': (trx as unknown as { payment: any }).payment.currency === 'usdc'? ((trx as unknown as { payment: any }).payment?.amount * (trx as unknown as { payment: any }).payment?.rate) : 0,
-    'ngn': (trx as unknown as { payment: any }).payment.currency === 'ngn'? (trx as unknown as { payment: any }).payment?.amount : 0,
+    'usdt': (trx as unknown as { payment: any }).payment?.currency === 'usdt'? ((trx as unknown as { payment: any }).payment?.amount * (trx as unknown as { payment: any }).payment?.rate) : 0,
+    'usdc': (trx as unknown as { payment: any }).payment?.currency === 'usdc'? ((trx as unknown as { payment: any }).payment?.amount * (trx as unknown as { payment: any }).payment?.rate) : 0,
+    'ngn': (trx as unknown as { payment: any }).payment?.currency === 'ngn'? (trx as unknown as { payment: any }).payment?.amount : 0,
   }))
 	const computedPieChartdata = [
     { label: "USDT", value: computedData?.reduce((prev, curr) => prev + curr['usdt'], 0) || 0, color: "#0ea5e9" },
