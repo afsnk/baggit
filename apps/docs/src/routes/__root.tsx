@@ -7,6 +7,7 @@ import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
 
 import TanStackQueryDevtools from '../integrations/tanstack-query/devtools'
+// import {RootProvider} from "fumadocs-ui/provider/tanstack"
 import {RootProvider} from "fumadocs-ui/provider/tanstack"
 
 import appCss from '../styles.css?url'
@@ -48,7 +49,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        <RootProvider>
+				<RootProvider>
           {children}
         </RootProvider>
         <TanStackDevtools

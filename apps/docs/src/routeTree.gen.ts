@@ -10,23 +10,23 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as HomeRouteRouteImport } from './routes/_home/route'
+import { Route as DocsSplatRouteImport } from './routes/_docs/$'
 import { Route as HomeIndexRouteImport } from './routes/_home/index'
-import { Route as DocsSplatRouteImport } from './routes/docs/$'
 import { Route as ApiSearchRouteImport } from './routes/api/search'
 
 const HomeRouteRoute = HomeRouteRouteImport.update({
   id: '/_home',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DocsSplatRoute = DocsSplatRouteImport.update({
+  id: '/_docs/$',
+  path: '/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const HomeIndexRoute = HomeIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => HomeRouteRoute,
-} as any)
-const DocsSplatRoute = DocsSplatRouteImport.update({
-  id: '/docs/$',
-  path: '/docs/$',
-  getParentRoute: () => rootRouteImport,
 } as any)
 const ApiSearchRoute = ApiSearchRouteImport.update({
   id: '/api/search',
@@ -36,33 +36,33 @@ const ApiSearchRoute = ApiSearchRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof HomeIndexRoute
+  '/$': typeof DocsSplatRoute
   '/api/search': typeof ApiSearchRoute
-  '/docs/$': typeof DocsSplatRoute
 }
 export interface FileRoutesByTo {
+  '/$': typeof DocsSplatRoute
   '/api/search': typeof ApiSearchRoute
-  '/docs/$': typeof DocsSplatRoute
   '/': typeof HomeIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_home': typeof HomeRouteRouteWithChildren
+  '/_docs/$': typeof DocsSplatRoute
   '/api/search': typeof ApiSearchRoute
-  '/docs/$': typeof DocsSplatRoute
   '/_home/': typeof HomeIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/api/search' | '/docs/$'
+  fullPaths: '/' | '/$' | '/api/search'
   fileRoutesByTo: FileRoutesByTo
-  to: '/api/search' | '/docs/$' | '/'
-  id: '__root__' | '/_home' | '/api/search' | '/docs/$' | '/_home/'
+  to: '/$' | '/api/search' | '/'
+  id: '__root__' | '/_home' | '/_docs/$' | '/api/search' | '/_home/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   HomeRouteRoute: typeof HomeRouteRouteWithChildren
-  ApiSearchRoute: typeof ApiSearchRoute
   DocsSplatRoute: typeof DocsSplatRoute
+  ApiSearchRoute: typeof ApiSearchRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -74,19 +74,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HomeRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_docs/$': {
+      id: '/_docs/$'
+      path: '/$'
+      fullPath: '/$'
+      preLoaderRoute: typeof DocsSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_home/': {
       id: '/_home/'
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof HomeIndexRouteImport
       parentRoute: typeof HomeRouteRoute
-    }
-    '/docs/$': {
-      id: '/docs/$'
-      path: '/docs/$'
-      fullPath: '/docs/$'
-      preLoaderRoute: typeof DocsSplatRouteImport
-      parentRoute: typeof rootRouteImport
     }
     '/api/search': {
       id: '/api/search'
@@ -112,8 +112,8 @@ const HomeRouteRouteWithChildren = HomeRouteRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   HomeRouteRoute: HomeRouteRouteWithChildren,
-  ApiSearchRoute: ApiSearchRoute,
   DocsSplatRoute: DocsSplatRoute,
+  ApiSearchRoute: ApiSearchRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

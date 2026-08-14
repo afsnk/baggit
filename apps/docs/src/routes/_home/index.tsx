@@ -8,17 +8,17 @@ const links: Array<{ label: string; description: string; url: string; }> = [
   {
     label: "Checkout",
     description: "Seamlessly allow payments for goods and services, with modern payment options, and fast payout",
-    url: "/docs/checkout"
+    url: "/checkout"
   },
   {
     label: "Widget",
     description: "Enable users, onboard, buy/sell assets directly in your application without zero hasle integration",
-    url: "/docs/widget"
+    url: "/widget"
   },
   {
     label: "Subscription",
     description: "Collect recurring payments without worry, turn on and forget with a reliable infra that keeps going",
-    url: "/docs/subscription"
+    url: "/subscription"
   }
 ]
 

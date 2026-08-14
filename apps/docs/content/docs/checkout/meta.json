@@ -1,0 +1,7 @@
+{
+  "title": "Checkout",
+  "description": "Create and configure checkout pop ups or redirect page",
+  "pages": ["initialise"],
+  "pagesIndex": "initialise",
+  "root": true
+}

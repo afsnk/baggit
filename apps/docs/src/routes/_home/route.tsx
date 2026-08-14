@@ -25,7 +25,7 @@ function RouteComponent() {
             <NavbarMenu>
               <NavbarMenuTrigger>Documentation</NavbarMenuTrigger>
               <NavbarMenuContent>
-                <NavbarMenuLink href="/docs">Guide</NavbarMenuLink>
+                <NavbarMenuLink href="/introduction">Introduction</NavbarMenuLink>
               </NavbarMenuContent>
             </NavbarMenu>
           ),
