@@ -149,7 +149,7 @@ body::before {
   z-index: -1;
   opacity: 0.28;
   background:
-    radial-gradient(circle at 20% 15%, rgba(255, 255, 255, 0.8), transparent 34%),
+    radial-gradient(circle at 20% 15%, rgba(255, 255, 255, 0.45), transparent 34%),
     radial-gradient(circle at 78% 26%, rgba(79, 184, 178, 0.2), transparent 42%),
     radial-gradient(circle at 42% 82%, rgba(47, 106, 74, 0.14), transparent 36%);
 }
@@ -167,6 +167,29 @@ body::after {
   background-size: 28px 28px;
   mask-image: radial-gradient(circle at 50% 30%, black, transparent 78%);
 }
+
+#nd-docs-layout h1 a, #nd-docs-layout h2 a, #nd-docs-layout h3 a,
+#nd-docs-layout h4 a, #nd-docs-layout h5 a, #nd-docs-layout h6 a {
+  color: var(--color-fd-foreground);
+}
+
+#nd-docs-layout .prose a,
+article a {
+  color: var(--color-fd-primary);
+  /*text-decoration: underline;*/
+}
+
+a [data-code-span] {
+  color: var(--color-fd-primary);
+  border-color: color-mix(in oklab, var(--color-fd-primary) 30%, transparent);
+  background-color: color-mix(in oklab, var(--color-fd-primary) 10%, transparent);
+  /* text-decoration: none; underline on the <a>, not the chip */
+}
+
+a:hover [data-code-span] {
+  background-color: color-mix(in oklab, var(--color-fd-primary) 18%, transparent);
+}
+
 
 @keyframes rise-in {
   from {

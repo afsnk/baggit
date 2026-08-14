@@ -8,9 +8,9 @@ import { baseOptions } from '@/lib/layout.shared';
 import { useFumadocsLoader } from 'fumadocs-core/source/client';
 import { Suspense } from 'react';
 import { useMDXComponents } from '@/components/mdx';
-import { MessageCircleCode } from 'lucide-react';
+import { Home, MessageCircleCode, WalletCards } from 'lucide-react';
 
-export const Route = createFileRoute('/docs/$')({
+export const Route = createFileRoute('/_docs/$')({
   head: () => ({meta: [{title: "Baggit service docs"}]}),
   component: Page,
   loader: async ({ params }) => {
@@ -58,9 +58,8 @@ function Page() {
   const data = useFumadocsLoader(Route.useLoaderData());
 
   return (
-    <DocsLayout {
-      ...baseOptions()
-    }
+		<DocsLayout
+			{...baseOptions()}
       // tree={data.pageTree}
       links={[
         {
@@ -73,18 +72,34 @@ function Page() {
           type: 'main',
           text: 'Merchant Dashboard',
           url: 'https://merchant.baggit.link',
-          external: true,
-        },
-      ]}
+					external: true,
+				}
+			]}
+			tabMode='auto'
+			tabs={[
+				{
+					title: "Introduction",
+					description: "Getting started",
+					url: "/introduction",
+					icon: <Home className='size-4' />,
+				},
+				{
+					title: "Checkout",
+					description: "Create/configure checkout",
+					url: "/checkout/initialise",
+					icon: <WalletCards className='size-4' />
+				}
+			]}
       tree={data.pageTree}
       themeSwitch={{ enabled: true }}
-      sidebar={{
+			sidebar={{
+				enabled: true,
         banner: (
           <div
             className="p-2 flex items-center justify-between bg-accent rounded-md hover:cursor-pointer"
             onClick={() => {
               const message = prompt('Enter feedback below')
-              console.log('MEssage to send to feedback API', message)
+              console.log('Message to send to feedback API', message)
             }}
           >
             Give Feedback

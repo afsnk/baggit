@@ -1,0 +1,85 @@
+---
+title: Webhook request
+description: Get real time status update for events from users and your account
+---
+
+Baggit sends JSON `POST{:sh}` request to a URL (`callback_url{:sh}`) that you provide when making a checkout or payout request.
+
+## Set webhook URL
+
+### Checkout
+Add callback_url to the request body when you call `POST /v1/checkout{:sh}` — to create a checkout request for a user to complete payment with either a redirect URL or a pop-up
+
+```ts tab="Node.js"
+const response = await fetch(`/v1/checkout`, {
+	method: "POST",
+	headers: {
+		'Baggit-Public-Key': ``,
+		'Content-Type': 'application/json'
+	},
+	body: JSON.stringify({
+		callbackUrl: 'https://webhook.site/#nnaosdvooosbdovbaobobvaosd' // [!code highlight]
+	})
+})
+```
+
+### Payout
+Add callback_url to the request body when you call `POST /v1/payout{:sh}` — to create a payout request to a destination bank of your choice
+
+```ts tab="Node.js"
+const response = await fetch(`/v1/payout`, {
+	method: "POST",
+	headers: {
+		'Baggit-Secret-Key': ``,
+		'Content-Type': 'application/json'
+	},
+	body: JSON.stringify({
+		callbackUrl: 'https://webhook.site/#nnaosdvooosbdovbaobobvaosd' // [!code highlight]
+	})
+})
+```
+
+### Wallet
+When setting up the wallet widget, a `callback_url{:sh}` can be set on the [Merchant Dashboard](https://merchant.baggit.link), to enable real notification on user events.
+
+ - [ ] Add dashboard screenshot of wallet section
+ 
+### Widget
+The buy/sell widget also has a callback_url that can be configured to receive real time events of activities a user performs with the widget.
+
+## How webhook notification work
+Baggit sends each notification as:
+- Method `POST{:sh}`
+- Headers: `Content-Type: application/json{:sh}`, `X-Baggit-Signature{:sh}`(HMAC-SHA256 hex digest of the raw body), `X-Baggit-Timestamp{:sh}` (when the webhook was sent;)
+- Body: `JSON{:sh}` payload (Depending on context or event type, see [Checkout webhook](/introduction/webhooks/shape#checkout))
+
+## Verify webhook request
+Always verify a webhook request notification to make sure its origin is from Baggit, do not give value before verifying the webhook request.
+
+### Webhook signature
+Every webhook request comes with a signature in the header whic is the hashed digest of the raw request body, using the same algorithm with your `Baggit-Secret-Key{:sh}` as the key should generate the same HMAC-SHA256 signature
+
+### How to verify webhook
+1. Read the `body{:sh}` and the `X-Baggit-Signature{:sh}` from the incoming request.
+2. Compute the expected webhook signature using your `Baggit-Secret-Key{:sh}` and the request `body{:sh}`.
+3. Compare the computed signature to the `X-Baggit-Signature{:sh}` in the request header.
+
+```ts tab="Node.js"
+
+```
+
+```go tab="GoLang"
+
+```
+
+```php tab="PHP"
+
+```
+
+```py tab="Python"
+
+```
+
+<Callout type="warn">
+	If verification fails(signature in header does not match computed signature), ignore the webhook and do not process it.
+</Callout>
