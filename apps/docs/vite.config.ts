@@ -9,8 +9,21 @@ import tailwindcss from '@tailwindcss/vite'
 import { cloudflare } from '@cloudflare/vite-plugin'
 import mdx from "fumadocs-mdx/vite"
 
+const FumadocsDeps = [
+  'fumadocs-core',
+  'fumadocs-ui',
+  '@fumadocs/base-ui',
+  '@fumadocs/ui',
+]
+
 const config = defineConfig({
-  resolve: { tsconfigPaths: true },
+	resolve: {
+		tsconfigPaths: true,
+		noExternal: FumadocsDeps
+	},
+	ssr: {
+		noExternal: FumadocsDeps
+	},
   plugins: [
     devtools(),
     cloudflare({ viteEnvironment: { name: 'ssr' } }),
