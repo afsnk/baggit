@@ -190,6 +190,26 @@ a:hover [data-code-span] {
   background-color: color-mix(in oklab, var(--color-fd-primary) 18%, transparent);
 }
 
+/* Table header: readable in both light and dark */
+.prose table thead,
+#nd-page table thead,
+table thead {
+  background-color: var(--color-fd-muted);
+}
+
+.prose table thead th,
+#nd-page table thead th,
+table thead th {
+  color: var(--color-fd-foreground);
+  font-weight: 600;
+  padding-left: 10px;
+}
+
+.prose table tbody tr,
+#nd-page table tbody td,
+table tbody tr {
+	padding-left: 10px
+}
 
 @keyframes rise-in {
   from {
