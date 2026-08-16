@@ -1,7 +1,12 @@
 {
   "title": "Checkout",
   "description": "Create and configure checkout pop ups or redirect page",
-  "pages": ["initialise"],
+  "pages": [
+  	"---Guide---",
+  	"index",
+   	"verify",
+   	"..."
+  ],
   "pagesIndex": "initialise",
   "root": true
 }

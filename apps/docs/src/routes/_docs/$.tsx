@@ -8,7 +8,7 @@ import { baseOptions } from '@/lib/layout.shared';
 import { useFumadocsLoader } from 'fumadocs-core/source/client';
 import { Suspense } from 'react';
 import { useMDXComponents } from '@/components/mdx';
-import { Home, MessageCircleCode, WalletCards } from 'lucide-react';
+import { BanknoteArrowUp, Home, MessageCircleCode, WalletCards } from 'lucide-react';
 
 export const Route = createFileRoute('/_docs/$')({
   head: () => ({meta: [{title: "Baggit service docs"}]}),
@@ -85,9 +85,15 @@ function Page() {
 				},
 				{
 					title: "Checkout",
-					description: "Create/configure checkout",
-					url: "/checkout/initialise",
+					description: "Create checkout",
+					url: "/checkout/",
 					icon: <WalletCards className='size-4' />
+				},
+				{
+					title: "Payout",
+					description: "Make payout",
+					url: "/payout/",
+					icon: <BanknoteArrowUp className='size-4' />
 				}
 			]}
       tree={data.pageTree}
