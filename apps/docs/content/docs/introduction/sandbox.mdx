@@ -1,0 +1,66 @@
+---
+title: Sandbox
+description: The sandbox environment is where you can integrate all Baggit features with simulated outcomes.
+---
+
+## How to access the sandbox
+The sandbox environment can be accessed by creating a `sk_test_{:sh}` key set and using it with requests sent to the `https://sandbox.baggit.link{:sh}`
+
+### Sandbox base URL
+Sandbox and production use different API hosts. Send sandbox traffix with your `sandbox{:sh}` API key to the base URL below
+```
+https://sandbox.baggit.link
+```
+
+See [Authentication](/introduction/authorization) for how to use the key with requests.
+
+### Example request
+```sh
+curl "https://sandbox.baggit.link/v1/checkout" \
+  -H "Baggit-Secret-Key: $YOUR_SANDBOX_SERVICE_KEY" \
+  -H "Accept: application/json"
+```
+
+<Callout type="warn">
+	Keep your sandbox API keys secure, never commit it to version control. Use environment variables and secrets as supported by your framework or programming language of choice.
+</Callout>
+
+## Sandbox vs Production
+The sandbox environment is responsible for simulating produciton environment while keeping things safe and risk low. It is perfect for testing integrations with the various [Baggit Services](https://baggit.link).
+
+
+| Features | Sandbox | Production |
+|-------|--------|-------|
+| Base URL | https://sandbox.baggit.link | https://api.baggit.link |
+| Business verification | Auto approved | Real world check and verification |
+| Checkout | Simulated | Real payment and value transfer |
+| Payout | Simulated | Real value transfer |
+| Widgets | Test mode | Live mode |
+
+## Automated onboarding
+In sandbox, onboarding is streamlined for testing and helping you kick start integrations as soon as possible
+
+- <b>Typically auto approved —</b> Submissions are often approved within minutes.
+- <b>Compliance checks still apply —</b> Some compliance checks (for example PEP screening) may still block approval in sandbox.
+- <b>Test data —</b> Use mocked and relevant test data for your testing and staging environment.
+
+<Callout type="info">
+	In production, business onboarding verification undergoes real compliance review.
+</Callout>
+
+
+## Transition to production
+When you're ready to move from sandbox to production:
+1. <b>Use your live API keys</b> from the dashboard
+2. <b>Use the correct base URL —</b> `https://api.baggit.link{:sh}` for live requests
+3. <b>Update environment variables</b> So production deployments never use sandbox keys and URL
+4. <b>Remove sandbox-only calls —</b> Drop any endpoints or flags used only for simulation or testing.
+5. <b>Perform user compliance checks —</b> Collect real user compliance information and document as required.
+6. <b>Test thoroughly —</b> Start with small live transactions before scaling to volumes.
+
+<Callout type="warn">
+	Never use your sandbox keys or URL in production or your live keys and URL for sandbox testing. Keys and URL are environment-specific and are not interchangeable.
+</Callout>
+
+
+<include>../../shared/help.mdx</include>

@@ -40,11 +40,24 @@ Now you can create your API keys, navigate to the `API-Keys{:sh}` page under `De
 
 ### Use the keys
 To use the API keys add it to the `Headers{:sh}` field of a request to any Baggit services API endpoints. DO NOT hardcode the keys, always use a hidden `.env{:sh}` file and reference the environment variable as supported in your projects programming language or framework.
-<Callout type="warn">
-	DO NOT hardcode API Keys as plaintext in your code, this could result in sever security breach and potential loss of funds.
-</Callout>
 
 ```ts tab="Node.js"
+import env from "@/core/env.ts"
+
+const response = await fetch(`/v1/checkout`, {
+	method: "POST",
+	headers: { // [!code focus]
+		'Baggit-Public-Key': env.BAGGIT_PK, // [!code focus]
+		'Baggit-Secret-Key': env.BAGGIT_SK, // [!code focus]
+		'Content-Type': 'application/json' // [!code focus]
+	}, // [!code focus]
+	body: JSON.stringify({
+		callbackUrl: 'https://webhook.site/#nnaosdvooosbdovbaobobvaosd',
+		amount: 5000,
+		currency: "NGN",
+		type: "onetime"
+	})
+})
 ````
 ```go tab="Golang"
 ````
@@ -52,3 +65,9 @@ To use the API keys add it to the `Headers{:sh}` field of a request to any Baggi
 ````
 ```py tab="Python"
 ````
+
+<Callout type="warn">
+	DO NOT hardcode API Keys as plaintext in your code, this could result in severe security breach and potential loss of funds.
+</Callout>
+
+<include>../../shared/help.mdx</include>
