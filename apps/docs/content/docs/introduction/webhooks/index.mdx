@@ -65,7 +65,19 @@ Every webhook request comes with a signature in the header whic is the hashed di
 3. Compare the computed signature to the `X-Baggit-Signature{:sh}` in the request header.
 
 ```ts tab="Node.js"
+import crypto from 'crypto';
 
+function verifySwitchWebhook(webhookBody, webhookSignature, yourServiceKey) {
+	const expected = crypto
+		.createHmac('sha256', yourServiceKey)
+		.update(webhookBody, 'utf8')
+		.digest('hex');
+	
+	const a = Buffer.from(expected, 'utf8');
+	const b = Buffer.from(webhookSignature.trim(), 'utf8');
+	
+	return a.length === b.length && crypto.timingSafeEqual(a, b);
+}
 ```
 
 ```go tab="GoLang"
@@ -73,13 +85,35 @@ Every webhook request comes with a signature in the header whic is the hashed di
 ```
 
 ```php tab="PHP"
+<?php
 
+function verifySwitchWebhook(string $webhookBody, string $webhookSignature, string $yourServiceKey): bool
+{
+    $expected = hash_hmac('sha256', $webhookBody, $yourServiceKey);
+    return hash_equals($expected, trim($webhookSignature));
+}
+?>
 ```
 
 ```py tab="Python"
+import hashlib
+import hmac
 
+
+def verify_switch_webhook(webhook_body, webhook_signature, your_service_key):
+    expected = hmac.new(
+        your_service_key.encode('utf-8'),
+        webhook_body.encode('utf-8'),
+        hashlib.sha256,
+    ).hexdigest()
+    sig = webhook_signature.strip()
+    if len(expected) != len(sig):
+        return False
+    return hmac.compare_digest(expected, sig)
 ```
 
 <Callout type="warn">
 	If verification fails(signature in header does not match computed signature), ignore the webhook and do not process it.
 </Callout>
+
+<include>../../../shared/help.mdx</include>
