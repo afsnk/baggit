@@ -4,9 +4,64 @@ description: Make payout requests from your merchant balance directly to users b
 ---
 
 ## Requirements
+The following are required before integrating with the payout API
+
+- Verified and approved(approval is automatic for sandbox) merchant account
+- An active organization
+- API keys for authentication
+- Lastly your coding essentials and you're good to go (or just prompt your agent)
 
 ## Make your first payout request
 
+`POST /v1/payout{:sh}` endpoint enables secure, programmatic payout from the merchants wallet balance directly to their users bank account.
+
+### Example request
+
+```sh tab="cURL"
+curl -L \
+  --request POST \
+  --url 'https://api.baggit.link/v1/payout' \
+  --header 'Baggit-Secret-Key: '"$BAGGIT_SK" \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "bankCode": "0000013",
+    "accountNumber": "1234567890",
+	  "accountName": "John Doe",
+	  "amount": 5000,
+	  reference: "ref_onoasodbosad-advadvdadv-anpontosn-noi0324"
+  }'
+```
+
+```ts tab="NodeJS"
+const res = await fetch('https://api.baggit.link/v1/payout', {
+  method: 'POST',
+  headers: {
+    'Baggit-Secret-Key': process.env.BAGGIT_SK,
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+	 bankCode: "0000013",
+	 accountNumber: "1234567890",
+	 accountName: "John Doe",
+	 amount": 5000,
+	 reference: "ref_onoasodbosad-advadvdadv-anpontosn-noi0324"
+  }),
+});
+
+const data = await res.json();
+console.log(`Checkout response: ${data}`);
+```
+
+### Example response
+```sh
+{
+	reference: "ref_onoasodbosad-advadvdadv-anpontosn-noi0324"
+	amount: 5000
+	status: "pending"
+}
+```
+
 ## Report issues
+Have any issues with payout transaction reach out through any of the means below.
 
 <include>../../shared/help.mdx</include>

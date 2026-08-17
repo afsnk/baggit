@@ -19,27 +19,39 @@ The following are required before integrating with the checkout API
 ```sh tab="cURL"
 curl -L \
   --request POST \
-  --url 'https://api.baggit.link/checkout' \
+  --url 'https://api.baggit.link/v1/checkout' \
   --header 'Baggit-Secret-Key: '"$BAGGIT_SK" \
   --header 'Content-Type: application/json' \
   --data '{
-    "asset": "base:usdc",
-    "country": "NG",
-    "currency": "NGN"
+		"amount": 5000
+		currency: "NGN"
+		reference: "ref_nbasdvboboasdvb-asdvnoabsdasdmoasdovasdoasdv-asdvao"
+		callbackUrl: ``,
+		metadata: { merchantName: "Acme Inc" },
+		customer: {
+			name: "John Doe",
+			email: "john@sampleorg.com"
+		},
   }'
 ```
 
 ```ts tab="NodeJS"
-const res = await fetch('https://api.baggit.link/checkout', {
+const res = await fetch('https://api.baggit.link/v1/checkout', {
   method: 'POST',
   headers: {
     'Baggit-Secret-Key': process.env.BAGGIT_SK,
     'Content-Type': 'application/json',
   },
   body: JSON.stringify({
-    asset: 'base:usdc',
-    country: 'NG',
-    currency: 'NGN',
+		currency: "NGN",
+		amount: 5000,
+		reference: "ref_nbasdvboboasdvb-asdvnoabsdasdmoasdovasdoasdv-asdvao",
+		callbackUrl: ``,
+		metadata: { merchantName: "Acme Inc" },
+		customer: {
+			name: "John Doe",
+			email: "john@sampleorg.com"
+		},
   }),
 });
 
@@ -50,13 +62,25 @@ console.log(`Checkout response: ${data}`);
 ### Example response
 ```json
 {
-	invoice: {},
-	defaultPayment: {}
+	invoice: {
+		id: "",
+		to: "",
+		from: "",
+		amount: 5000,
+		currency: "NGN",
+		reference: "ref_90830508046-80804500b0va-09b0b9u495g-830b0eg",
+		orgId: "org_oasobosaboasbdofasodfnas",
+		memo: "",
+		metadata: {},
+		createdAt: "2026-08-14-10:15",
+		updatedAt: "2026-08-14-10:15"
+	},
+	paymentUrl: "https://checkout.baggit.link/r/ref_noasdobvasd-asdvnbasdv-adnoasbdv-asdandoavd"
 }
 ```
 
 ## Report issues
-Have any issues with a transaction? 
+Have any issues with payment transaction reach out through any of the means below.
 
 
 <include>../../shared/help.mdx</include>

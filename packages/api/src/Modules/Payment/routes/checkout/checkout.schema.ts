@@ -11,8 +11,9 @@ const DETAILS = {
 export const createCheckoutOrder = {
   response: {
     200: z.object({
-      invoice: selectInvoice,
-      defaultPayment: selectPayments
+			invoice: selectInvoice,
+      paymentUrl: z.url(),
+      // defaultPayment: selectPayments
     }),
     401: z.object({
       message: z.string(),
