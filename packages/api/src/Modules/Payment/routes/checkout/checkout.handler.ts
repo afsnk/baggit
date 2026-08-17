@@ -45,7 +45,7 @@ export const createCheckoutOrder: AppRouteHandler<CreateCheckoutOrderRoute, 'api
       }).returning()
     // Return checkout url
 
-    const combined = {invoice: newInvoice, defaultPayment}
+		const combined = { invoice: newInvoice, paymentUrl: defaultPayment.metadata?.url! }
 
     return status(200, combined)
   }
