@@ -1,0 +1,9 @@
+{
+	"title": "Getting started",
+	"pages": [
+		"---Introduction---",
+		"index"
+	],
+	"defaultOpen": true,
+	"root": true
+}
