@@ -3,5 +3,34 @@ title: Verify checkout
 description: Verify payment status of a checkout transaction
 ---
 
+`GET /v1/checkout/${orderId}/verify{:sh}` endpoint returns the order status found with its corresponding `orderId{:sh}`.
+Call this endpoint after a redirect back to your `redirectUrl{:sh}` from the `POST /v1/checkout{:sh}` checkout creation endpoint.
+
+### Example request
+```sh tab="cURL"
+curl -L \
+  --request GET \
+  --url 'https://api.baggit.link/v1/checkout/{orderId}/verify' \
+  --header 'Baggit-Secret-Key: '"$BAGGIT_SK" \
+  --header 'Content-Type: application/json' \
+```
+
+
+### Example response
+```sh
+{
+	id: "inv_00000000000000000001",
+	to: "0x0000000000000000000000000000000",
+	from: "Acme Inc.",
+	amount: "5000",
+	currency: "NGN",
+	reference: "ref_908028042-20820274792-2927927992224-297792724",
+	orgId: "org_oobsodvoaboOBobosbdovboaboBObasduvbobasdv",
+	memo: "",
+	metadata: {},
+	createdAt: "2021-06-15-01:05",
+	updatedAt: "2021-06-15-01:05"
+}
+```
 
 <include>../../shared/help.mdx</include>

@@ -11,14 +11,14 @@ const links: Array<{ label: string; description: string; url: string; }> = [
     url: "/checkout"
   },
   {
-    label: "Widget",
-    description: "Enable users, onboard, buy/sell assets directly in your application without zero hasle integration",
-    url: "/widget"
+    label: "Payout",
+    description: "Payout directly to users bank accounts",
+    url: "/payout"
   },
   {
-    label: "Subscription",
-    description: "Collect recurring payments without worry, turn on and forget with a reliable infra that keeps going",
-    url: "/subscription"
+    label: "Widget",
+    description: "Enable users, onboard, buy/sell assets directly in your application with zero hasle integration",
+    url: "/widget"
   }
 ]
 

@@ -4,10 +4,59 @@ description: Create a checkout and get a redirect url or pop up
 ---
 
 ## Requirements
+The following are required before integrating with the checkout API
+
+- Verified and approved(approval is automatic for sandbox) merchant account
+- An active organization
+- API keys for authentication
+- Lastly your coding essentials and you're good to go (or just prompt your agent)
 
 ## Make your first checkout request
 
+`POST /checkout {:sh}` endpoint returns the checkout transaction details along with a redirect url for your users to complete payment. Call this endpoint when a user clicks _Pay now_ or wants to perform similar actions.
+
+### Example request
+```sh tab="cURL"
+curl -L \
+  --request POST \
+  --url 'https://api.baggit.link/checkout' \
+  --header 'Baggit-Secret-Key: '"$BAGGIT_SK" \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "asset": "base:usdc",
+    "country": "NG",
+    "currency": "NGN"
+  }'
+```
+
+```ts tab="NodeJS"
+const res = await fetch('https://api.baggit.link/checkout', {
+  method: 'POST',
+  headers: {
+    'Baggit-Secret-Key': process.env.BAGGIT_SK,
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+    asset: 'base:usdc',
+    country: 'NG',
+    currency: 'NGN',
+  }),
+});
+
+const data = await res.json();
+console.log(`Checkout response: ${data}`);
+```
+
+### Example response
+```json
+{
+	invoice: {},
+	defaultPayment: {}
+}
+```
+
 ## Report issues
+Have any issues with a transaction? 
 
 
 <include>../../shared/help.mdx</include>
