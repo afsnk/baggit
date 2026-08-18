@@ -15,6 +15,19 @@ curl -L \
   --header 'Content-Type: application/json' \
 ```
 
+```ts tab="NodeJS"
+const res = await fetch('https://api.baggit.link/v1/checkout/{orderId}/verify', {
+  method: 'GET',
+  headers: {
+    'Baggit-Secret-Key': process.env.BAGGIT_SK,
+    'Content-Type': 'application/json'
+  }
+});
+
+const data = await res.json();
+console.log(`Checkout verification response: ${data}`);
+```
+
 
 ### Example response
 ```sh
