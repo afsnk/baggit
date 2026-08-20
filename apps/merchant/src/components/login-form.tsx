@@ -49,7 +49,6 @@ export function LoginForm({
                       console.log(`Error signing in with github`, { error })
                       return
                     }
-                    console.log(`Github auth`, { data })
                   }}
                 >
                   <Github />
