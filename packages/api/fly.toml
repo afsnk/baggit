@@ -52,3 +52,10 @@ primary_region = 'lhr'
   cpus = 1
   memory_mb = 512
   processes = ['auth']
+
+[[vm]]
+  memory = '256mb'
+  cpus = 1
+  cpu_kind = 'shared'
+  memory_mb = 256
+  processes = ['worker-email']
