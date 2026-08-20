@@ -4,7 +4,7 @@ import { createError } from "evlog";
 import db from "@/Core/DB";
 import transactionService from "../../services/transaction.service";
 import env from "@/Core/Config/env";
-import { ramps, transactions } from "@/Core/DB/schema";
+import { ramps, transactions as transactionsTable } from "@/Core/DB/schema";
 import { Address } from "viem";
 import { eq } from "drizzle-orm";
 
@@ -38,7 +38,7 @@ export const createPayoutRequest: AppRouteHandler<CreatePayoutRequest, 'apiKey' 
 			}).returning()
 
 		// Add to transaction table
-		const [newTransaction] = await db.insert(transactions)
+		const [newTransaction] = await db.insert(transactionsTable)
 			.values({
 				rampId: newRamp.id,
 				network: "bsc",
@@ -54,7 +54,22 @@ export const createPayoutRequest: AppRouteHandler<CreatePayoutRequest, 'apiKey' 
 			reference: body.reference,
 			callbackUrl: `${env.API_URL}/v1/payout/webhook/switch/${newTransaction.id}`
 		})
-		log.set({payoutDetails: {...result}, newTransaction, newRamp})
+		log.set({ payoutDetails: { ...result }, newTransaction, newRamp })
+
+		// Update transaction with metadata
+		const [updatedTransaction] = await db.update(transactionsTable)
+			.set({
+				metadata: {
+					callbackUrl: `${env.API_URL}/v1/payout/webhook/switch/${newTransaction.id}`,
+					receiveAddress: result.deposit.address,
+					accountName: body.accountName,
+					accountNumber: body.accountNumber,
+					bankCode: body.bankCode,
+					asset: result.deposit.asset
+				} as any
+			})
+			.where((eq(transactionsTable.id, newTransaction.id)))
+			.returning()
 
 		// Send source amount_usd to deposit address
 		const transferResult = await transactionService.collectFeeAndPayout(
@@ -91,12 +106,15 @@ export const switchWebhookRequest: AppRouteHandler<SwitchWebhookRequest> = async
 		const transactionId = params.transactionId
 
 		if (body.status === "COMPLETED") {
-      const [updatedTransaction] = await db.update(transactions)
+      const [updatedTransaction] = await db.update(transactionsTable)
         .set({
           status: "complete",
         })
-        .where(eq(transactions.paymentId, transactionId!))
-        .returning();
+        .where(eq(transactionsTable.paymentId, transactionId!))
+				.returning();
+
+      // TODO: Call webhook
+      // FIXME: Extract webhook processing to `ProviderContext` with with the correct adapter
     }
 
 		return status(200, {
