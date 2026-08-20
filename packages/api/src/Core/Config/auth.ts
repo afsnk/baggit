@@ -110,12 +110,6 @@ const defaultAuthConfig: BetterAuthOptions = {
   }
 }
 
-const secondaryStorage: BetterAuthOptions['secondaryStorage'] = {
-  get: async (key) => {  },
-  set: async (key, value, ttl) => { },
-  delete: async (key) => { }
-}
-
 export const auth = betterAuth({
   ...defaultAuthConfig,
   // secondaryStorage,
