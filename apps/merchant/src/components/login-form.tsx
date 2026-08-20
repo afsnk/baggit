@@ -40,7 +40,7 @@ export function LoginForm({
                   variant="outline"
                   type="button"
                   onClick={async () => {
-                    const { data, error } = await authClient.signIn.social({
+                    const { error } = await authClient.signIn.social({
                       provider: 'github',
                       callbackURL: `${env.VITE_CLIENT_URL}/overview`,
                     })
