@@ -34,7 +34,7 @@
     "@sinclair/typebox": "^0.34.49",
     "@zerodev/ecdsa-validator": "^5.4.9",
     "@zerodev/sdk": "^5.5.10",
-    "better-auth": "1.6.9",
+    "better-auth": "1.6.25",
     "dotenv": "^17.4.2",
     "dotenv-expand": "^13.0.0",
     "drizzle-orm": "0.44.4",
