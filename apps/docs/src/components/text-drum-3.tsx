@@ -1,0 +1,360 @@
+"use client";
+
+/**
+ * 3D text drum built on embla-carousel (vertical axis + loop).
+ *
+ * Rows sit on the front of a cylinder: each face is tilted and pushed back
+ * by its distance from the viewport's center line, so the drum foreshortens
+ * toward the top and bottom edges. Mouse wheel, pointer drag (embla) and
+ * taps all drive the drum; the centered row is the selected value.
+ */
+import useEmblaCarousel from "embla-carousel-react";
+import {
+	type CSSProperties,
+	type KeyboardEvent,
+	useCallback,
+	useEffect,
+	useRef,
+	useState,
+} from "react";
+
+const clamp = (v: number, lo: number, hi: number) =>
+	Math.max(lo, Math.min(hi, v));
+
+export interface ScrollWheelProps {
+	/** The sequence of phrases, in the exact order they should cycle. */
+	phrases: string[];
+	/** Controlled selected index. */
+	value?: number;
+	/** Uncontrolled initial index. */
+	defaultValue?: number;
+	/** Fires whenever the centered row changes. */
+	onChange?: (index: number) => void;
+	/** Row height in px. */
+	itemHeight?: number;
+	/** Rows visible at once (odd numbers center one row). */
+	visibleCount?: number;
+	/** Max rotateX per row of distance — the drum curvature. */
+	tiltDeg?: number;
+	/** How far each row recedes per row of distance, as a fraction of itemHeight. */
+	recede?: number;
+	/** Seamless wrap-around. Needs enough rows to fill the viewport ~2x. */
+	loop?: boolean;
+	/** Wheel delta (px) needed to advance one row — a mouse notch is ~120. */
+	wheelStep?: number;
+	/** Non-centered rows. */
+	color?: string;
+	/** Centered row. */
+	activeColor?: string;
+	className?: string;
+	style?: CSSProperties;
+}
+
+export function ScrollWheel({
+	phrases,
+	value,
+	defaultValue = 0,
+	onChange,
+	itemHeight = 46,
+	visibleCount = 9,
+	tiltDeg = 20,
+	recede = 0.45,
+	loop = true,
+	wheelStep = 100,
+	color = "#4a4a4a",
+	activeColor = "#d8d8d8",
+	className,
+	style,
+}: ScrollWheelProps) {
+	const n = phrases.length;
+	const [emblaRef, emblaApi] = useEmblaCarousel({
+		axis: "y",
+		align: "center",
+		loop,
+		duration: 24,
+		watchDrag: true,
+	});
+	const [active, setActive] = useState(() => {
+		const v = value ?? defaultValue;
+		return n > 0 ? ((v % n) + n) % n : 0;
+	});
+	const faceRefs = useRef<(HTMLDivElement | null)[]>([]);
+	const wheelAcc = useRef(0);
+	const lastEmit = useRef(-1);
+	const dragMoved = useRef(false);
+	const downY = useRef(0);
+	const onChangeRef = useRef(onChange);
+	onChangeRef.current = onChange;
+
+	/* ----------------------------- 3D drum paint ---------------------------- */
+
+	const paint = useCallback(() => {
+		const api = emblaApi;
+		const view = api?.rootNode();
+		if (!api || !view) return;
+		const viewRect = view.getBoundingClientRect();
+		const midY = viewRect.top + viewRect.height / 2;
+		api.slideNodes().forEach((slide, i) => {
+			const face = faceRefs.current[i];
+			if (!face) return;
+			const rect = slide.getBoundingClientRect();
+			const d = (rect.top + rect.height / 2 - midY) / itemHeight; // row units from center
+			const tilt = clamp(-d * tiltDeg, -84, 84);
+			const z = -Math.min(Math.abs(d), visibleCount) * recede * itemHeight;
+			face.style.transform = `translateZ(${z.toFixed(2)}px) rotateX(${tilt.toFixed(2)}deg)`;
+			face.style.opacity = clamp(
+				1 - Math.abs(d) / (visibleCount / 2 + 0.5),
+				0,
+				1,
+			).toFixed(3);
+		});
+	}, [emblaApi, itemHeight, tiltDeg, recede, visibleCount]);
+
+	useEffect(() => {
+		if (!emblaApi) return;
+		let raf = 0;
+		const repaint = () => {
+			cancelAnimationFrame(raf);
+			raf = requestAnimationFrame(paint);
+		};
+		paint();
+		emblaApi.on("scroll", repaint);
+		emblaApi.on("resize", repaint);
+		emblaApi.on("reInit", repaint);
+		return () => {
+			cancelAnimationFrame(raf);
+			emblaApi.off("scroll", repaint);
+			emblaApi.off("resize", repaint);
+			emblaApi.off("reInit", repaint);
+		};
+	}, [emblaApi, paint]);
+
+	/* ------------------------------ value wiring ----------------------------- */
+
+	useEffect(() => {
+		if (!emblaApi || n === 0) return;
+		const onSelect = () => {
+			const i = emblaApi.selectedScrollSnap();
+			setActive(i);
+			if (i !== lastEmit.current) {
+				lastEmit.current = i;
+				onChangeRef.current?.(i);
+			}
+		};
+		emblaApi.on("select", onSelect);
+		return () => {
+			emblaApi.off("select", onSelect);
+		};
+	}, [emblaApi, n]);
+
+	// land on the initial index once the engine exists
+	useEffect(() => {
+		if (!emblaApi || n === 0) return;
+		const start = ((defaultValue % n) + n) % n;
+		if (emblaApi.selectedScrollSnap() !== start) emblaApi.scrollTo(start, true);
+		lastEmit.current = emblaApi.selectedScrollSnap();
+	}, [emblaApi, defaultValue, n]);
+
+	// controlled: follow `value`
+	useEffect(() => {
+		if (!emblaApi || n === 0 || value == null) return;
+		const target = ((value % n) + n) % n;
+		if (emblaApi.selectedScrollSnap() !== target) emblaApi.scrollTo(target);
+	}, [emblaApi, value, n]);
+
+	/* --------------------------------- wheel --------------------------------- */
+
+	useEffect(() => {
+		const view = emblaApi?.rootNode();
+		if (!view || !emblaApi || n === 0) return;
+		const onWheel = (e: WheelEvent) => {
+			e.preventDefault();
+			wheelAcc.current += e.deltaMode === 1 ? e.deltaY * 16 : e.deltaY;
+			const steps = Math.trunc(wheelAcc.current / wheelStep);
+			if (steps !== 0) {
+				for (let s = 0; s < Math.abs(steps); s++) {
+					if (steps > 0) emblaApi.scrollNext();
+					else emblaApi.scrollPrev();
+				}
+				wheelAcc.current -= steps * wheelStep;
+			}
+		};
+		view.addEventListener("wheel", onWheel, { passive: false });
+		return () => view.removeEventListener("wheel", onWheel);
+	}, [emblaApi, wheelStep, n]);
+
+	/* --------------------- tap-to-select vs drag disambiguation --------------- */
+
+	useEffect(() => {
+		const view = emblaApi?.rootNode();
+		if (!view) return;
+		const onPointerDown = (e: PointerEvent) => {
+			downY.current = e.clientY;
+			dragMoved.current = false;
+		};
+		const onPointerMove = (e: PointerEvent) => {
+			if (Math.abs(e.clientY - downY.current) > 8) dragMoved.current = true;
+		};
+		// a drag release must not double as a tap selection
+		const onClickCapture = (e: MouseEvent) => {
+			if (dragMoved.current) {
+				e.preventDefault();
+				e.stopPropagation();
+				dragMoved.current = false;
+			}
+		};
+		view.addEventListener("pointerdown", onPointerDown, true);
+		view.addEventListener("pointermove", onPointerMove, true);
+		view.addEventListener("click", onClickCapture, true);
+		return () => {
+			view.removeEventListener("pointerdown", onPointerDown, true);
+			view.removeEventListener("pointermove", onPointerMove, true);
+			view.removeEventListener("click", onClickCapture, true);
+		};
+	}, [emblaApi]);
+
+	/* -------------------------------- keyboard ------------------------------- */
+
+	const onKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
+		if (!emblaApi || n === 0) return;
+		if (e.key === "ArrowUp" || e.key === "ArrowLeft") {
+			e.preventDefault();
+			emblaApi.scrollPrev();
+		} else if (e.key === "ArrowDown" || e.key === "ArrowRight") {
+			e.preventDefault();
+			emblaApi.scrollNext();
+		}
+	};
+
+	/* --------------------------------- render -------------------------------- */
+
+	const mask =
+		"linear-gradient(to bottom, transparent, #000 28%, #000 72%, transparent)";
+
+	return (
+		<div
+			ref={emblaRef}
+			className={className}
+			style={{
+				height: itemHeight * visibleCount,
+				overflow: "hidden",
+				perspective: 1100,
+				touchAction: "pan-x", // vertical gestures belong to the drum
+				cursor: "grab",
+				WebkitMaskImage: mask,
+				maskImage: mask,
+				...style,
+			}}
+			tabIndex={0}
+			role="listbox"
+			aria-label="Phrase selector"
+			onKeyDown={onKeyDown}
+		>
+			<div
+				style={{
+					display: "flex",
+					flexDirection: "column",
+					transformStyle: "preserve-3d",
+					height: "100%",
+				}}
+			>
+				{phrases.map((phrase, i) => (
+					<div
+						// biome-ignore lint/suspicious/noArrayIndexKey: phrases may repeat, list order is static
+						key={`${phrase}-${i}`}
+						style={{
+							flex: `0 0 ${itemHeight}px`,
+							minWidth: 0,
+							height: itemHeight,
+						}}
+						role="option"
+						aria-selected={active === i}
+						tabIndex={-1}
+						onClick={() => {
+							if (!dragMoved.current) emblaApi?.scrollTo(i);
+						}}
+						onKeyDown={(e) => {
+							if (e.key === "Enter" || e.key === " ") {
+								e.preventDefault();
+								emblaApi?.scrollTo(i);
+							}
+						}}
+					>
+						<div
+							ref={(el) => {
+								faceRefs.current[i] = el;
+							}}
+							style={{
+								height: itemHeight,
+								lineHeight: `${itemHeight}px`,
+								fontSize: Math.round(itemHeight * 0.72),
+								fontWeight: 500,
+								letterSpacing: "-0.03em",
+								whiteSpace: "nowrap",
+								willChange: "transform, opacity",
+								color: active === i ? activeColor : color,
+								transition: "color 200ms ease",
+							}}
+						>
+							{phrase}
+						</div>
+					</div>
+				))}
+			</div>
+		</div>
+	);
+}
+
+/* -------------------------------------------------------------------------- */
+/*                                   demo                                     */
+/* -------------------------------------------------------------------------- */
+
+export const PHRASES = [
+	"local development.",
+	"remote access.",
+	"coding agents.",
+	"background jobs.",
+	"production applications.",
+	"sandboxes.",
+	"shared terminals.",
+	"incident response.",
+	"humans and machines.",
+	"operational history.",
+];
+
+/**
+ * The drum acting as a value selector: the centered phrase auto-completes
+ * the headline, mirroring the superlogical.com layout.
+ */
+export function MultiplexerHeadline() {
+	const [value, setValue] = useState(4);
+
+	return (
+		<div
+			className="max-h-fit h-2/3"
+		>
+			<h1
+				style={{
+					margin: 0,
+					fontSize: "clamp(26px, 3.2vw, 42px)",
+					fontWeight: 500,
+					letterSpacing: "-0.02em",
+					color: "#e6e6e6",
+					maxWidth: "28ch",
+					lineHeight: 1.35,
+				}}
+			>
+				We are building the multiplexer for{" "}
+				<span style={{ color: "#e8956a" }}>{PHRASES[value]}</span>
+			</h1>
+			<ScrollWheel
+				phrases={PHRASES}
+				value={value}
+				onChange={setValue}
+				itemHeight={44}
+				visibleCount={9}
+				style={{ width: 420 }}
+			/>
+		</div>
+	);
+}
