@@ -42,6 +42,8 @@ export interface ScrollWheelProps {
 	loop?: boolean;
 	/** Wheel delta (px) needed to advance one row — a mouse notch is ~120. */
 	wheelStep?: number;
+	/** Scroll animation length in embla units (lower = snappier). */
+	duration?: number;
 	/** Non-centered rows. */
 	color?: string;
 	/** Centered row. */
@@ -61,17 +63,23 @@ export function ScrollWheel({
 	recede = 0.45,
 	loop = true,
 	wheelStep = 100,
+	duration = 18,
 	color = "#4a4a4a",
 	activeColor = "#d8d8d8",
 	className,
 	style,
 }: ScrollWheelProps) {
 	const n = phrases.length;
+	// Embla's loop needs enough slide content to cover the viewport several
+	// times over, or it drops snaps at the seam; repeat the list until it does.
+	const reps = Math.max(1, Math.ceil((visibleCount * 3) / Math.max(n, 1)));
+	const startIndex = n > 0 ? ((defaultValue % n) + n) % n : 0;
 	const [emblaRef, emblaApi] = useEmblaCarousel({
 		axis: "y",
 		align: "center",
 		loop,
-		duration: 24,
+		startIndex,
+		duration,
 		watchDrag: true,
 	});
 	const [active, setActive] = useState(() => {
@@ -131,52 +139,77 @@ export function ScrollWheel({
 
 	/* ------------------------------ value wiring ----------------------------- */
 
+	// snap index (0..reps*n-1) → phrase index (0..n-1)
+	const phraseIndexOf = useCallback(
+		(snap: number) => (n > 0 ? ((snap % n) + n) % n : 0),
+		[n],
+	);
+	// phrase index → snap index nearest the current position (shortest wrap path)
+	const nearestSnap = useCallback(
+		(v: number) => {
+			if (!emblaApi || n === 0) return v;
+			const cur = emblaApi.selectedScrollSnap();
+			const k = Math.round((cur - v) / n);
+			return v + k * n;
+		},
+		[emblaApi, n],
+	);
+
 	useEffect(() => {
 		if (!emblaApi || n === 0) return;
 		const onSelect = () => {
-			const i = emblaApi.selectedScrollSnap();
-			setActive(i);
-			if (i !== lastEmit.current) {
-				lastEmit.current = i;
-				onChangeRef.current?.(i);
+			const v = phraseIndexOf(emblaApi.selectedScrollSnap());
+			setActive(v);
+			if (v !== lastEmit.current) {
+				lastEmit.current = v;
+				onChangeRef.current?.(v);
 			}
 		};
 		emblaApi.on("select", onSelect);
 		return () => {
 			emblaApi.off("select", onSelect);
 		};
-	}, [emblaApi, n]);
+	}, [emblaApi, n, phraseIndexOf]);
 
-	// land on the initial index once the engine exists
+	// keep the emit guard aligned with the engine's starting snap
 	useEffect(() => {
 		if (!emblaApi || n === 0) return;
-		const start = ((defaultValue % n) + n) % n;
-		if (emblaApi.selectedScrollSnap() !== start) emblaApi.scrollTo(start, true);
-		lastEmit.current = emblaApi.selectedScrollSnap();
-	}, [emblaApi, defaultValue, n]);
+		lastEmit.current = phraseIndexOf(emblaApi.selectedScrollSnap());
+	}, [emblaApi, n, phraseIndexOf]);
 
 	// controlled: follow `value`
 	useEffect(() => {
 		if (!emblaApi || n === 0 || value == null) return;
-		const target = ((value % n) + n) % n;
+		const target = nearestSnap(((value % n) + n) % n);
 		if (emblaApi.selectedScrollSnap() !== target) emblaApi.scrollTo(target);
-	}, [emblaApi, value, n]);
+	}, [emblaApi, value, n, nearestSnap]);
 
 	/* --------------------------------- wheel --------------------------------- */
 
 	useEffect(() => {
 		const view = emblaApi?.rootNode();
 		if (!view || !emblaApi || n === 0) return;
+		const scrollBySteps = (steps: number) => {
+			for (let s = 0; s < Math.abs(steps); s++) {
+				if (steps > 0) emblaApi.scrollNext();
+				else emblaApi.scrollPrev();
+			}
+		};
 		const onWheel = (e: WheelEvent) => {
 			e.preventDefault();
-			wheelAcc.current += e.deltaMode === 1 ? e.deltaY * 16 : e.deltaY;
-			const steps = Math.trunc(wheelAcc.current / wheelStep);
-			if (steps !== 0) {
-				for (let s = 0; s < Math.abs(steps); s++) {
-					if (steps > 0) emblaApi.scrollNext();
-					else emblaApi.scrollPrev();
+			const dy = e.deltaMode === 1 ? e.deltaY * 16 : e.deltaY;
+			if (Math.abs(dy) >= wheelStep / 2) {
+				// discrete notches (mouse wheel): one notch = one row, no drift
+				scrollBySteps(Math.round(dy / wheelStep));
+				wheelAcc.current = 0;
+			} else {
+				// continuous deltas (trackpad): accumulate, keep the remainder
+				wheelAcc.current += dy;
+				const steps = Math.trunc(wheelAcc.current / wheelStep);
+				if (steps !== 0) {
+					scrollBySteps(steps);
+					wheelAcc.current -= steps * wheelStep;
 				}
-				wheelAcc.current -= steps * wheelStep;
 			}
 		};
 		view.addEventListener("wheel", onWheel, { passive: false });
@@ -258,48 +291,56 @@ export function ScrollWheel({
 					height: "100%",
 				}}
 			>
-				{phrases.map((phrase, i) => (
-					<div
-						// biome-ignore lint/suspicious/noArrayIndexKey: phrases may repeat, list order is static
-						key={`${phrase}-${i}`}
-						style={{
-							flex: `0 0 ${itemHeight}px`,
-							minWidth: 0,
-							height: itemHeight,
-						}}
-						role="option"
-						aria-selected={active === i}
-						tabIndex={-1}
-						onClick={() => {
-							if (!dragMoved.current) emblaApi?.scrollTo(i);
-						}}
-						onKeyDown={(e) => {
-							if (e.key === "Enter" || e.key === " ") {
-								e.preventDefault();
-								emblaApi?.scrollTo(i);
-							}
-						}}
-					>
+				{Array.from({ length: reps * n }, (_, i) => {
+					const phrase = phrases[i % n];
+					return (
 						<div
-							ref={(el) => {
-								faceRefs.current[i] = el;
-							}}
+							// biome-ignore lint/suspicious/noArrayIndexKey: repeated list, order is static
+							key={`${phrase}-${i}`}
 							style={{
+								flex: `0 0 ${itemHeight}px`,
+								minWidth: 0,
 								height: itemHeight,
-								lineHeight: `${itemHeight}px`,
-								fontSize: Math.round(itemHeight * 0.72),
-								fontWeight: 500,
-								letterSpacing: "-0.03em",
-								whiteSpace: "nowrap",
-								willChange: "transform, opacity",
-								color: active === i ? activeColor : color,
-								transition: "color 200ms ease",
+							}}
+							role="option"
+							aria-selected={active === phraseIndexOf(i)}
+							tabIndex={-1}
+							onClick={() => {
+								if (!dragMoved.current) emblaApi?.scrollTo(nearestSnap(i % n));
+							}}
+							onKeyDown={(e) => {
+								if (e.key === "Enter" || e.key === " ") {
+									e.preventDefault();
+									emblaApi?.scrollTo(nearestSnap(i % n));
+								}
 							}}
 						>
-							{phrase}
+							<div
+								ref={(el) => {
+									faceRefs.current[i] = el;
+								}}
+								style={{
+									width: "100%",
+									height: itemHeight,
+									lineHeight: `${itemHeight}px`,
+									fontSize: Math.round(itemHeight * 0.72),
+									fontWeight: 500,
+									letterSpacing: "-0.03em",
+									whiteSpace: "nowrap",
+									textAlign: "left",
+									// rows pivot around the left rim, arcing like the edge of a
+									// horizontal drum as it turns
+									transformOrigin: "left center",
+									willChange: "transform, opacity",
+									color: active === phraseIndexOf(i) ? activeColor : color,
+									transition: "color 200ms ease",
+								}}
+							>
+								{phrase}
+							</div>
 						</div>
-					</div>
-				))}
+					);
+				})}
 			</div>
 		</div>
 	);
@@ -330,9 +371,7 @@ export function MultiplexerHeadline() {
 	const [value, setValue] = useState(4);
 
 	return (
-		<div
-			className="max-h-fit h-2/3"
-		>
+		<div className="max-h-fit h-2/3">
 			<h1
 				style={{
 					margin: 0,
@@ -351,8 +390,8 @@ export function MultiplexerHeadline() {
 				phrases={PHRASES}
 				value={value}
 				onChange={setValue}
-				itemHeight={44}
-				visibleCount={9}
+				itemHeight={35}
+				visibleCount={7}
 				style={{ width: 420 }}
 			/>
 		</div>
