@@ -34,6 +34,9 @@ function RouteComponent() {
       ]}
     >
       <Outlet />
+      <footer className='flex w-full items-center justify-center py-4 border-t border-gray-400/30 text-xs'>
+        ©{new Date().getUTCFullYear()} Baggit Innovations Inc, All rights reserved
+      </footer>
     </HomeLayout>
   )
 }
