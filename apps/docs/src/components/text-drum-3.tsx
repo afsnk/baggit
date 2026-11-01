@@ -3,10 +3,13 @@
 /**
  * 3D text drum built on embla-carousel (vertical axis + loop).
  *
- * Rows sit on the front of a cylinder: each face is tilted and pushed back
- * by its distance from the viewport's center line, so the drum foreshortens
- * toward the top and bottom edges. Mouse wheel, pointer drag (embla) and
- * taps all drive the drum; the centered row is the selected value.
+ * Rows sit on the front of a drum: each face is tilted and pushed back by its
+ * distance from the viewport's center line, so the drum foreshortens toward
+ * the top and bottom edges. Each row is also nudged right along a vertical
+ * half-circle whose arc passes through the left edge of the centered row, and
+ * the centered row is drawn slightly larger — together the drum reads like a
+ * sphere cut vertically in half. Mouse wheel, pointer drag (embla) and taps
+ * all drive the drum; the centered row is the selected value.
  */
 import useEmblaCarousel from "embla-carousel-react";
 import {
@@ -38,6 +41,10 @@ export interface ScrollWheelProps {
 	tiltDeg?: number;
 	/** How far each row recedes per row of distance, as a fraction of itemHeight. */
 	recede?: number;
+	/** Radius (px) of the vertical half-circle rounding the drum's left edge; larger = flatter. */
+	curveRadius?: number;
+	/** Scale of the centered row, easing back to 1 one row away. */
+	activeScale?: number;
 	/** Seamless wrap-around. Needs enough rows to fill the viewport ~2x. */
 	loop?: boolean;
 	/** Wheel delta (px) needed to advance one row — a mouse notch is ~120. */
@@ -61,6 +68,8 @@ export function ScrollWheel({
 	visibleCount = 9,
 	tiltDeg = 20,
 	recede = 0.45,
+	curveRadius = 600,
+	activeScale = 1.06,
 	loop = true,
 	wheelStep = 100,
 	duration = 18,
@@ -109,14 +118,24 @@ export function ScrollWheel({
 			const d = (rect.top + rect.height / 2 - midY) / itemHeight; // row units from center
 			const tilt = clamp(-d * tiltDeg, -84, 84);
 			const z = -Math.min(Math.abs(d), visibleCount) * recede * itemHeight;
-			face.style.transform = `translateZ(${z.toFixed(2)}px) rotateX(${tilt.toFixed(2)}deg)`;
-			face.style.opacity = clamp(
-				1 - Math.abs(d) / (visibleCount / 2 + 0.5),
-				0,
-				1,
-			).toFixed(3);
+			// rows slide right along a vertical half-circle through the centered
+			// row's left edge — the drum reads like a sphere cut vertically in half
+			const dy = Math.min(Math.abs(d * itemHeight), curveRadius);
+			const indent =
+				curveRadius - Math.sqrt(curveRadius * curveRadius - dy * dy);
+			// the centered row is drawn slightly larger, easing out over one row
+			const scale = 1 + (activeScale - 1) * Math.max(0, 1 - Math.abs(d));
+			face.style.transform = `translateX(${indent.toFixed(2)}px) translateZ(${z.toFixed(2)}px) rotateX(${tilt.toFixed(2)}deg) scale(${scale.toFixed(3)})`;
 		});
-	}, [emblaApi, itemHeight, tiltDeg, recede, visibleCount]);
+	}, [
+		emblaApi,
+		itemHeight,
+		tiltDeg,
+		recede,
+		visibleCount,
+		curveRadius,
+		activeScale,
+	]);
 
 	useEffect(() => {
 		if (!emblaApi) return;
@@ -224,6 +243,13 @@ export function ScrollWheel({
 		const onPointerDown = (e: PointerEvent) => {
 			downY.current = e.clientY;
 			dragMoved.current = false;
+			// a drag must never select the phrase text
+			view.style.userSelect = "none";
+			view.style.webkitUserSelect = "none";
+		};
+		const release = () => {
+			view.style.userSelect = "";
+			view.style.webkitUserSelect = "";
 		};
 		const onPointerMove = (e: PointerEvent) => {
 			if (Math.abs(e.clientY - downY.current) > 8) dragMoved.current = true;
@@ -239,10 +265,15 @@ export function ScrollWheel({
 		view.addEventListener("pointerdown", onPointerDown, true);
 		view.addEventListener("pointermove", onPointerMove, true);
 		view.addEventListener("click", onClickCapture, true);
+		window.addEventListener("pointerup", release);
+		window.addEventListener("pointercancel", release);
 		return () => {
+			release();
 			view.removeEventListener("pointerdown", onPointerDown, true);
 			view.removeEventListener("pointermove", onPointerMove, true);
 			view.removeEventListener("click", onClickCapture, true);
+			window.removeEventListener("pointerup", release);
+			window.removeEventListener("pointercancel", release);
 		};
 	}, [emblaApi]);
 
@@ -301,6 +332,7 @@ export function ScrollWheel({
 								flex: `0 0 ${itemHeight}px`,
 								minWidth: 0,
 								height: itemHeight,
+								transformStyle: "preserve-3d",
 							}}
 							role="option"
 							aria-selected={active === phraseIndexOf(i)}
@@ -331,7 +363,7 @@ export function ScrollWheel({
 									// rows pivot around the left rim, arcing like the edge of a
 									// horizontal drum as it turns
 									transformOrigin: "left center",
-									willChange: "transform, opacity",
+									willChange: "transform",
 									color: active === phraseIndexOf(i) ? activeColor : color,
 									transition: "color 200ms ease",
 								}}
@@ -371,17 +403,18 @@ export function MultiplexerHeadline() {
 	const [value, setValue] = useState(4);
 
 	return (
-		<div className="max-h-fit h-2/3">
+		<div className="max-h-fit h-auto border border-red-400 relative">
 			<h1
 				style={{
 					margin: 0,
-					fontSize: "clamp(26px, 3.2vw, 42px)",
+					fontSize: "clamp(12px, 3.2vw, 32px)",
 					fontWeight: 500,
 					letterSpacing: "-0.02em",
 					color: "#e6e6e6",
 					maxWidth: "28ch",
 					lineHeight: 1.35,
 				}}
+				className="absolute top-1/2 -translate-y-1/2 inset-bs-1/2 -left-3/2 bg-black px-3 shadow-2xl"
 			>
 				We are building the multiplexer for{" "}
 				<span style={{ color: "#e8956a" }}>{PHRASES[value]}</span>
@@ -393,6 +426,7 @@ export function MultiplexerHeadline() {
 				itemHeight={35}
 				visibleCount={7}
 				style={{ width: 420 }}
+				className="border border-green-500 p-8"
 			/>
 		</div>
 	);
