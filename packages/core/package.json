@@ -1,9 +1,18 @@
 {
-  "name": "@baggit/apra",
+  "name": "@baggit/core",
   "version": "0.0.1",
-  "description": "Adaptive Provider Routing Architecture — Serverless Crypto On/Off Ramp Aggregator",
+  "description": "Runtime agnostic, adaptive provider route aggregator.",
   "private": true,
   "type": "module",
+  "exports": {
+    "./services": {
+	    	"import": "./dist/src/services/index.js",
+	     "types": "./dist/src/services/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
@@ -20,7 +29,8 @@
   "dependencies": {
     "nats": "^2.29.1",
     "zod": "^3.24.5",
-    "drizzle-orm": "^0.43.1",
+    "drizzle-orm": "0.44.4",
+    "drizzle-zod": "^0.8.3",
     "@libsql/client": "^0.14.0",
     "better-sqlite3": "^11.9.1",
     "drizzle-kit": "^0.30.6",

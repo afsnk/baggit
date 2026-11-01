@@ -21,7 +21,7 @@
       "@apra/ports": ["./src/ports"],
       "@apra/registry": ["./src/registry"],
       "@apra/primitives": ["./src/primitives"],
-      "@apra/adapters/*": ["./src/adapters/*"],
+      "@apra/adapters/*": ["src/v1.0/adapters/*"],
       "@apra/providers/*": ["./src/providers/*"],
       "@apra/sdk/*": ["./src/sdk/*"],
       "@apra/utils/*": ["./src/utils/*"],
