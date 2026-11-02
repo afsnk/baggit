@@ -15,13 +15,12 @@ export interface DBConfig {
 const isProd = process.env.NODE_ENV === "production"
 export function createDB(config?: DBConfig): DB {
   if (db) return db
-
-
 		const connection = {
 			url: config?.url ?? process.env.DATABASE_URL!,
 			authToken: config?.authToken ?? process.env.DATABASE_AUTH_TOKEN,
 		}
 		db = drizzle({
+			// @ts-ignores
 			dialect: isProd ? 'turso' : 'sqlite',
 			connection,
 			schema
