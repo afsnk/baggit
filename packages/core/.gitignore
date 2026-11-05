@@ -1,6 +1,5 @@
-dist/
-node_modules/
-
+v0.0
+node_modules
 
 # output
 out

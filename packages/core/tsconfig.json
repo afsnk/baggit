@@ -1,11 +1,12 @@
 {
   "compilerOptions": {
-    "target": "ES2022",
+    "target": "esnext",
     "module": "esnext",
     "moduleResolution": "bundler",
-    "lib": ["esnext"],
+    "types": ["bun-types"],
     "strict": true,
-    "noEmit": true,
+    "noEmit": false,
+    "allowJs": true,
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
@@ -15,19 +16,12 @@
     "sourceMap": true,
     "outDir": "./dist",
     "rootDir": "./src",
+    "baseUrl": ".",
     "paths": {
-      "@apra/domain/*": ["./src/domain/*"],
-      "@apra/application/*": ["./src/application/*"],
-      "@apra/ports": ["./src/ports"],
-      "@apra/registry": ["./src/registry"],
-      "@apra/primitives": ["./src/primitives"],
-      "@apra/adapters/*": ["src/v1.0/adapters/*"],
-      "@apra/providers/*": ["./src/providers/*"],
-      "@apra/sdk/*": ["./src/sdk/*"],
-      "@apra/utils/*": ["./src/utils/*"],
-      "@apra/configs": ["./src/configs"]
+      "@core/*": ["./src/v1.0/*"], //Replace active version
+      "@shared/*": ["./src/shared/*"]
     }
   },
-  "include": ["src/**/*.ts"],
+  "include": ["src/v1.0/**/*.ts", "src/shared/**/*.ts"], // Include active version
   "exclude": ["node_modules", "dist"]
 }
