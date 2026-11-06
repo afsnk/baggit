@@ -17,25 +17,19 @@ export {
   jwks,
 } from "./auth"
 export {
-  transactions,
-  selectTransactions,
-  insertTransactions,
-  patchTransactions,
+  transaction,
+  selectTransaction,
+  insertTransaction,
+  patchTransaction,
   transactionRelations,
-  cleanedTransaction
 } from "./transaction"
 export {
-  payments,
-  selectPayments,
-  insertPayments,
-  patchPayments,
-  paymentRelations,
   invoice,
   invoiceRelations,
   selectInvoice,
   insertInvoice,
   patchInvoice,
-} from "./payment"
+} from "./invoice"
 export {
   ramps
 } from "./ramp"

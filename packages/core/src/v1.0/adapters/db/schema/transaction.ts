@@ -2,33 +2,23 @@ import { index, integer, real, sqliteTable, text } from "drizzle-orm/sqlite-core
 import { createInsertSchema, createSelectSchema } from "drizzle-zod"
 import { z } from "zod"
 import { toZodV4SchemaTyped } from "@core/zod-utils";
-import { payments } from "./payment";
+import { invoice } from "./invoice";
 import { ramps } from "./ramp";
 import { generateId } from "@core/utils";
 import { relations } from "drizzle-orm";
-import { organization } from "./auth";
+import { organization, user } from "./auth";
 
 // Carries the actual values for processing the payment like provider details
-export const transactions = sqliteTable("transactions", {
+export const transaction = sqliteTable("transactions", {
   id: text("id").primaryKey().$defaultFn(() => generateId('trx')),
   status: text("status", { enum: ["failed", "canceled", "expired", "pending", "complete"] }).default("pending"),
-  network: text("network", { enum: ["base", "bsc", "solana", "stellar"] }).notNull().default("base"), // Base is still crypto
-  asset: text("asset", { enum: ["usdc", "usdt", "cngn", "ngn", "usd", "gbp"] }).notNull(),
-  paymentId: text("payment_id").references(() => payments.id, {onDelete: "no action"}),
-  rampId: text("ramp_id").references(() => ramps.id, { onDelete: "no action" }),
-  orgId: text("org_id").references(() => organization.id),
-  metadata: text("metadata", { mode: "json" }).$type<{
-    address?: `0x${string}`;
-    pk?: string;
-    collectionHash?: `0x${string}`;
-    payoutHash?: `0x${string}`;
-    fromBlock?: number;
-    accountNumber?: string;
-    accountName?: string;
-    bankName?: string;
-    bankCode?: string;
-    [x: string]: any;
-  }>().notNull(),
+  settledForId: text("settled_for_id").notNull(), // The primitive id being fulfilled (invoice|order)
+	entityId: text("entity_id").notNull(), // ID for the entity owner of the transaction
+  entityType: text("entity_type").notNull(), // TYPE of the entity owner (org|user)
+	medium: text("medium", { mode: "json" }).$type<Medium>(), // Base is still crypto
+	asset: text("asset", { mode: "json" }).$type<Asset>().notNull(),
+  receipt: text("receipt", {mode: "json"}).$type<Receipt>(),
+  metadata: text("metadata", { mode: "json" }).$type<TransactionMeta>().notNull(),
   createdAt: integer({ mode: "timestamp" })
     .$defaultFn(() => new Date()),
   updatedAt: integer({ mode: "timestamp" })
@@ -36,50 +26,110 @@ export const transactions = sqliteTable("transactions", {
     .$onUpdate(() => new Date()),
 }, (table) => [
   index("transactions_status_idx").on(table.status),
-  index("transactions_network_idx").on(table.network),
-  index("transactions_asset_idx").on(table.asset),
-  index("transactions_paymentId_idx").on(table.paymentId)
 ]);
 
-export const selectTransactions = toZodV4SchemaTyped(createSelectSchema(transactions));
-export const cleanedTransaction = createSelectSchema(transactions).omit({ metadata: true }).extend({
-  payment: createSelectSchema(payments).nullable().optional(),
-  ramp: createSelectSchema(ramps).nullable().optional(),
-});
-export const insertTransactions = toZodV4SchemaTyped(createInsertSchema(
-  transactions,
+export type Asset = {
+	in: (CryptoAsset | FiatAsset);
+	out: (CryptoAsset | FiatAsset);
+	pass?: (CryptoAsset | FiatAsset)[];
+};
+
+type CryptoAsset = {
+	token: string;
+	symbol: string;
+	tokenAddress: string;
+}
+type FiatAsset = {
+	name: string;
+	symbol: string;
+	country: string;
+}
+
+export type Medium = (CryptoRail | FiatRail);
+
+export type CryptoRail = {
+	id: string; // psp ID for internal
+	baseAction: "swap" | "onramp" | "offramp" | string;
+	chainId: number | string;
+	network: string;
+	networkFee?: string | number;
+}
+
+// Details about the PSP Fiat rail
+export type FiatRail = {
+	id: string; // psp ID for internal
+	baseAction: "transfer" | "payout" | "collection" | string;
+	fee: number | Record<string, any>;
+}
+
+export type TransactionMeta = {
+	address?: `0x${string}` | string;
+	callbackUrl: string;
+	pk?: string;
+  [x: string]: any;
+}
+
+export type Receipt = (CryptoReceipt | FiatReceipt);
+type CryptoReceipt = {
+	hash: string;
+	explorerUrl: string;
+	txBlock: string | number;
+	[key: string]: any;
+}
+type FiatReceipt = {
+	refereence: string;
+	pspReference?: string;
+	receiptUrl: string; // Generated internally or stored from PSP
+	bank: {
+		name: string;
+		code: string;
+		account: {
+			name: string;
+			number: string;
+		}
+		asset?: string;
+	};
+	[key: string]: any;
+}
+// TODO: Others like MOMO can be represented later on
+
+export const selectTransaction = toZodV4SchemaTyped(createSelectSchema(transaction));
+export const insertTransaction = toZodV4SchemaTyped(createInsertSchema(
+  transaction,
 ).required({
-  network: true,
+  medium: true,
   asset: true,
-  paymentId: true,
-  orgId: true,
-}).omit({
   metadata: true,
-  id: true,
+  entityId: true,
+  entityType: true,
+}).omit({
+	id: true,
+  receipt: true,
   createdAt: true,
   updatedAt: true,
 }));
 
 // @ts-expect-error partial exists on zod v4 type
-export const patchTransactions = insertTransactions.partial();
+export const patchTransaction = insertTransaction.partial();
 
-
-// Ties payment and ramp to transaction shema
-export const transactionRelations = relations(transactions, ({ one }) => ({
-  payment: one(payments, {
-    fields: [transactions.paymentId],
-    references: [payments.id]
-  }),
-  ramp: one(ramps, {
-    fields: [transactions.rampId],
-    references: [ramps.id]
-  }),
-  organization: one(organization, {
-    fields: [transactions.orgId],
+// Polymorphic References to related tables
+export const transactionRelations = relations(transaction, ({ one }) => ({
+	user: one(user, {
+		fields: [transaction.entityId],
+		references: [user.id]
+	}),
+  org: one(organization, {
+    fields: [transaction.entityId],
     references: [organization.id]
-  })
+	}),
+	order: one(ramps, {
+		fields: [transaction.settledForId],
+		references: [ramps.id]
+  }),
+	invoice: one(invoice, {
+		fields: [transaction.settledForId],
+		references: [invoice.id],
+	})
 }))
 
-
-export type TTransaction = z.infer<typeof selectTransactions>
-export type CleanedTransaction = z.infer<typeof cleanedTransaction>
+export type TTransaction = z.infer<typeof selectTransaction>
