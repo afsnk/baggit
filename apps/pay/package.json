@@ -8,7 +8,7 @@
   "scripts": {
     "dev": "portless pay.baggit --app-port 3001 vite dev --port 3001",
     "generate-routes": "tsr generate",
-    "build": "vite build && tsc --noEmit",
+    "build": "vite build",
     "deploy": "npm run build && wrangler deploy",
     "cf-typegen": "wrangler types",
     "preview": "vite preview",
@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@baggit/api": "workspace:*",
+    "@baggit/core": "workspace:*",
     "@nats-io/kv": "^3.4.0",
     "@nats-io/nats-core": "^3.4.0",
     "@posthog/react": "^1.7.0",

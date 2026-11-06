@@ -4,6 +4,9 @@ import { z } from 'zod'
 export const env = createEnv({
 	server: {
 		SERVER_URL: z.string().url().default('https://api.baggit.link'),
+		BETTER_AUTH_SECRET: z.string().optional(),
+		DATABASE_URL: z.string().url(),
+		DATABASE_AUTH_TOKEN: z.string().optional(),
 	},
 
 	/**
@@ -14,7 +17,7 @@ export const env = createEnv({
 
 	client: {
 		VITE_API_URL: z.string().url().default('https://api.baggit.link'),
-		VITE_BETTER_AUTH_URL: z.url().default('https://auth.baggit.link'),
+		VITE_BETTER_AUTH_URL: z.url().default('https://pay.baggit.dev'),
 		VITE_NATS_CON_URL: z.url().default('wss://connect.ngs.global'),
     VITE_NATS_KV_KEY: z.string(),
     VITE_NATS_USER_JWT: z.string(),
