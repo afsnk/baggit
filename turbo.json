@@ -16,10 +16,22 @@
     },
     "dev": {
       "persistent": true,
-      "cache": false
+      "cache": false,
+      "dependsOn": ["@baggit/core#build"]
+    },
+    "@baggit/core#build": {
+      "dependsOn": ["^build"],
+      "outputs": []
+    },
+    "test": {
+      "dependsOn": ["build"],
+      "outputs": []
     },
     "deploy": {
       "dependsOn": ["build"]
+    },
+    "lint": {
+      "outputs": []
     }
   }
 }

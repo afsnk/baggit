@@ -16,7 +16,6 @@
     "sourceMap": true,
     "outDir": "./dist",
     "rootDir": "./src",
-    "baseUrl": ".",
     "paths": {
       "@core/*": ["./src/v1.0/*"], //Replace active version
       "@shared/*": ["./src/shared/*"]

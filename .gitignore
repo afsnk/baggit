@@ -12,3 +12,4 @@ tsconfig.tsbuildinfo
 apps/demo
 ./apps/demo
 apps/demo/
+local_master.db
