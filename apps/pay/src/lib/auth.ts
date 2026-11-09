@@ -2,7 +2,7 @@ import { tanstackStartCookies } from "better-auth/tanstack-start";
 // import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import db from "#/db";
 // import { env } from "#/env";
-import { createAuth } from "@baggit/core/v1.0"
+import { createAuth } from "@baggit/core"
 
 
 

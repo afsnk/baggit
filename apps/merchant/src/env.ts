@@ -3,7 +3,12 @@ import { z } from 'zod'
 
 export const env = createEnv({
   server: {
-    SERVER_URL: z.string().url().optional(),
+		SERVER_URL: z.url().optional(),
+		DATABASE_URL: z.url(),
+		DATABASE_AUTH_TOKEN: z.string().optional(),
+		NODE_ENV: z.string(),
+		SWITCH_API_KEY: z.string(),
+		SWITCH_API_URL: z.url(),
   },
 
   /**
@@ -14,16 +19,15 @@ export const env = createEnv({
 
   client: {
     VITE_APP_TITLE: z.string().min(1).optional(),
-    VITE_BETTER_AUTH_URL: z.string().url(),
+    VITE_BETTER_AUTH_URL: z.url(),
     VITE_CLIENT_URL: z.string().default('https://merchant.baggit.dev'),
-    VITE_API_URL: z.url(),
-  },
+	},
 
   /**
    * What object holds the environment variables at runtime. This is usually
    * `process.env` or `import.meta.env`.
    */
-  runtimeEnv: import.meta.env,
+  runtimeEnv: typeof window === "undefined"? process.env : import.meta.env,
 
   /**
    * By default, this library will feed the environment variables directly to

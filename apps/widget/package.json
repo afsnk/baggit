@@ -20,7 +20,7 @@
     "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
-    "@better-auth/api-key": "^1.6.23",
+    "@better-auth/api-key": "^1.7.18",
     "@faker-js/faker": "^10.3.0",
     "@posthog/react": "^1.7.0",
     "@react-three/fiber": "^9.6.1",
@@ -42,7 +42,7 @@
     "@tanstack/react-table": "latest",
     "@tanstack/router-plugin": "^1.132.0",
     "@tanstack/store": "latest",
-    "better-auth": "^1.5.3",
+    "better-auth": "^1.7.18",
     "better-sqlite3": "^12.6.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

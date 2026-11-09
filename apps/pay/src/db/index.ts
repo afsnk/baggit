@@ -1,5 +1,5 @@
 import { env } from "#/env"
-import {createDB } from "@baggit/core/v1.0"
+import {createDB } from "@baggit/core"
 
 
 

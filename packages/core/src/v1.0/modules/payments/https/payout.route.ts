@@ -140,7 +140,8 @@ function createPayout(
   return {
     fetch: router.fetch,
     service,
-    adapter,
+		adapter,
+    transactionRepo: repository,
   }
 }
 

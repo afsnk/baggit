@@ -21,6 +21,8 @@ import { Route as PlatformDeveloperObservabilityRouteImport } from './routes/_pl
 import { Route as PlatformSettingsGeneralRouteImport } from './routes/_platform/settings.general'
 import { Route as PlatformSettingsLimitsRouteImport } from './routes/_platform/settings.limits'
 import { Route as PlatformSettingsTeamRouteImport } from './routes/_platform/settings.team'
+import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
+import { Route as ApiPayoutSplatRouteImport } from './routes/api/payout/$'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -87,6 +89,16 @@ const PlatformSettingsTeamRoute = PlatformSettingsTeamRouteImport.update({
   path: '/settings/team',
   getParentRoute: () => PlatformRouteRoute,
 } as any)
+const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
+  id: '/api/auth/$',
+  path: '/api/auth/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPayoutSplatRoute = ApiPayoutSplatRouteImport.update({
+  id: '/api/payout/$',
+  path: '/api/payout/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -100,6 +112,8 @@ export interface FileRoutesByFullPath {
   '/settings/general': typeof PlatformSettingsGeneralRoute
   '/settings/limits': typeof PlatformSettingsLimitsRoute
   '/settings/team': typeof PlatformSettingsTeamRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/payout/$': typeof ApiPayoutSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -113,6 +127,8 @@ export interface FileRoutesByTo {
   '/settings/general': typeof PlatformSettingsGeneralRoute
   '/settings/limits': typeof PlatformSettingsLimitsRoute
   '/settings/team': typeof PlatformSettingsTeamRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/payout/$': typeof ApiPayoutSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -128,6 +144,8 @@ export interface FileRoutesById {
   '/_platform/settings/general': typeof PlatformSettingsGeneralRoute
   '/_platform/settings/limits': typeof PlatformSettingsLimitsRoute
   '/_platform/settings/team': typeof PlatformSettingsTeamRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/payout/$': typeof ApiPayoutSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -143,6 +161,8 @@ export interface FileRouteTypes {
     | '/settings/general'
     | '/settings/limits'
     | '/settings/team'
+    | '/api/auth/$'
+    | '/api/payout/$'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -156,6 +176,8 @@ export interface FileRouteTypes {
     | '/settings/general'
     | '/settings/limits'
     | '/settings/team'
+    | '/api/auth/$'
+    | '/api/payout/$'
   id:
     | '__root__'
     | '/'
@@ -170,12 +192,16 @@ export interface FileRouteTypes {
     | '/_platform/settings/general'
     | '/_platform/settings/limits'
     | '/_platform/settings/team'
+    | '/api/auth/$'
+    | '/api/payout/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   PlatformRouteRoute: typeof PlatformRouteRouteWithChildren
   AuthAuthRoute: typeof AuthAuthRoute
+  ApiAuthSplatRoute: typeof ApiAuthSplatRoute
+  ApiPayoutSplatRoute: typeof ApiPayoutSplatRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -264,6 +290,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PlatformSettingsTeamRouteImport
       parentRoute: typeof PlatformRouteRoute
     }
+    '/api/auth/$': {
+      id: '/api/auth/$'
+      path: '/api/auth/$'
+      fullPath: '/api/auth/$'
+      preLoaderRoute: typeof ApiAuthSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/payout/$': {
+      id: '/api/payout/$'
+      path: '/api/payout/$'
+      fullPath: '/api/payout/$'
+      preLoaderRoute: typeof ApiPayoutSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -299,6 +339,8 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   PlatformRouteRoute: PlatformRouteRouteWithChildren,
   AuthAuthRoute: AuthAuthRoute,
+  ApiAuthSplatRoute: ApiAuthSplatRoute,
+  ApiPayoutSplatRoute: ApiPayoutSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

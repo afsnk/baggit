@@ -3,6 +3,7 @@
 */
 
 import { checkout } from "#/lib/checkout"
+import { schema } from "@baggit/core"
 import { createServerFn } from "@tanstack/react-start"
 import {z} from "zod"
 
@@ -10,11 +11,8 @@ import {z} from "zod"
 export const createCheckout = createServerFn()
 	.validator(
 		// Or get checkout schema from core
-		z.object({
-			amount: z.number(),
-			reference: z.string().min(4)
-		})
+		schema.insertInvoice
 	)
 	.handler(async ({ data }) => {
-		return await checkout.service.createInvoice(data)
+		return await checkout.service.create(data)
 	})
