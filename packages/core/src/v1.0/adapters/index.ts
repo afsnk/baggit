@@ -1,3 +1,4 @@
-export * from "./nats/index"
-export * from "./drizzle/index"
-export * from "./telemetry/index"
+export * from "./db"
+export * from "./auth"
+export * as schema from "./db/schema"
+export * from "./email"

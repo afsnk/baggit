@@ -14,10 +14,11 @@ export const invoice = sqliteTable("invoice", {
   reference: text("reference").notNull(),
   orgId: text("org_id").notNull().references(() => organization.id),
 	memo: text("memo"),
-	payment: text("payment", { mode: "json" }).$type<TPayment>().notNull(),
+	payment: text("payment", { mode: "json" }).$type<PaymentMeta>().notNull(),
 	metadata: text("metadata", { mode: "json" }).$type<InvoiceMeta>().notNull(),
 	redirectUrl: text("redirect_url"),
-  callbackMetadata: text("callback_metadata", {mode: "json"}),
+	// return back to redirect or webhook what ever is stored here
+  callbackMetadata: text("callback_metadata", {mode: "json"}).$type<{[key: string]: any}>(),
   createdAt: integer({ mode: "timestamp" })
     .$defaultFn(() => new Date()),
   updatedAt: integer({ mode: "timestamp" })
@@ -28,26 +29,26 @@ export const invoice = sqliteTable("invoice", {
   index("invoice_reference_idx").on(table.reference),
 ])
 
-type TPayment = {
+export type PaymentMeta = {
 	method: string | "bank-transfer" | "crypto";
 	currency: string;
 	url: string
 }
 
-type InvoiceMeta = {
+export type InvoiceMeta = {
 	type: "recurring" | "onetime";
 	customer: GlobalCustomer;
 	items?: InvoiceItems[];
 	range?: "weekly" | "monthly" | "yearly"
 }
 
-type InvoiceItems = {
+export type InvoiceItems = {
 	title: string;
 	quantity: number;
 	price: number;
 }
 
-type GlobalCustomer = {
+export type GlobalCustomer = {
 	name: string;
 	email?: string;
 	phone?: string
@@ -61,10 +62,10 @@ export const insertInvoice = toZodV4SchemaTyped(createInsertSchema(invoice)
   	subject: true,
 		amount: true,
 		currency: true,
-		orgId: true,
 		reference: true,
-		metadata: true,
+		orgId: true,
     payment: true,
+		metadata: true,
   })
   .omit({
     id: true,
@@ -83,4 +84,6 @@ export const invoiceRelations = relations(invoice, ({ one }) => ({
 	})
 }))
 
-export type TInvoice = z.infer<typeof selectInvoice>;
+export type SelectInvoice = z.infer<typeof selectInvoice>;
+export type InsertInvoice = z.infer<typeof insertInvoice>;
+export type PatchInvoice = z.infer<typeof patchInvoice>;

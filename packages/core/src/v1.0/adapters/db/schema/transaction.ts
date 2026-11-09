@@ -2,7 +2,7 @@ import { index, integer, real, sqliteTable, text } from "drizzle-orm/sqlite-core
 import { createInsertSchema, createSelectSchema } from "drizzle-zod"
 import { z } from "zod"
 import { toZodV4SchemaTyped } from "@core/zod-utils";
-import { invoice } from "./invoice";
+import { insertInvoice, invoice, patchInvoice } from "./invoice";
 import { ramps } from "./ramp";
 import { generateId } from "@core/utils";
 import { relations } from "drizzle-orm";
@@ -14,7 +14,7 @@ export const transaction = sqliteTable("transactions", {
   status: text("status", { enum: ["failed", "canceled", "expired", "pending", "complete"] }).default("pending"),
   settledForId: text("settled_for_id").notNull(), // The primitive id being fulfilled (invoice|order)
 	entityId: text("entity_id").notNull(), // ID for the entity owner of the transaction
-  entityType: text("entity_type").notNull(), // TYPE of the entity owner (org|user)
+  entityType: text("entity_type", {enum: ['org', 'user', 'anon']}).notNull(), // TYPE of the entity owner (org|user)
 	medium: text("medium", { mode: "json" }).$type<Medium>(), // Base is still crypto
 	asset: text("asset", { mode: "json" }).$type<Asset>().notNull(),
   receipt: text("receipt", {mode: "json"}).$type<Receipt>(),
@@ -25,7 +25,9 @@ export const transaction = sqliteTable("transactions", {
     .$defaultFn(() => new Date())
     .$onUpdate(() => new Date()),
 }, (table) => [
-  index("transactions_status_idx").on(table.status),
+	index("transaction_status_idx").on(table.status),
+	index("transaction_settled_for_id_idx").on(table.settledForId),
+  index("transaction_entity_type_idx").on(table.entityType)
 ]);
 
 export type Asset = {
@@ -94,9 +96,10 @@ type FiatReceipt = {
 // TODO: Others like MOMO can be represented later on
 
 export const selectTransaction = toZodV4SchemaTyped(createSelectSchema(transaction));
-export const insertTransaction = toZodV4SchemaTyped(createInsertSchema(
+const internalInsert = createInsertSchema(
   transaction,
 ).required({
+	settledForId: true,
   medium: true,
   asset: true,
   metadata: true,
@@ -107,10 +110,9 @@ export const insertTransaction = toZodV4SchemaTyped(createInsertSchema(
   receipt: true,
   createdAt: true,
   updatedAt: true,
-}));
-
-// @ts-expect-error partial exists on zod v4 type
-export const patchTransaction = insertTransaction.partial();
+})
+export const insertTransaction = toZodV4SchemaTyped(internalInsert);
+export const patchTransaction = toZodV4SchemaTyped(internalInsert.partial())
 
 // Polymorphic References to related tables
 export const transactionRelations = relations(transaction, ({ one }) => ({
@@ -132,4 +134,6 @@ export const transactionRelations = relations(transaction, ({ one }) => ({
 	})
 }))
 
-export type TTransaction = z.infer<typeof selectTransaction>
+export type SelectTransaction = z.infer<typeof selectTransaction>;
+export type InsertTransaction = z.infer<typeof insertTransaction>;
+export type PatchTransaction = z.infer<typeof patchTransaction>;
