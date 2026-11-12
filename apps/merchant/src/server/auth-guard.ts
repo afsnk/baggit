@@ -1,7 +1,6 @@
 import { createServerFn } from '@tanstack/react-start'
 import { getRequest } from '@tanstack/react-start/server'
 
-import { authClient } from '#/lib/auth-client'
 import { z } from 'zod'
 import { redirect } from '@tanstack/react-router'
 import { auth } from '#/lib/auth'
