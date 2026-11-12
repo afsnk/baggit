@@ -11,7 +11,7 @@ import { Button } from './ui/button'
 import { Copy, Key, Loader2, LockIcon } from 'lucide-react'
 import { Input } from './ui/input'
 import { useState } from 'react'
-import NiceModal, { useModal } from '@ebay/nice-modal-react'
+import Modal, { useModal } from '@ebay/nice-modal-react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { authClient } from '#/lib/auth-client'
 import { toast } from 'sonner'
@@ -27,7 +27,7 @@ import {
 
 interface ICreateKeysModal {}
 
-const CreateKeysModal = NiceModal.create((_: ICreateKeysModal) => {
+const CreateKeysModal = Modal.create((_: ICreateKeysModal) => {
   const { data: session, isPending } = authClient.useSession()
   const queryClient = useQueryClient()
   const modal = useModal()
@@ -126,7 +126,7 @@ const CreateKeysModal = NiceModal.create((_: ICreateKeysModal) => {
                 keyName: name,
               })
             }
-            disabled={createKeys.isPending || isPending}
+            disabled={createKeys.isPending || isPending || !!createKeys.data?.length}
           >
             {createKeys.isPending ? (
               <div className="flex items-center justify-center gap-3">
@@ -142,4 +142,4 @@ const CreateKeysModal = NiceModal.create((_: ICreateKeysModal) => {
   )
 })
 
-export const showCreateKeysModal = () => NiceModal.show(CreateKeysModal)
+export const showCreateKeysModal = () => Modal.show(CreateKeysModal)

@@ -5,7 +5,7 @@ import { organization, anonymous, bearer, emailOTP } from 'better-auth/plugins'
 import { DB } from '../db'
 import * as schema from '@core/adapters/db/schema'
 import { defaultAuthConfig } from './better-auth.config'
-import { useLogger } from 'evlog/elysia'
+import { initLogger, createRequestLogger, log } from 'evlog'
 import { createError } from 'evlog'
 import {
   generateAccount,
@@ -13,8 +13,22 @@ import {
 } from '@core/modules/payments/utils/wallet.utils'
 import { eq } from 'drizzle-orm'
 
-export const createAuth = (db: DB, overrideAuthConfig?: BetterAuthOptions) =>
-  betterAuth({
+initLogger({
+  env: {
+    service: 'auth',
+    environment: process.env.NODE_ENV || 'development',
+  },
+});
+
+export const createAuth = (db: DB, overrideAuthConfig?: BetterAuthOptions) => {
+  const defaultPlugins = (defaultAuthConfig.plugins ??
+    []) as BetterAuthOptions['plugins']
+  const overridePlugins = (overrideAuthConfig?.plugins ??
+    []) as BetterAuthOptions['plugins']
+  const { plugins: _dp, ...defaultRest } = defaultAuthConfig
+  const { plugins: _op, ...overrideRest } = overrideAuthConfig ?? {}
+
+  return betterAuth({
     database: drizzleAdapter(db, {
       provider: 'sqlite',
       schema: { ...schema },
@@ -45,6 +59,8 @@ export const createAuth = (db: DB, overrideAuthConfig?: BetterAuthOptions) =>
         },
       },
     },
+    ...defaultRest,
+    ...overrideRest,
     plugins: [
       apiKey([
         {
@@ -76,7 +92,7 @@ export const createAuth = (db: DB, overrideAuthConfig?: BetterAuthOptions) =>
           return user.emailVerified
         },
         sendInvitationEmail: async (data) => {
-          const log = useLogger()
+          // const log = useLogger()
           const email = data.email.trim()
 
           // await emailQueue.enqueue<IEmailProps>('send', {
@@ -99,13 +115,20 @@ export const createAuth = (db: DB, overrideAuthConfig?: BetterAuthOptions) =>
             // TODO: send welcome to organization email
           },
           async afterCreateOrganization({ organization }) {
-            const log = useLogger()
             try {
               // TODO: Initialise organization resources after creation
-              const chain = getChain(process.env.NODE_ENV || 'development', 'bsc')
-              const account = await generateAccount(process.env.ZERODEV_RPC!, chain, process.env.ENC_KEY!, organization.id)
+              const chain = getChain(
+                process.env.NODE_ENV || 'development',
+                'bsc',
+              )
+              const account = await generateAccount(
+                process.env.ZERODEV_RPC!,
+                chain,
+                process.env.ENC_KEY!,
+                organization.id,
+              )
 
-              log.set({ account, chain })
+              log.info({ account, chain })
 
               const [updatedOrg] = await db
                 .update(schema.organization)
@@ -117,13 +140,13 @@ export const createAuth = (db: DB, overrideAuthConfig?: BetterAuthOptions) =>
                 })
                 .where(eq(schema.organization.id, organization.id))
                 .returning()
-              log.set({ orgWithAddress: updatedOrg })
+              log.info({ orgWithAddress: updatedOrg })
             } catch (error: any) {
-              log.error(error)
-              throw createError({
-                message: error?.message,
-                why: 'Failed to created organization address',
-                fix: 'Try again later, contact support',
+              // log.error(error)
+							throw createError({
+								message: error?.message,
+								why: 'Failed to create organization',
+								fix: 'Try again later'
               })
             }
           },
@@ -174,9 +197,8 @@ export const createAuth = (db: DB, overrideAuthConfig?: BetterAuthOptions) =>
       //   }
       // }),
       bearer(),
-      ...(defaultAuthConfig.plugins || []),
-      ...((overrideAuthConfig && overrideAuthConfig.plugins) || []),
+      ...(defaultPlugins ?? []),
+      ...(overridePlugins ?? []),
     ],
-    ...defaultAuthConfig,
-    ...overrideAuthConfig,
-  }) as Auth
+  }) as unknown as Auth
+}

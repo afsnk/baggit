@@ -133,14 +133,14 @@ export class Cypher {
 // ─────────────────────────────────────────────
 //  Quick demo (remove in production)
 // ─────────────────────────────────────────────
-
-const SECRET = "super-secret-passphrase-123";
-const PLAIN_TEXT = "Pay $1,250.00 to wallet 0xABCDEF…";
-
-const result = encrypt(PLAIN_TEXT, SECRET);
-const recovered = decrypt(result.encrypted, SECRET);
-
-console.log("Original  :", PLAIN_TEXT);
-console.log("Encrypted :", result.encrypted);
-console.log("Decrypted :", recovered);
-console.log("Match     :", recovered === PLAIN_TEXT);
+//
+// const SECRET = "super-secret-passphrase-123";
+// const PLAIN_TEXT = "Pay $1,250.00 to wallet 0xABCDEF…";
+//
+// const result = encrypt(PLAIN_TEXT, SECRET);
+// const recovered = decrypt(result.encrypted, SECRET);
+//
+// console.log("Original  :", PLAIN_TEXT);
+// console.log("Encrypted :", result.encrypted);
+// console.log("Decrypted :", recovered);
+// console.log("Match     :", recovered === PLAIN_TEXT);

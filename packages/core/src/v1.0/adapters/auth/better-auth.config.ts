@@ -13,7 +13,7 @@ import { createAuthMiddleware } from "better-auth/api"
 export const defaultAuthConfig: BetterAuthOptions = {
 	secret: process.env.BETTER_AUTH_SECRET,
   baseURL: {
-    allowedHosts: ["https://baggit.dev"],
+    allowedHosts: ["https://baggit.dev", "https://baggit.link"],
     fallback: "https://baggit.dev"
   },
   appName: "Baggit Services",

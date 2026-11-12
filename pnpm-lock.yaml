@@ -99,7 +99,7 @@ importers:
         version: 1.0.2(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@fumadocs/base-ui':
         specifier: latest
-        version: 16.18.4(@types/mdx@2.0.14)(@types/react@19.2.14)(date-fns@4.4.0)(fumadocs-core@16.11.4(@mdx-js/mdx@3.1.1)(@tanstack/react-router@1.170.46(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(@types/estree-jsx@1.0.5)(@types/hast@3.0.5)(@types/mdast@4.0.4)(@types/react@19.2.14)(lucide-react@0.577.0(react@19.2.4))(next@16.2.6(@babel/core@7.29.13)(@opentelemetry/api@1.10.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.6.7))(next@16.2.6(@babel/core@7.29.13)(@opentelemetry/api@1.10.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(tailwindcss@4.3.5)
+        version: 16.19.0(@types/mdx@2.0.14)(@types/react@19.2.14)(date-fns@4.4.0)(fumadocs-core@16.11.4(@mdx-js/mdx@3.1.1)(@tanstack/react-router@1.170.46(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(@types/estree-jsx@1.0.5)(@types/hast@3.0.5)(@types/mdast@4.0.4)(@types/react@19.2.14)(lucide-react@0.577.0(react@19.2.4))(next@16.2.6(@babel/core@7.29.13)(@opentelemetry/api@1.10.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.6.7))(next@16.2.6(@babel/core@7.29.13)(@opentelemetry/api@1.10.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(tailwindcss@4.3.5)
       '@react-three/fiber':
         specifier: ^9.6.1
         version: 9.8.2(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(three@0.185.1)
@@ -294,40 +294,40 @@ importers:
         specifier: ^4.1.18
         version: 4.3.5(vite@8.3.7(@types/node@22.20.5)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))
       '@tanstack/match-sorter-utils':
-        specifier: latest
+        specifier: 9.2.6
         version: 9.2.6
       '@tanstack/query-db-collection':
-        specifier: latest
-        version: 1.5.1(@tanstack/db@1.0.0-rc.1.4(typescript@6.0.3))(@tanstack/query-core@5.107.1)(typescript@6.0.3)
+        specifier: 1.5.1
+        version: 1.5.1(@tanstack/db@1.0.0-rc.1.5(typescript@6.0.3))(@tanstack/query-core@5.107.1)(typescript@6.0.3)
       '@tanstack/react-db':
-        specifier: latest
+        specifier: 1.0.0-rc.1.4
         version: 1.0.0-rc.1.4(react@19.2.4)(typescript@6.0.3)
       '@tanstack/react-devtools':
-        specifier: latest
+        specifier: 0.10.14
         version: 0.10.14(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(csstype@3.2.3)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(solid-js@1.9.18)
       '@tanstack/react-form':
-        specifier: latest
+        specifier: 1.33.5
         version: 1.33.5(@tanstack/react-start@1.169.5(esbuild@0.28.2)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(rolldown@1.2.4)(rollup@4.68.2)(vite@8.3.7(@types/node@22.20.5)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@tanstack/react-pacer':
         specifier: ^0.22.1
         version: 0.22.1(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@tanstack/react-query':
-        specifier: latest
+        specifier: 5.107.1
         version: 5.107.1(@types/react@19.2.14)(react@19.2.4)
       '@tanstack/react-query-devtools':
-        specifier: latest
+        specifier: 5.107.1
         version: 5.107.1(@tanstack/react-query@5.107.1(@types/react@19.2.14)(react@19.2.4))(@types/react@19.2.14)(csstype@3.2.3)(react@19.2.4)
       '@tanstack/react-router':
-        specifier: latest
+        specifier: 1.170.46
         version: 1.170.46(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@tanstack/react-router-devtools':
-        specifier: latest
+        specifier: 1.167.3
         version: 1.167.3(@tanstack/react-router@1.170.46(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(@tanstack/router-core@1.171.39)(csstype@3.2.3)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@tanstack/react-router-ssr-query':
-        specifier: latest
+        specifier: 1.167.3
         version: 1.167.3(@tanstack/query-core@5.107.1)(@tanstack/react-query@5.107.1(@types/react@19.2.14)(react@19.2.4))(@tanstack/react-router@1.170.46(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(@tanstack/router-core@1.171.39)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@tanstack/react-start':
-        specifier: latest
+        specifier: 1.169.5
         version: 1.169.5(esbuild@0.28.2)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(rolldown@1.2.4)(rollup@4.68.2)(vite@8.3.7(@types/node@22.20.5)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))
       '@tanstack/react-table':
         specifier: 8.21.3
@@ -427,7 +427,7 @@ importers:
         specifier: ^0.5.16
         version: 0.5.20(tailwindcss@4.3.5)
       '@tanstack/devtools-vite':
-        specifier: latest
+        specifier: 0.8.6
         version: 0.8.6(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.1)(vite@8.3.7(@types/node@22.20.5)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))
       '@tanstack/eslint-config':
         specifier: latest
@@ -512,10 +512,10 @@ importers:
         version: 4.3.5(vite@8.3.7(@types/node@22.20.5)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))
       '@tanstack/query-db-collection':
         specifier: latest
-        version: 1.5.1(@tanstack/db@1.0.0-rc.1.4(typescript@6.0.3))(@tanstack/query-core@5.107.1)(typescript@6.0.3)
+        version: 1.5.2(@tanstack/db@1.0.0-rc.1.5(typescript@6.0.3))(@tanstack/query-core@5.107.1)(typescript@6.0.3)
       '@tanstack/react-db':
         specifier: latest
-        version: 1.0.0-rc.1.4(react@19.2.4)(typescript@6.0.3)
+        version: 1.0.0-rc.1.5(react@19.2.4)(typescript@6.0.3)
       '@tanstack/react-devtools':
         specifier: latest
         version: 0.10.14(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(csstype@3.2.3)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(solid-js@1.9.18)
@@ -865,10 +865,10 @@ importers:
         version: 9.2.6
       '@tanstack/query-db-collection':
         specifier: latest
-        version: 1.5.1(@tanstack/db@1.0.0-rc.1.4(typescript@5.9.3))(@tanstack/query-core@5.107.1)(typescript@5.9.3)
+        version: 1.5.2(@tanstack/db@1.0.0-rc.1.5(typescript@5.9.3))(@tanstack/query-core@5.107.1)(typescript@5.9.3)
       '@tanstack/react-db':
         specifier: latest
-        version: 1.0.0-rc.1.4(react@19.2.4)(typescript@5.9.3)
+        version: 1.0.0-rc.1.5(react@19.2.4)(typescript@5.9.3)
       '@tanstack/react-devtools':
         specifier: latest
         version: 0.10.14(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(csstype@3.2.3)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(solid-js@1.9.18)
@@ -1043,13 +1043,13 @@ importers:
         version: 1.7.18(3af7acd8dc5e74622e533fe8804831d9)
       '@elysia/cors':
         specifier: ^1.4.2
-        version: 1.4.3(elysia@2.0.0-rc.4(exact-mirror@1.2.7(typebox@1.4.6))(openapi-types@12.1.3)(typebox@1.4.6)(typescript@6.0.3))
+        version: 1.4.3(elysia@1.4.32(@sinclair/typebox@0.34.52)(exact-mirror@1.2.7(typebox@1.4.6))(file-type@22.3.0)(openapi-types@12.1.3)(typescript@6.0.3))
       '@elysia/openapi':
         specifier: ^1.4.15
-        version: 1.4.17(@sinclair/typebox@0.34.52)(elysia@2.0.0-rc.4(exact-mirror@1.2.7(typebox@1.4.6))(openapi-types@12.1.3)(typebox@1.4.6)(typescript@6.0.3))(typescript@6.0.3)
+        version: 1.4.17(@sinclair/typebox@0.34.52)(elysia@1.4.32(@sinclair/typebox@0.34.52)(exact-mirror@1.2.7(typebox@1.4.6))(file-type@22.3.0)(openapi-types@12.1.3)(typescript@6.0.3))(typescript@6.0.3)
       '@elysiajs/openapi':
         specifier: ^1.4.15
-        version: 1.4.17(@sinclair/typebox@0.34.52)(elysia@2.0.0-rc.4(exact-mirror@1.2.7(typebox@1.4.6))(openapi-types@12.1.3)(typebox@1.4.6)(typescript@6.0.3))(typescript@6.0.3)
+        version: 1.4.17(@sinclair/typebox@0.34.52)(elysia@1.4.32(@sinclair/typebox@0.34.52)(exact-mirror@1.2.7(typebox@1.4.6))(file-type@22.3.0)(openapi-types@12.1.3)(typescript@6.0.3))(typescript@6.0.3)
       '@libsql/client':
         specifier: ^0.17.3
         version: 0.17.4
@@ -1088,10 +1088,10 @@ importers:
         version: 0.8.3(drizzle-orm@0.44.4(@libsql/client@0.17.4)(@opentelemetry/api@1.10.0)(@types/better-sqlite3@7.6.13)(better-sqlite3@12.11.1)(bun-types@1.4.4)(kysely@0.29.8))(zod@4.6.7)
       elysia:
         specifier: latest
-        version: 2.0.0-rc.4(exact-mirror@1.2.7(typebox@1.4.6))(openapi-types@12.1.3)(typebox@1.4.6)(typescript@6.0.3)
+        version: 1.4.32(@sinclair/typebox@0.34.52)(exact-mirror@1.2.7(typebox@1.4.6))(file-type@22.3.0)(openapi-types@12.1.3)(typescript@6.0.3)
       evlog:
         specifier: ^2.14.1
-        version: 2.35.1(@tanstack/start-client-core@1.170.39)(elysia@2.0.0-rc.4(exact-mirror@1.2.7(typebox@1.4.6))(openapi-types@12.1.3)(typebox@1.4.6)(typescript@6.0.3))(hono@4.13.17)(next@16.2.6(@opentelemetry/api@1.10.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(nitro@3.0.261103-rc)(react@19.2.4)(vite@8.3.7(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))
+        version: 2.35.1(@tanstack/start-client-core@1.170.39)(elysia@1.4.32(@sinclair/typebox@0.34.52)(exact-mirror@1.2.7(typebox@1.4.6))(file-type@22.3.0)(openapi-types@12.1.3)(typescript@6.0.3))(hono@4.13.17)(next@16.2.6(@opentelemetry/api@1.10.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(nitro@3.0.261103-rc)(react@19.2.4)(vite@8.3.7(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))
       jose:
         specifier: ^6.2.3
         version: 6.2.17
@@ -2773,12 +2773,12 @@ packages:
       '@types/react':
         optional: true
 
-  '@fumadocs/base-ui@16.18.4':
-    resolution: {integrity: sha512-ZWyflJUffTUX4k1jPRiUvlo0BRhePudxCJzFdAFa0/c7/foo/vz1/Vn1QgdGBunQJGeaZ8M7Kp2ahpP91PGMcg==}
+  '@fumadocs/base-ui@16.19.0':
+    resolution: {integrity: sha512-rY3JbYUUZobGxiBvytfdO2E2KcbJz3XpzPMrqor6zJ7bH2dJgnmVapSHJKse/GPCrSAep2Ps0HP6CUcKesxJEw==}
     peerDependencies:
       '@types/mdx': '*'
       '@types/react': '*'
-      fumadocs-core: 16.18.4
+      fumadocs-core: 16.19.0
       next: 16.x.x
       react: ^19.2.0
       react-dom: ^19.2.0
@@ -5269,8 +5269,18 @@ packages:
     peerDependencies:
       typescript: '>=4.7'
 
+  '@tanstack/db-ivm@1.0.0-rc.1.3':
+    resolution: {integrity: sha512-4LhRE/6nypOURscUzRyjqffaANVBK8TDv/011cLz79NMxNpZuNgjzwV3s9Z+Rb1d4je+ooRBfPt8hPmGp6dPMw==}
+    peerDependencies:
+      typescript: '>=4.7'
+
   '@tanstack/db@1.0.0-rc.1.4':
     resolution: {integrity: sha512-UaBXdnoACdauRb0tdav0TqwGE/viWWTHssnPKOC4sd3jiLdS5Jb2KFunW4wflfQpJHxSD+12wAIO7J8uMXQGgA==}
+    peerDependencies:
+      typescript: '>=4.7'
+
+  '@tanstack/db@1.0.0-rc.1.5':
+    resolution: {integrity: sha512-Cpbrc7e1ZcM5j+l/hltVB4IuA6P2i1Py7WRqUsbb0Whof/eylpEfJzx0wgw/2PiOF+s3wJlIXArmghe/zjZR/g==}
     peerDependencies:
       typescript: '>=4.7'
 
@@ -5338,6 +5348,10 @@ packages:
     resolution: {integrity: sha512-eQ1MyLKCHyXiH7NbdmB80W77OhiMgGBUb+qDx/8WMGbwg5Lf/NlfD0TfNYAqY77i8V3AxoDoYdICrQE5ADw4Yw==}
     engines: {node: '>=18'}
 
+  '@tanstack/pacer-lite@0.3.0':
+    resolution: {integrity: sha512-+YeHKWX5Zd1Irga2smwAolGtzOcf8VVYhM2QI5XEA5TN58iKKufTjhvrbTCEgLLglR1ynHMGVT/l4m5PkwOdaw==}
+    engines: {node: '>=20'}
+
   '@tanstack/pacer@0.21.1':
     resolution: {integrity: sha512-hB01dd4rlsYcTCNP7wK186jgAe6K5qimgM1Y5Jtvz+9PUaILvpmeLLjmQNUNSO1l23lIt+CeQR6mO1mjlPvRtQ==}
     engines: {node: '>=18'}
@@ -5352,11 +5366,23 @@ packages:
       '@tanstack/query-core': ^5.90.15
       typescript: '>=4.7'
 
+  '@tanstack/query-db-collection@1.5.2':
+    resolution: {integrity: sha512-N1We6WDnLy5nGctQjtCihc6xBy3nbLMeLLDebouNY3dB01AcsRWh1Cop0/xeJ/47pm9J9+BFz3q9k1NzfAu7VQ==}
+    peerDependencies:
+      '@tanstack/db': ^1.0.0-rc.0
+      '@tanstack/query-core': ^5.90.15
+      typescript: '>=4.7'
+
   '@tanstack/query-devtools@5.107.1':
     resolution: {integrity: sha512-cZvgIPNvsh57mM3yTTwuL2GUMmMp5XR+3k5r2UJDyStmPYCqSwZf8z7OulgA4X8vISziAG5PoykbQ1q+2zemdA==}
 
   '@tanstack/react-db@1.0.0-rc.1.4':
     resolution: {integrity: sha512-lA5KrIHCwfuLLvcYMoUIc6biihiFBE4K6piAKsW4DdRC2I2qssxyzyeHyYcBdGFhia+fPAel7Iu8pjvgjlgqYA==}
+    peerDependencies:
+      react: '>=18.0.0'
+
+  '@tanstack/react-db@1.0.0-rc.1.5':
+    resolution: {integrity: sha512-6IDdNA8iNYtEAfbFkI/32gKC2INlV6b17CweaDpyfLdkQ+LyX/qWxDFBL6rKsS29crkAitepPkG3zXDHZpFBEw==}
     peerDependencies:
       react: '>=18.0.0'
 
@@ -7140,6 +7166,21 @@ packages:
       typescript:
         optional: true
 
+  elysia@1.4.32:
+    resolution: {integrity: sha512-pSWBPKJe0t24r6oQydL8xmFnbOOVs0bXN1ShIwSPxXJbE/z9NRRXs8FigQRhXyjdbi3YSuJgEKe22BVx4cU99w==}
+    peerDependencies:
+      '@sinclair/typebox': '>= 0.34.0 < 1'
+      '@types/bun': '>= 1.2.0'
+      exact-mirror: '>= 0.2.9 < 1'
+      file-type: '>= 20.0.0'
+      openapi-types: '>= 12.0.0'
+      typescript: '>= 5.0.0'
+    peerDependenciesMeta:
+      '@types/bun':
+        optional: true
+      typescript:
+        optional: true
+
   elysia@2.0.0-rc.4:
     resolution: {integrity: sha512-0+II5vGTo/HLEkKF7glCefIXcVWnQV1ytDfIEqU2UC75ygt6Vqd3FWDkiMQYtIr2CzF6gew8yiuDqWKSA77LtQ==}
     engines: {node: '>=22.18'}
@@ -8100,10 +8141,12 @@ packages:
 
   libsql@0.4.7:
     resolution: {integrity: sha512-T9eIRCs6b0J1SHKYIvD8+KCJMcWZ900iZyxdnSCdqxN12Z1ijzT+jY5nrk72Jw4B0HGzms2NgpryArlJqvc3Lw==}
+    cpu: [x64, arm64, wasm32]
     os: [darwin, linux, win32]
 
   libsql@0.5.29:
     resolution: {integrity: sha512-8lMP8iMgiBzzoNbAPQ59qdVcj6UaE/Vnm+fiwX4doX4Narook0a4GPKWBEv+CR8a1OwbfkgL18uBfBjWdF0Fzg==}
+    cpu: [x64, arm64, wasm32, arm]
     os: [darwin, linux, win32]
 
   lightningcss-android-arm64@1.33.0:
@@ -10864,9 +10907,9 @@ snapshots:
     dependencies:
       elysia: 1.4.31(@sinclair/typebox@0.34.52)(exact-mirror@1.2.7(typebox@1.4.6))(file-type@22.3.0)(openapi-types@12.1.3)(typescript@5.7.2)
 
-  '@elysia/cors@1.4.3(elysia@2.0.0-rc.4(exact-mirror@1.2.7(typebox@1.4.6))(openapi-types@12.1.3)(typebox@1.4.6)(typescript@6.0.3))':
+  '@elysia/cors@1.4.3(elysia@1.4.32(@sinclair/typebox@0.34.52)(exact-mirror@1.2.7(typebox@1.4.6))(file-type@22.3.0)(openapi-types@12.1.3)(typescript@6.0.3))':
     dependencies:
-      elysia: 2.0.0-rc.4(exact-mirror@1.2.7(typebox@1.4.6))(openapi-types@12.1.3)(typebox@1.4.6)(typescript@6.0.3)
+      elysia: 1.4.32(@sinclair/typebox@0.34.52)(exact-mirror@1.2.7(typebox@1.4.6))(file-type@22.3.0)(openapi-types@12.1.3)(typescript@6.0.3)
 
   '@elysia/eden@1.4.9(elysia@2.0.0-rc.4(exact-mirror@1.2.7(typebox@1.4.6))(openapi-types@12.1.3)(typebox@1.4.6)(typescript@5.7.2))':
     dependencies:
@@ -10878,10 +10921,10 @@ snapshots:
       elysia: 1.4.31(@sinclair/typebox@0.34.52)(exact-mirror@1.2.7(typebox@1.4.6))(file-type@22.3.0)(openapi-types@12.1.3)(typescript@5.7.2)
       typescript: 5.7.2
 
-  '@elysia/openapi@1.4.17(@sinclair/typebox@0.34.52)(elysia@2.0.0-rc.4(exact-mirror@1.2.7(typebox@1.4.6))(openapi-types@12.1.3)(typebox@1.4.6)(typescript@6.0.3))(typescript@6.0.3)':
+  '@elysia/openapi@1.4.17(@sinclair/typebox@0.34.52)(elysia@1.4.32(@sinclair/typebox@0.34.52)(exact-mirror@1.2.7(typebox@1.4.6))(file-type@22.3.0)(openapi-types@12.1.3)(typescript@6.0.3))(typescript@6.0.3)':
     dependencies:
       '@sinclair/typebox': 0.34.52
-      elysia: 2.0.0-rc.4(exact-mirror@1.2.7(typebox@1.4.6))(openapi-types@12.1.3)(typebox@1.4.6)(typescript@6.0.3)
+      elysia: 1.4.32(@sinclair/typebox@0.34.52)(exact-mirror@1.2.7(typebox@1.4.6))(file-type@22.3.0)(openapi-types@12.1.3)(typescript@6.0.3)
       typescript: 6.0.3
 
   '@elysiajs/openapi@1.4.17(@sinclair/typebox@0.34.52)(elysia@1.4.31(@sinclair/typebox@0.34.52)(exact-mirror@1.2.7(typebox@1.4.6))(file-type@22.3.0)(openapi-types@12.1.3)(typescript@5.7.2))(typescript@5.7.2)':
@@ -10890,10 +10933,10 @@ snapshots:
       elysia: 1.4.31(@sinclair/typebox@0.34.52)(exact-mirror@1.2.7(typebox@1.4.6))(file-type@22.3.0)(openapi-types@12.1.3)(typescript@5.7.2)
       typescript: 5.7.2
 
-  '@elysiajs/openapi@1.4.17(@sinclair/typebox@0.34.52)(elysia@2.0.0-rc.4(exact-mirror@1.2.7(typebox@1.4.6))(openapi-types@12.1.3)(typebox@1.4.6)(typescript@6.0.3))(typescript@6.0.3)':
+  '@elysiajs/openapi@1.4.17(@sinclair/typebox@0.34.52)(elysia@1.4.32(@sinclair/typebox@0.34.52)(exact-mirror@1.2.7(typebox@1.4.6))(file-type@22.3.0)(openapi-types@12.1.3)(typescript@6.0.3))(typescript@6.0.3)':
     dependencies:
       '@sinclair/typebox': 0.34.52
-      elysia: 2.0.0-rc.4(exact-mirror@1.2.7(typebox@1.4.6))(openapi-types@12.1.3)(typebox@1.4.6)(typescript@6.0.3)
+      elysia: 1.4.32(@sinclair/typebox@0.34.52)(exact-mirror@1.2.7(typebox@1.4.6))(file-type@22.3.0)(openapi-types@12.1.3)(typescript@6.0.3)
       typescript: 6.0.3
 
   '@emnapi/core@1.11.1':
@@ -11387,7 +11430,7 @@ snapshots:
     optionalDependencies:
       '@types/react': 19.2.14
 
-  '@fumadocs/base-ui@16.18.4(@types/mdx@2.0.14)(@types/react@19.2.14)(date-fns@4.4.0)(fumadocs-core@16.11.4(@mdx-js/mdx@3.1.1)(@tanstack/react-router@1.170.46(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(@types/estree-jsx@1.0.5)(@types/hast@3.0.5)(@types/mdast@4.0.4)(@types/react@19.2.14)(lucide-react@0.577.0(react@19.2.4))(next@16.2.6(@babel/core@7.29.13)(@opentelemetry/api@1.10.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.6.7))(next@16.2.6(@babel/core@7.29.13)(@opentelemetry/api@1.10.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(tailwindcss@4.3.5)':
+  '@fumadocs/base-ui@16.19.0(@types/mdx@2.0.14)(@types/react@19.2.14)(date-fns@4.4.0)(fumadocs-core@16.11.4(@mdx-js/mdx@3.1.1)(@tanstack/react-router@1.170.46(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(@types/estree-jsx@1.0.5)(@types/hast@3.0.5)(@types/mdast@4.0.4)(@types/react@19.2.14)(lucide-react@0.577.0(react@19.2.4))(next@16.2.6(@babel/core@7.29.13)(@opentelemetry/api@1.10.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.6.7))(next@16.2.6(@babel/core@7.29.13)(@opentelemetry/api@1.10.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(tailwindcss@4.3.5)':
     dependencies:
       '@base-ui/react': 1.9.0(@types/react@19.2.14)(date-fns@4.4.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@fuma-translate/react': 1.0.2(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -13744,28 +13787,40 @@ snapshots:
       tailwindcss: 4.3.5
       vite: 8.3.7(@types/node@22.20.5)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)
 
-  '@tanstack/db-ivm@1.0.0-rc.1.2(typescript@5.9.3)':
-    dependencies:
-      fractional-indexing: 3.4.0
-      typescript: 5.9.3
-
   '@tanstack/db-ivm@1.0.0-rc.1.2(typescript@6.0.3)':
     dependencies:
       fractional-indexing: 3.4.0
       typescript: 6.0.3
 
-  '@tanstack/db@1.0.0-rc.1.4(typescript@5.9.3)':
+  '@tanstack/db-ivm@1.0.0-rc.1.3(typescript@5.9.3)':
     dependencies:
-      '@standard-schema/spec': 1.1.0
-      '@tanstack/db-ivm': 1.0.0-rc.1.2(typescript@5.9.3)
-      '@tanstack/pacer-lite': 0.2.2
+      fractional-indexing: 3.4.0
       typescript: 5.9.3
+
+  '@tanstack/db-ivm@1.0.0-rc.1.3(typescript@6.0.3)':
+    dependencies:
+      fractional-indexing: 3.4.0
+      typescript: 6.0.3
 
   '@tanstack/db@1.0.0-rc.1.4(typescript@6.0.3)':
     dependencies:
       '@standard-schema/spec': 1.1.0
       '@tanstack/db-ivm': 1.0.0-rc.1.2(typescript@6.0.3)
       '@tanstack/pacer-lite': 0.2.2
+      typescript: 6.0.3
+
+  '@tanstack/db@1.0.0-rc.1.5(typescript@5.9.3)':
+    dependencies:
+      '@standard-schema/spec': 1.1.0
+      '@tanstack/db-ivm': 1.0.0-rc.1.3(typescript@5.9.3)
+      '@tanstack/pacer-lite': 0.3.0
+      typescript: 5.9.3
+
+  '@tanstack/db@1.0.0-rc.1.5(typescript@6.0.3)':
+    dependencies:
+      '@standard-schema/spec': 1.1.0
+      '@tanstack/db-ivm': 1.0.0-rc.1.3(typescript@6.0.3)
+      '@tanstack/pacer-lite': 0.3.0
       typescript: 6.0.3
 
   '@tanstack/devtools-bundler-core@0.1.4(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.1)':
@@ -13927,6 +13982,8 @@ snapshots:
 
   '@tanstack/pacer-lite@0.2.2': {}
 
+  '@tanstack/pacer-lite@0.3.0': {}
+
   '@tanstack/pacer@0.21.1':
     dependencies:
       '@tanstack/devtools-event-client': 0.4.4
@@ -13934,17 +13991,24 @@ snapshots:
 
   '@tanstack/query-core@5.107.1': {}
 
-  '@tanstack/query-db-collection@1.5.1(@tanstack/db@1.0.0-rc.1.4(typescript@5.9.3))(@tanstack/query-core@5.107.1)(typescript@5.9.3)':
+  '@tanstack/query-db-collection@1.5.1(@tanstack/db@1.0.0-rc.1.5(typescript@6.0.3))(@tanstack/query-core@5.107.1)(typescript@6.0.3)':
     dependencies:
       '@standard-schema/spec': 1.1.0
-      '@tanstack/db': 1.0.0-rc.1.4(typescript@5.9.3)
+      '@tanstack/db': 1.0.0-rc.1.5(typescript@6.0.3)
+      '@tanstack/query-core': 5.107.1
+      typescript: 6.0.3
+
+  '@tanstack/query-db-collection@1.5.2(@tanstack/db@1.0.0-rc.1.5(typescript@5.9.3))(@tanstack/query-core@5.107.1)(typescript@5.9.3)':
+    dependencies:
+      '@standard-schema/spec': 1.1.0
+      '@tanstack/db': 1.0.0-rc.1.5(typescript@5.9.3)
       '@tanstack/query-core': 5.107.1
       typescript: 5.9.3
 
-  '@tanstack/query-db-collection@1.5.1(@tanstack/db@1.0.0-rc.1.4(typescript@6.0.3))(@tanstack/query-core@5.107.1)(typescript@6.0.3)':
+  '@tanstack/query-db-collection@1.5.2(@tanstack/db@1.0.0-rc.1.5(typescript@6.0.3))(@tanstack/query-core@5.107.1)(typescript@6.0.3)':
     dependencies:
       '@standard-schema/spec': 1.1.0
-      '@tanstack/db': 1.0.0-rc.1.4(typescript@6.0.3)
+      '@tanstack/db': 1.0.0-rc.1.5(typescript@6.0.3)
       '@tanstack/query-core': 5.107.1
       typescript: 6.0.3
 
@@ -13965,16 +14029,23 @@ snapshots:
     transitivePeerDependencies:
       - csstype
 
-  '@tanstack/react-db@1.0.0-rc.1.4(react@19.2.4)(typescript@5.9.3)':
+  '@tanstack/react-db@1.0.0-rc.1.4(react@19.2.4)(typescript@6.0.3)':
     dependencies:
-      '@tanstack/db': 1.0.0-rc.1.4(typescript@5.9.3)
+      '@tanstack/db': 1.0.0-rc.1.4(typescript@6.0.3)
       react: 19.2.4
     transitivePeerDependencies:
       - typescript
 
-  '@tanstack/react-db@1.0.0-rc.1.4(react@19.2.4)(typescript@6.0.3)':
+  '@tanstack/react-db@1.0.0-rc.1.5(react@19.2.4)(typescript@5.9.3)':
     dependencies:
-      '@tanstack/db': 1.0.0-rc.1.4(typescript@6.0.3)
+      '@tanstack/db': 1.0.0-rc.1.5(typescript@5.9.3)
+      react: 19.2.4
+    transitivePeerDependencies:
+      - typescript
+
+  '@tanstack/react-db@1.0.0-rc.1.5(react@19.2.4)(typescript@6.0.3)':
+    dependencies:
+      '@tanstack/db': 1.0.0-rc.1.5(typescript@6.0.3)
       react: 19.2.4
     transitivePeerDependencies:
       - typescript
@@ -16318,6 +16389,18 @@ snapshots:
     optionalDependencies:
       typescript: 5.7.2
 
+  elysia@1.4.32(@sinclair/typebox@0.34.52)(exact-mirror@1.2.7(typebox@1.4.6))(file-type@22.3.0)(openapi-types@12.1.3)(typescript@6.0.3):
+    dependencies:
+      '@sinclair/typebox': 0.34.52
+      cookie: 1.1.1
+      exact-mirror: 1.2.7(typebox@1.4.6)
+      fast-decode-uri-component: 1.0.1
+      file-type: 22.3.0
+      memoirist: 0.4.0
+      openapi-types: 12.1.3
+    optionalDependencies:
+      typescript: 6.0.3
+
   elysia@2.0.0-rc.4(exact-mirror@1.2.7(typebox@1.4.6))(openapi-types@12.1.3)(typebox@1.4.6)(typescript@5.7.2):
     dependencies:
       deuri: 3.0.1
@@ -16327,16 +16410,6 @@ snapshots:
       typebox: 1.4.6
     optionalDependencies:
       typescript: 5.7.2
-
-  elysia@2.0.0-rc.4(exact-mirror@1.2.7(typebox@1.4.6))(openapi-types@12.1.3)(typebox@1.4.6)(typescript@6.0.3):
-    dependencies:
-      deuri: 3.0.1
-      exact-mirror: 1.2.7(typebox@1.4.6)
-      memoirist: 1.2.4
-      openapi-types: 12.1.3
-      typebox: 1.4.6
-    optionalDependencies:
-      typescript: 6.0.3
 
   embla-carousel-react@8.6.0(react@19.2.4):
     dependencies:
@@ -16798,10 +16871,10 @@ snapshots:
       react: 19.2.4
       vite: 8.3.7(@types/node@22.20.5)(esbuild@0.27.7)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)
 
-  evlog@2.35.1(@tanstack/start-client-core@1.170.39)(elysia@2.0.0-rc.4(exact-mirror@1.2.7(typebox@1.4.6))(openapi-types@12.1.3)(typebox@1.4.6)(typescript@6.0.3))(hono@4.13.17)(next@16.2.6(@opentelemetry/api@1.10.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(nitro@3.0.261103-rc)(react@19.2.4)(vite@8.3.7(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)):
+  evlog@2.35.1(@tanstack/start-client-core@1.170.39)(elysia@1.4.32(@sinclair/typebox@0.34.52)(exact-mirror@1.2.7(typebox@1.4.6))(file-type@22.3.0)(openapi-types@12.1.3)(typescript@6.0.3))(hono@4.13.17)(next@16.2.6(@opentelemetry/api@1.10.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(nitro@3.0.261103-rc)(react@19.2.4)(vite@8.3.7(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)):
     optionalDependencies:
       '@tanstack/start-client-core': 1.170.39
-      elysia: 2.0.0-rc.4(exact-mirror@1.2.7(typebox@1.4.6))(openapi-types@12.1.3)(typebox@1.4.6)(typescript@6.0.3)
+      elysia: 1.4.32(@sinclair/typebox@0.34.52)(exact-mirror@1.2.7(typebox@1.4.6))(file-type@22.3.0)(openapi-types@12.1.3)(typescript@6.0.3)
       hono: 4.13.17
       next: 16.2.6(@babel/core@7.29.13)(@opentelemetry/api@1.10.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       nitro: 3.0.261103-rc

@@ -19,6 +19,7 @@ import { authClient } from '#/lib/auth-client'
 import { QueryClient, useMutation } from '@tanstack/react-query'
 import { showCreateOrgModal } from './create-org-modal'
 import { cn } from '#/lib/utils'
+import { useEffect } from 'react'
 
 const queryClient = new QueryClient()
 
@@ -49,6 +50,17 @@ export function OrgSwitcher() {
   })
 
   const { toggleSidebar } = useSidebar()
+
+	useEffect(() => {
+    if (activeOrg) return // already set
+    ;(async () => {
+      if (orgList?.length) {
+        await authClient.organization.setActive({
+          organizationId: orgList[0].id,
+        })
+      }
+    })()
+  }, [activeOrg])
 
   if (!activeOrg) {
     return (
