@@ -39,7 +39,7 @@ export const session = sqliteTable(
       .references(() => user.id, { onDelete: "cascade" }),
     activeOrganizationId: text("active_organization_id"),
   },
-  (table) => [index("session_userId_idx").on(table.userId)],
+  (table) => [index("session_userid_idx").on(table.userId)],
 );
 
 export const account = sqliteTable(
@@ -69,7 +69,7 @@ export const account = sqliteTable(
       .$onUpdate(() => /* @__PURE__ */ new Date())
       .notNull(),
   },
-  (table) => [index("account_userId_idx").on(table.userId)],
+  (table) => [index("account_userid_idx").on(table.userId)],
 );
 
 export const verification = sqliteTable(
@@ -119,8 +119,8 @@ export const apikey = sqliteTable(
     metadata: text("metadata"),
   },
   (table) => [
-    index("apikey_configId_idx").on(table.configId),
-    index("apikey_referenceId_idx").on(table.referenceId),
+    index("apikey_configid_idx").on(table.configId),
+    index("apikey_referenceid_idx").on(table.referenceId),
     index("apikey_key_idx").on(table.key),
   ],
 );
@@ -160,8 +160,8 @@ export const member = sqliteTable(
     createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull(),
   },
   (table) => [
-    index("member_organizationId_idx").on(table.organizationId),
-    index("member_userId_idx").on(table.userId),
+    index("member_organizationid_idx").on(table.organizationId),
+    index("member_userid_idx").on(table.userId),
   ],
 );
 
@@ -184,7 +184,7 @@ export const invitation = sqliteTable(
       .references(() => user.id, { onDelete: "cascade" }),
   },
   (table) => [
-    index("invitation_organizationId_idx").on(table.organizationId),
+    index("invitation_organizationid_idx").on(table.organizationId),
     index("invitation_email_idx").on(table.email),
   ],
 );
