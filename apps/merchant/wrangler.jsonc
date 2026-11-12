@@ -51,6 +51,7 @@
       	"ENVIRONMENT": "staging",
         "BETTER_AUTH_TRUSTED_ORIGINS": "https://merchant-staging.baggit.link",
         "VITE_BETTER_AUTH_URL": "https://merchant-staging.baggit.link",
+        "MERCHANT_CLIENT_URL": "https://merchant-staging.baggit.link",
         "VITE_APP_TITLE": "Merchant Dashboard",
 		    "VITE_CLIENT_URL": "https://merchant-staging.baggit.link",
         "NODE_ENV": "staging",
