@@ -86,7 +86,7 @@ jobs:
           EMAIL_FROM_NAME: ${{ secrets.EMAIL_FROM_NAME }}
           BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
           BETTER_AUTH_TRUSTED_ORIGIN: ${{ secrets.BETTER_AUTH_TRUSTED_ORIGIN }}
-          BETTER_AUTH_URL: ${{ secrets.BETTER_AUTH_URL }}
+          VITE_BETTER_AUTH_URL: https://merchant-staging.baggit.link
         run: pnpm exec turbo run build --filter=@baggit/core --filter=@baggit/merchant
 
       - name: Push runtime secrets to the Worker
