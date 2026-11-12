@@ -34,7 +34,7 @@ const config = defineConfig({
       hooks: {
         compiled() {
 					console.log(`[compiled] App compiled`)
-					execSync(`npx drizzle-kit push --force`, {stdio: "inherit"})
+					execSync(`npx drizzle-kit push --force --verbose`, {stdio: "inherit"})
 					console.log(`[drizzle] DB Pushed!`)
         },
       },
