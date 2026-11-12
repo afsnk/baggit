@@ -260,9 +260,6 @@ importers:
 
   apps/merchant:
     dependencies:
-      '@baggit/api':
-        specifier: workspace:*
-        version: link:../../packages/api
       '@baggit/core':
         specifier: workspace:*
         version: link:../../packages/core
