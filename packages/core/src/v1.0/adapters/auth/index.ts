@@ -13,8 +13,15 @@ import {
 } from '@core/modules/payments/utils/wallet.utils'
 import { eq } from 'drizzle-orm'
 
-export const createAuth = (db: DB, overrideAuthConfig?: BetterAuthOptions) =>
-  betterAuth({
+export const createAuth = (db: DB, overrideAuthConfig?: BetterAuthOptions) => {
+  const defaultPlugins = (defaultAuthConfig.plugins ??
+    []) as BetterAuthOptions['plugins']
+  const overridePlugins = (overrideAuthConfig?.plugins ??
+    []) as BetterAuthOptions['plugins']
+  const { plugins: _dp, ...defaultRest } = defaultAuthConfig
+  const { plugins: _op, ...overrideRest } = overrideAuthConfig ?? {}
+
+  return betterAuth({
     database: drizzleAdapter(db, {
       provider: 'sqlite',
       schema: { ...schema },
@@ -45,6 +52,8 @@ export const createAuth = (db: DB, overrideAuthConfig?: BetterAuthOptions) =>
         },
       },
     },
+    ...defaultRest,
+    ...overrideRest,
     plugins: [
       apiKey([
         {
@@ -102,8 +111,16 @@ export const createAuth = (db: DB, overrideAuthConfig?: BetterAuthOptions) =>
             const log = useLogger()
             try {
               // TODO: Initialise organization resources after creation
-              const chain = getChain(process.env.NODE_ENV || 'development', 'bsc')
-              const account = await generateAccount(process.env.ZERODEV_RPC!, chain, process.env.ENC_KEY!, organization.id)
+              const chain = getChain(
+                process.env.NODE_ENV || 'development',
+                'bsc',
+              )
+              const account = await generateAccount(
+                process.env.ZERODEV_RPC!,
+                chain,
+                process.env.ENC_KEY!,
+                organization.id,
+              )
 
               log.set({ account, chain })
 
@@ -174,9 +191,8 @@ export const createAuth = (db: DB, overrideAuthConfig?: BetterAuthOptions) =>
       //   }
       // }),
       bearer(),
-      ...(defaultAuthConfig.plugins || []),
-      ...((overrideAuthConfig && overrideAuthConfig.plugins) || []),
+      ...(defaultPlugins ?? []),
+      ...(overridePlugins ?? []),
     ],
-    ...defaultAuthConfig,
-    ...overrideAuthConfig,
-  }) as Auth
+  }) as unknown as Auth
+}
