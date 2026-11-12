@@ -11,7 +11,7 @@ export default defineConfig({
   strict: process.env.NODE_ENV === "development",
   verbose: process.env.NODE_ENV === "development",
   dbCredentials: {
-    url: process.env.DATABASE_URL || '',
+    url: (process.env.DATABASE_URL || '').replace(/^turso:\/\//, 'https://'),
     authToken: process.env.DATABASE_AUTH_TOKEN,
   }
 })
