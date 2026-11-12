@@ -57,7 +57,11 @@ export function createRouter<
     // Elysia's default AOT mode compiles handlers with `new Function(...)`,
     // which is disallowed on Cloudflare Workers
     // (EvalError: Code generation from strings disallowed for this context).
-    // The official Cloudflare Workers adapter uses dynamic handlers instead.
+    // The Cloudflare adapter alone is not enough in elysia 1.4.x: its
+    // composeGeneralHandler still uses Function(...) codegen. `aot: false`
+    // is what switches routing to the interpreter-based dynamic handler
+    // (createDynamicHandler), which does no code generation.
+    aot: false,
     adapter: CloudflareAdapter,
     ...config,
   })
