@@ -12,6 +12,8 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as RIndexRouteImport } from './routes/r/index'
 import { Route as RRefRouteImport } from './routes/r/$ref'
+import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
+import { Route as ApiCheckoutSplatRouteImport } from './routes/api/checkout/$'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -28,35 +30,53 @@ const RRefRoute = RRefRouteImport.update({
   path: '/r/$ref',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
+  id: '/api/auth/$',
+  path: '/api/auth/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiCheckoutSplatRoute = ApiCheckoutSplatRouteImport.update({
+  id: '/api/checkout/$',
+  path: '/api/checkout/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/r/$ref': typeof RRefRoute
   '/r/': typeof RIndexRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/checkout/$': typeof ApiCheckoutSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/r/$ref': typeof RRefRoute
   '/r': typeof RIndexRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/checkout/$': typeof ApiCheckoutSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/r/$ref': typeof RRefRoute
   '/r/': typeof RIndexRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/checkout/$': typeof ApiCheckoutSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/r/$ref' | '/r/'
+  fullPaths: '/' | '/r/$ref' | '/r/' | '/api/auth/$' | '/api/checkout/$'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/r/$ref' | '/r'
-  id: '__root__' | '/' | '/r/$ref' | '/r/'
+  to: '/' | '/r/$ref' | '/r' | '/api/auth/$' | '/api/checkout/$'
+  id: '__root__' | '/' | '/r/$ref' | '/r/' | '/api/auth/$' | '/api/checkout/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   RRefRoute: typeof RRefRoute
   RIndexRoute: typeof RIndexRoute
+  ApiAuthSplatRoute: typeof ApiAuthSplatRoute
+  ApiCheckoutSplatRoute: typeof ApiCheckoutSplatRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -82,6 +102,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RRefRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/auth/$': {
+      id: '/api/auth/$'
+      path: '/api/auth/$'
+      fullPath: '/api/auth/$'
+      preLoaderRoute: typeof ApiAuthSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/checkout/$': {
+      id: '/api/checkout/$'
+      path: '/api/checkout/$'
+      fullPath: '/api/checkout/$'
+      preLoaderRoute: typeof ApiCheckoutSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -89,6 +123,8 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   RRefRoute: RRefRoute,
   RIndexRoute: RIndexRoute,
+  ApiAuthSplatRoute: ApiAuthSplatRoute,
+  ApiCheckoutSplatRoute: ApiCheckoutSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

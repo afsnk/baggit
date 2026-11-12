@@ -3,24 +3,20 @@ import BarChart from '#/components/charts/bar-chart'
 import BarXAxis from '#/components/charts/bar-x-axis'
 import Grid from '#/components/charts/grid'
 import ChartTooltip from '#/components/charts/tooltip/chart-tooltip'
-import type { Transaction } from '@baggit/api/app'
+import type { SelectTransaction } from '@baggit/core'
 
 export default function CrossRevenueBarChart({
   transactionData,
   isLoading,
 }: {
-  transactionData?: Transaction[]
+  transactionData?: SelectTransaction[]
   isLoading: boolean
 }) {
   const computedBarChartData = transactionData?.map((trx) => ({
     date: new Intl.DateTimeFormat('en-US', { dateStyle: 'medium' }).format(
-      new Date(trx.createdAt!),
+      trx.createdAt as Date,
     ),
-    usdt:
-      (trx as unknown as { payment: any }).payment?.currency === 'usdt'
-        ? (trx as unknown as { payment: any }).payment?.amount *
-          (trx as unknown as { payment: any }).payment?.rate
-        : 0,
+    usdt: trx.asset.amount * 1,
     usdc:
       (trx as unknown as { payment: any }).payment?.currency === 'usdc'
         ? (trx as unknown as { payment: any }).payment?.amount *

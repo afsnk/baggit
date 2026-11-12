@@ -39,7 +39,8 @@ export function LoginForm({
                 <Button
                   variant="outline"
                   type="button"
-                  onClick={async () => {
+									onClick={async () => {
+										console.log(`Login in`)
                     const { error } = await authClient.signIn.social({
                       provider: 'github',
                       callbackURL: `${env.VITE_CLIENT_URL}/overview`,

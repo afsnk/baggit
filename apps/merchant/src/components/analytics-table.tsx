@@ -9,8 +9,9 @@ import { Badge } from '#/components/ui/badge.tsx'
 import { Checkbox } from '#/components/ui/checkbox.tsx'
 import type { Transaction } from "@baggit/api/app"
 import { DataTable } from './data-table'
+import type { SelectTransaction } from '@baggit/core'
 
-const getStatusColor = (status: Transaction['status']) => {
+const getStatusColor = (status: SelectTransaction['status']) => {
   switch (status) {
     case "complete":
       return 'bg-emerald-500'
@@ -22,7 +23,7 @@ const getStatusColor = (status: Transaction['status']) => {
   }
 }
 
-const columns: ColumnDef<Transaction>[] = [
+const columns: ColumnDef<SelectTransaction>[] = [
   {
     cell: ({ row }) => (
       <Checkbox
@@ -53,7 +54,7 @@ const columns: ColumnDef<Transaction>[] = [
     accessorKey: 'id',
     cell: ({ row }) => (
       <div className="font-medium font-mono text-muted-foreground">
-        {(row.getValue('id') as unknown as string).slice(0, 12)}
+        {row.id.slice(0, 12)}
       </div>
     ),
     header: 'Transaction ID',
@@ -91,12 +92,12 @@ const columns: ColumnDef<Transaction>[] = [
     size: 80,
   },
   {
-    accessorFn: (prop) => prop?.payment?.currency || prop.asset,
+    accessorFn: (prop) => prop?.asset?.in?.symbol || prop.asset.out?.symbol,
     header: 'Asset',
     size: 50,
   },
   {
-    accessorFn: (prop) => prop?.payment?.amount || prop?.ramp?.amount,
+    accessorFn: (prop) => prop.asset.amount,
     header: 'Amount',
     size: 80
   },
@@ -104,7 +105,7 @@ const columns: ColumnDef<Transaction>[] = [
     accessorKey: 'createdAt',
     header: 'Date created',
     cell: ({ row }) => {
-      const time = new Date(row.getValue('createdAt'))
+      const time = new Date(row.getValue('createdAt') || '2026-10-10')
 			const formatted = time.toLocaleString(undefined, {
 				dateStyle: "short",
 				timeStyle: "short",
@@ -120,7 +121,7 @@ const columns: ColumnDef<Transaction>[] = [
     accessorKey: 'updatedAt',
     header: 'Date updated',
     cell: ({ row }) => {
-      const time = new Date(row.getValue('updatedAt'))
+      const time = new Date(row.getValue('updatedAt') || '2026-10-10')
 			const formatted = time.toLocaleString(undefined, {
 				dateStyle: "short",
 				timeStyle: "short"
@@ -134,7 +135,7 @@ const columns: ColumnDef<Transaction>[] = [
   },
 ]
 
-export default function AnalyticsTable({ data }: { data: Array<Transaction> }) {
+export default function AnalyticsTable({ data }: { data: Array<SelectTransaction> }) {
   return (
     <DataTable data={data} columns={columns} />
   )

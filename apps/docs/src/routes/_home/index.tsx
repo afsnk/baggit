@@ -1,6 +1,8 @@
-import { Container, Main, Section } from '#/components/craft'
-import { CardSpotlight } from '#/components/ui/card-spotlight';
-import { createFileRoute, Link } from '@tanstack/react-router'
+import { Main } from '#/components/craft'
+import { createFileRoute } from '@tanstack/react-router'
+import CheckoutSection from './-components/checkout-section';
+import PayoutSection from './-components/payout-section';
+import WidgetSection from './-components/widget-section';
 
 export const Route = createFileRoute('/_home/')({ component: Home })
 
@@ -25,18 +27,11 @@ const links: Array<{ label: string; description: string; url: string; }> = [
 function Home() {
   return (
     <Main>
-      <Section>
-        <Container className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-          {links.map((link) => (
-            <Link to={link.url} preload="intent" className='w-full md:last:col-span-2 no-underline!'>
-              <CardSpotlight className="w-full no-underline! group">
-                <h4>{link.label}</h4>
-                <span className='font-light text-sm text-primary'>{link.description}</span>
-              </CardSpotlight>
-            </Link>
-          ))}
-        </Container>
-      </Section>
+			<CheckoutSection />
+
+			<PayoutSection />
+
+			<WidgetSection />
     </Main>
   )
 }

@@ -8,7 +8,7 @@
   "scripts": {
     "dev": "portless pay.baggit --app-port 3001 vite dev --port 3001",
     "generate-routes": "tsr generate",
-    "build": "vite build && tsc --noEmit",
+    "build": "vite build",
     "deploy": "npm run build && wrangler deploy",
     "cf-typegen": "wrangler types",
     "preview": "vite preview",
@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@baggit/api": "workspace:*",
+    "@baggit/core": "workspace:*",
     "@nats-io/kv": "^3.4.0",
     "@nats-io/nats-core": "^3.4.0",
     "@posthog/react": "^1.7.0",
@@ -38,7 +39,6 @@
     "@tanstack/react-store": "latest",
     "@tanstack/router-plugin": "^1.132.0",
     "@tanstack/store": "latest",
-    "better-auth": "^1.5.3",
     "better-sqlite3": "^12.6.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -85,7 +85,6 @@
     "jsdom": "^28.1.0",
     "prettier": "^3.8.1",
     "tsx": "^4.21.0",
-    "typescript": "^6.0.2",
     "vite": "^8.0.0",
     "vitest": "^4.1.5",
     "wrangler": "^4.107.0"

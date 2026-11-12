@@ -1,6 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap');
 @import 'tailwindcss';
 @import 'fumadocs-ui/css/neutral.css';
+@import 'fumadocs-ui/css/shadcn.css';
 @import 'fumadocs-ui/css/preset.css';
 
 @plugin '@tailwindcss/typography';
@@ -8,6 +9,57 @@
 @import 'tw-animate-css';
 
 @custom-variant dark (&:is(.dark *));
+
+@font-face {
+  font-family: 'Boing';
+  font-style: normal;
+  font-weight: 100;
+  font-display: swap;
+  src: local('/fonts/Boing/Boing-Thin.ttf'), url('/fonts/Boing/Boing-Thin.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'Boing';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: local('/fonts/Boing/Boing-Light.ttf'), url('/fonts/Boing/Boing-Light.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'Boing';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: local('/fonts/Boing/Boing-Medium.ttf'), url('/fonts/Boing/Boing-Medium.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'Boing';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('/fonts/Boing/Boing-Regular.ttf'), url('/fonts/Boing/Boing-Regular.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'Boing';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: local('/fonts/Boing/Boing-Semibold.ttf'), url('/fonts/Boing/Boing-Semibold.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'Boing';
+  font-style: italic;
+  font-weight: 600;
+  font-display: swap;
+  src: local('/fonts/Boing/Boing-SemiboldItalic.ttf'), url('/fonts/Boing/Boing-SemiboldItalic.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'Boing';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('/fonts/Boing/Boing-Bold.ttf'), url('/fonts/Boing/Boing-Bold.ttf') format('truetype');
+}
+
 
 :root {
   --background: oklch(1 0 0);
@@ -82,6 +134,7 @@
 
 @theme inline {
   --font-sans: 'Manrope', ui-sans-serif, system-ui, sans-serif;
+  --font-boing: 'Boing', sans-serif;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);

@@ -1,0 +1,106 @@
+name: Deploy merchant dashboard to Cloudflare
+
+on:
+  push:
+    branches: [staging, preprod, main]
+    paths:
+      - "apps/merchant/**"
+      - ".github/workflows/deploy-merchant.yml"
+  workflow_dispatch: {}
+
+jobs:
+  resolve:
+    name: Resolve environment
+    runs-on: ubuntu-latest
+    outputs:
+      environment: ${{ steps.pick.outputs.environment }}
+      wrangler_env: ${{ steps.pick.outputs.wrangler_env }}
+    steps:
+      - id: pick
+        env:
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          case "$BRANCH" in
+            main)       ENV_NAME=production; WRANGLER_ENV=production ;;
+            staging)    ENV_NAME=staging;    WRANGLER_ENV=staging ;;
+            preprod/*)  ENV_NAME=preprod;    WRANGLER_ENV=preprod ;;
+            *)          ENV_NAME=preview;    WRANGLER_ENV=preview ;;
+          esac
+          echo "environment=$ENV_NAME"      >> "$GITHUB_OUTPUT"
+          echo "wrangler_env=$WRANGLER_ENV" >> "$GITHUB_OUTPUT"
+          echo "Branch '$BRANCH' → environment '$ENV_NAME'"
+
+  deploy:
+    name: Deploy to merchant ${{ needs.resolve.outputs.environment }}
+    needs: resolve
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ needs.resolve.outputs.environment }}
+      url: ${{ steps.deploy.outputs.deployment-url }}
+    concurrency:
+      group: deploy-merchant-${{ needs.resolve.outputs.environment }}
+      cancel-in-progress: false
+    steps:
+      - run: echo "Deploying to ${{ needs.resolve.outputs.environment }}"
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build
+        working-directory: apps/merchant
+        env:
+          NITRO_PRESET: cloudflare_module
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DATABASE_AUTH_TOKEN: ${{ secrets.DATABASE_AUTH_TOKEN }}
+          SWITCH_API_URL: ${{ secrets.SWITCH_API_URL }}
+          SWITCH_API_KEY: ${{ secrets.SWITCH_API_KEY }}
+          SERVER_URL: ${{ secrets.SERVER_URL }}
+          NODE_ENV: ${{ secrets.NODE_ENV }}
+          PLUNK_SECRET_KEY: ${{ secrets.PLUNK_SECRET_KEY }}
+          EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
+          EMAIL_FROM_NAME: ${{ secrets.EMAIL_FROM_NAME }}
+          BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
+          BETTER_AUTH_TRUSTED_ORIGIN: ${{ secrets.BETTER_AUTH_TRUSTED_ORIGIN }}
+          BETTER_AUTH_URL: ${{ secrets.BETTER_AUTH_URL }}
+          # FEATURE_FLAG_TRANSACTION_HISTORY: ${{ secrets.FEATURE_FLAG_TRANSACTION_HISTORY }}
+          # FEATURE_FLAG_CURRENCIES: ${{ secrets.FEATURE_FLAG_CURRENCIES }}
+          # FEATURE_FLAG_ADMIN_DASHBOARD: ${{ secrets.FEATURE_FLAG_ADMIN_DASHBOARD }}
+          # FEATURE_FLAG_DEVELOPER_FEE: ${{ secrets.FEATURE_FLAG_DEVELOPER_FEE }}
+          # DEVELOPER_FEE_PERCENT: ${{ secrets.DEVELOPER_FEE_PERCENT }}
+          # FEATURE_FLAG_RATE_LIMIT: ${{ secrets.FEATURE_FLAG_RATE_LIMIT }}
+        run: pnpm build
+
+      - name: Push runtime secrets to the Worker
+        working-directory: apps/merchant/.output
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          echo "${{ secrets.DATABASE_URL }}" | npx wrangler secret put DATABASE_URL --env ${{ needs.resolve.outputs.environment }}
+          echo "${{ secrets.DATABASE_AUTH_TOKEN }}" | npx wrangler secret put DATABASE_AUTH_TOKEN --env ${{ needs.resolve.outputs.environment }}
+          echo "${{ secrets.SWITCH_API_URL }}" | npx wrangler secret put SWITCH_API_URL --env ${{ needs.resolve.outputs.environment }}
+          echo "${{ secrets.SWITCH_API_KEY }}" | npx wrangler secret put SWITCH_API_KEY --env ${{ needs.resolve.outputs.environment }}
+          echo "${{ secrets.ENC_KEY }}" | npx wrangler secret put ENC_KEY --env ${{ needs.resolve.outputs.environment }}
+          echo "${{ secrets.FEE_COLLECTION_ADDRESS }}" | npx wrangler secret put FEE_COLLECTION_ADDRESS --env ${{ needs.resolve.outputs.environment }}
+          echo "${{ secrets.GOOGLE_CLIENT_ID }}" | npx wrangler secret put GOOGLE_CLIENT_ID --env ${{ needs.resolve.outputs.environment }}
+          echo "${{ secrets.GOOGLE_CLIENT_SECRET }}" | npx wrangler secret put GOOGLE_CLIENT_SECRET --env ${{ needs.resolve.outputs.environment }}
+          echo "${{ secrets.NODE_ENV }}" | npx wrangler secret put NODE_ENV --env ${{ needs.resolve.outputs.environment }}
+          echo "${{ secrets.BETTER_AUTH_SECRET }}" | npx wrangler secret put BETTER_AUTH_SECRET --env ${{ needs.resolve.outputs.environment }}
+          echo "${{ secrets.GHUB_CLIENT_ID }}" | npx wrangler secret put GITHUB_CLIENT_ID --env ${{ needs.resolve.outputs.environment }}
+          echo "${{ secrets.GHUB_CLIENT_SECRET }}" | npx wrangler secret put GITHUB_CLIENT_SECRET --env ${{ needs.resolve.outputs.environment }}
+
+      - name: Deploy ${{ needs.resolve.outputs.environment }} output
+        working-directory: apps/business
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_ENV: ${{ needs.resolve.outputs.environment }} # Define environment here
+        run: pnpm exec nitro deploy --prebuilt

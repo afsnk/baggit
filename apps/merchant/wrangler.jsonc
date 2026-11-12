@@ -20,4 +20,70 @@
       "head_sampling_rate": 1,
     },
   },
+  "assets": {
+    "directory": ".output/public",
+  },
+  "preview_urls": true,
+
+  // Top-level route: puts preview URLs on your own domain
+  // → <preview-name>.preview.app.com
+  "routes": [
+    {
+      "pattern": "merchant-preview.baggit.link",
+      "custom_domain": true,
+      "previews_enabled": true,
+      "enabled": false, // preview traffic only; remove to also serve production here
+    },
+  ],
+
+  "env": {
+    // ---------- staging → staging.app.com ----------
+    "staging": {
+      "name": "merchant-staging",
+      "routes": [
+        {
+          "pattern": "merchant-staging.baggit.link",
+          "custom_domain": true,
+          "previews_enabled": true,
+        },
+      ],
+      "vars": {
+      	"ENVIRONMENT": "staging",
+        "BETTER_AUTH_TRUSTED_ORIGINS": "https://merchant-staging.baggit.link",
+        "VITE_BETTER_AUTH_URL": "https://merchant-staging.baggit.link",
+        "VITE_APP_TITLE": "Merchant Dashboard",
+		    "VITE_CLIENT_URL": "https://merchant-staging.baggit.link",
+        "NODE_ENV": "staging",
+        "PLUNK_API_URL": "https://next-api.useplunk.com",
+      },
+    },
+
+    // ---------- preprod → preprod.app.com ----------
+    "preprod": {
+      "name": "merchant-preprod",
+      "routes": [
+        {
+          "pattern": "merchant-preprod.baggit.link",
+          "custom_domain": true,
+          "previews_enabled": true,
+        },
+      ],
+      "vars": { "ENVIRONMENT": "preprod" },
+    },
+
+    // ---------- production → app.com ----------
+    "production": {
+      "name": "merchant-production",
+      "routes": [
+        { "pattern": "merchant.baggit.link", "custom_domain": true },
+      ],
+      "vars": {
+      	"ENVIRONMENT": "production",
+       "BETTER_AUTH_TRUSTED_ORIGINS": "https://merchant.baggit.link",
+       "BETTER_AUTH_URL": "https://merchant.baggit.link",
+       "NODE_ENV": "production",
+       "PLUNK_API_URL": "https://next-api.useplunk.com",
+      },
+    },
+  },
 }

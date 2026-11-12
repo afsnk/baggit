@@ -36,17 +36,19 @@ const pieData = [
 ];
 
 function RouteComponent() {
-  const { data: orgList } = authClient.useListOrganizations()
+  const { data: orgList, isPending } = authClient.useListOrganizations()
 
-  if (!orgList) {
+  if (!orgList && isPending) {
     return (
       <div className="w-full flex items-center justify-center">
         <Loader2 className="animate-spin" />
       </div>
     )
-  }
+	}
 
-  if (!orgList.length) {
+
+
+  if (orgList && !orgList.length && !isPending) {
     return <EmptyOrg />
   }
 

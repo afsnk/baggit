@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "pnpm -C packages/demo dev",
+    "dev:merchant": "turbo dev --filter=@baggit/merchant",
     "build": "pnpm -r --filter ./packages build",
     "build:npm": "pnpm -C packages/npm build",
     "build:registry": "pnpm -C packages/registry build",
@@ -38,34 +39,49 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/afsnk/afsnk_labs.git"
+    "url": "https://github.com/afsnk/baggit.git"
   },
   "dependencies": {
     "@better-fetch/fetch": "^1.1.21",
     "@elysia/eden": "1.4.9",
+    "better-auth": "1.7.18",
     "better-result": "^2.9.2",
     "date-fns": "^4.4.0",
-    "nitro": "^3.0.260415-beta",
+    "drizzle-orm": "0.44.4",
+    "drizzle-zod": "^0.8.3",
+    "nitro": "3.0.261103-rc",
     "nuban-prediction": "^1.2.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "tailwindcss": "^4.1.18",
-    "tw-animate-css": "^1.4.0"
+    "tw-animate-css": "^1.4.0",
+    "zod": "^4.4.1"
   },
   "devDependencies": {
     "@types/node": "^22.10.2",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
+    "drizzle-kit": "0.31.6",
     "tsc-alias": "^1.8.16",
     "tsx": "^4.21.0",
     "turbo": "^2.9.7",
-    "typescript": "^5.7.2",
+    "typescript": "5.7.2",
     "vitest": "^3.0.5"
   },
   "pnpm": {
-    "onlyBuiltDependencies": []
+    "overrides": {
+      "rolldown": "1.2.4",
+      "tslib": "^2.8.0",
+      "better-auth": "1.7.18",
+      "@better-auth/core": "1.7.18",
+      "@better-auth/api-key": "1.7.18"
+    },
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "lightningcss"
+    ]
   },
-  "packageManager": "bun@1.3.14",
+  "packageManager": "pnpm@10.3.0",
   "workspaces": [
     "packages/*",
     "apps/*"
