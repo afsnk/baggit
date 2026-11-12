@@ -4,7 +4,7 @@ import { z } from 'zod'
 export const env = createEnv({
   server: {
 		SERVER_URL: z.url().optional(),
-		DATABASE_URL: z.url(),
+		DATABASE_URL: z.url().transform((arg) => arg.replace(/^turso:\/\//, 'https://')),
 		DATABASE_AUTH_TOKEN: z.string().optional(),
 		NODE_ENV: z.string(),
 		SWITCH_API_KEY: z.string(),
