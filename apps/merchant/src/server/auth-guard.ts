@@ -14,7 +14,7 @@ export const authGuard = createServerFn()
     })
 
     if (error) {
-      console.log(`Failed to fetch session`, { error })
+      console.log(`Failed to fetch session`, JSON.stringify({ error }, null, 2))
       throw redirect({
         href: '/auth',
         search: {},
