@@ -88,13 +88,12 @@ jobs:
           echo "${{ secrets.DATABASE_AUTH_TOKEN }}" | npx wrangler secret put DATABASE_AUTH_TOKEN --env ${{ needs.resolve.outputs.environment }}
           echo "${{ secrets.SWITCH_API_URL }}" | npx wrangler secret put SWITCH_API_URL --env ${{ needs.resolve.outputs.environment }}
           echo "${{ secrets.SWITCH_API_KEY }}" | npx wrangler secret put SWITCH_API_KEY --env ${{ needs.resolve.outputs.environment }}
-          echo "${{ secrets.ADMIN_EMAIL }}" | npx wrangler secret put ADMIN_EMAIL --env ${{ needs.resolve.outputs.environment }}
-          echo "${{ secrets.ADMIN_PASSWORD }}" | npx wrangler secret put ADMIN_PASSWORD --env ${{ needs.resolve.outputs.environment }}
-          echo "${{ secrets.PLUNK_SECRET_KEY }}" | npx wrangler secret put PLUNK_SECRET_KEY --env ${{ needs.resolve.outputs.environment }}
-          echo "${{ secrets.EMAIL_FROM }}" | npx wrangler secret put EMAIL_FROM --env ${{ needs.resolve.outputs.environment }}
-          echo "${{ secrets.EMAIL_FROM_NAME }}" | npx wrangler secret put EMAIL_FROM_NAME --env ${{ needs.resolve.outputs.environment }}
+          echo "${{ secrets.ENC_KEY }}" | npx wrangler secret put ENC_KEY --env ${{ needs.resolve.outputs.environment }}
+          echo "${{ secrets.FEE_COLLECTION_ADDRESS }}" | npx wrangler secret put FEE_COLLECTION_ADDRESS --env ${{ needs.resolve.outputs.environment }}
+          echo "${{ secrets.GOOGLE_CLIENT_ID }}" | npx wrangler secret put GOOGLE_CLIENT_ID --env ${{ needs.resolve.outputs.environment }}
+          echo "${{ secrets.GOOGLE_CLIENT_SECRET }}" | npx wrangler secret put GOOGLE_CLIENT_SECRET --env ${{ needs.resolve.outputs.environment }}
+          echo "${{ secrets.NODE_ENV }}" | npx wrangler secret put NODE_ENV --env ${{ needs.resolve.outputs.environment }}
           echo "${{ secrets.BETTER_AUTH_SECRET }}" | npx wrangler secret put BETTER_AUTH_SECRET --env ${{ needs.resolve.outputs.environment }}
-          echo "${{ secrets.SERVER_URL }}" | npx wrangler secret put SERVER_URL --env ${{ needs.resolve.outputs.environment }}
           echo "${{ secrets.GHUB_CLIENT_ID }}" | npx wrangler secret put GITHUB_CLIENT_ID --env ${{ needs.resolve.outputs.environment }}
           echo "${{ secrets.GHUB_CLIENT_SECRET }}" | npx wrangler secret put GITHUB_CLIENT_SECRET --env ${{ needs.resolve.outputs.environment }}
 
