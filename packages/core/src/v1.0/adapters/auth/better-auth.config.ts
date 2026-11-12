@@ -14,7 +14,7 @@ export const defaultAuthConfig: BetterAuthOptions = {
 	secret: process.env.BETTER_AUTH_SECRET,
   baseURL: {
     allowedHosts: ["https://baggit.dev", "https://*.baggit.dev", "https://baggit.link", "https://*.baggit.link"],
-    fallback: process.env.VITE_BETTER_AUTH_URL ?? "https://baggit.dev"
+    fallback: process.env.VITE_BETTER_AUTH_URL ?? "https://*.baggit.link"
   },
   appName: "Baggit Services",
   emailAndPassword: {
