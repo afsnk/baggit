@@ -1,7 +1,5 @@
-"use client"
-
+import type {UsernameAuthClient} from "@better-auth-ui/react"
 import {
-  type UsernameAuthClient,
   useAuth,
   useSession
 } from "@better-auth-ui/react"
@@ -51,8 +49,7 @@ export function UserAvatar({
   const resolvedUser = user ?? session?.user
 
   const initials = (
-    resolvedUser?.username ||
-    resolvedUser?.name ||
+  	resolvedUser?.name ||
     resolvedUser?.email
   )
     ?.slice(0, 2)
@@ -68,7 +65,6 @@ export function UserAvatar({
       <AvatarImage
         src={resolvedUser?.image ?? undefined}
         alt={
-          resolvedUser?.displayUsername ||
           resolvedUser?.name ||
           resolvedUser?.email
         }

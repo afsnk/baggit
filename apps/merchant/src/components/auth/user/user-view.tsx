@@ -1,5 +1,5 @@
+import type{ UsernameAuthClient} from "@better-auth-ui/react"
 import {
-  type UsernameAuthClient,
   useAuth,
   useSession
 } from "@better-auth-ui/react"
@@ -67,13 +67,12 @@ export function UserView({
 
       <div className="grid min-w-0 flex-1 text-left text-sm leading-tight">
         <span className="truncate font-medium text-foreground">
-          {resolvedUser?.displayUsername ||
-            resolvedUser?.name ||
+          {resolvedUser?.name ||
             resolvedUser?.email}
         </span>
 
         {!hideSubtitle &&
-          (resolvedUser?.displayUsername || resolvedUser?.name) && (
+          (resolvedUser?.name) && (
             <span className="text-muted-foreground truncate text-xs">
               {resolvedUser?.email}
             </span>

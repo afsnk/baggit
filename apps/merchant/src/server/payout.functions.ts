@@ -19,8 +19,8 @@ export const lookupBank = createServerFn({ method: 'POST' })
 
 			return {
 				accountNumber: result.account_number,
-				bankcode: result.bank_code,
-				accountNmae: result.account_name,
+				bankCode: result.bank_code,
+				accountName: result.account_name,
 			}
     } catch (error: any) {
       console.log(`Failed to get account name`, { error })
@@ -48,7 +48,7 @@ export const createPayout = createServerFn({ method: 'POST' })
       reference: z.string(),
     }),
   )
-  .handler(async ({ data }) => {
+  .handler(async () => {
     try {
 			// TODO: Create payout request from merchant wallet
     } catch (error: any) {

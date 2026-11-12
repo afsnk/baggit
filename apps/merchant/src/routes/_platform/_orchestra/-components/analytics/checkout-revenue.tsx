@@ -5,7 +5,6 @@ import PieSlice from "#/components/charts/pie-slice";
 import { Badge } from "#/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "#/components/ui/card";
 import { useIsMobile } from "#/hooks/use-mobile";
-import type { Transaction } from "@baggit/api/app";
 import type { SelectTransaction } from "@baggit/core";
 
 
