@@ -118,17 +118,7 @@ const columns: ColumnDef<APIKey>[] = [
   {
     accessorKey: 'configId',
     header: 'Key type',
-  },
-  // {
-  //   accessorKey: 'createdAt',
-  //   header: 'Date created',
-  //   size: 80,
-  // },
-  // {
-  //   accessorKey: 'updateedAt',
-  //   header: 'Date updated',
-  //   size: 80,
-  // },
+  }
 ]
 
 export default function APIKeyTable({ data }: { data: Array<APIKey> }) {

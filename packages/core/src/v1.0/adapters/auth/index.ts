@@ -5,13 +5,20 @@ import { organization, anonymous, bearer, emailOTP } from 'better-auth/plugins'
 import { DB } from '../db'
 import * as schema from '@core/adapters/db/schema'
 import { defaultAuthConfig } from './better-auth.config'
-import { useLogger } from 'evlog/elysia'
+import { initLogger, createRequestLogger, log } from 'evlog'
 import { createError } from 'evlog'
 import {
   generateAccount,
   getChain,
 } from '@core/modules/payments/utils/wallet.utils'
 import { eq } from 'drizzle-orm'
+
+initLogger({
+  env: {
+    service: 'auth',
+    environment: process.env.NODE_ENV || 'development',
+  },
+});
 
 export const createAuth = (db: DB, overrideAuthConfig?: BetterAuthOptions) => {
   const defaultPlugins = (defaultAuthConfig.plugins ??
@@ -85,7 +92,7 @@ export const createAuth = (db: DB, overrideAuthConfig?: BetterAuthOptions) => {
           return user.emailVerified
         },
         sendInvitationEmail: async (data) => {
-          const log = useLogger()
+          // const log = useLogger()
           const email = data.email.trim()
 
           // await emailQueue.enqueue<IEmailProps>('send', {
@@ -108,7 +115,6 @@ export const createAuth = (db: DB, overrideAuthConfig?: BetterAuthOptions) => {
             // TODO: send welcome to organization email
           },
           async afterCreateOrganization({ organization }) {
-            const log = useLogger()
             try {
               // TODO: Initialise organization resources after creation
               const chain = getChain(
@@ -122,7 +128,7 @@ export const createAuth = (db: DB, overrideAuthConfig?: BetterAuthOptions) => {
                 organization.id,
               )
 
-              log.set({ account, chain })
+              log.info({ account, chain })
 
               const [updatedOrg] = await db
                 .update(schema.organization)
@@ -134,13 +140,13 @@ export const createAuth = (db: DB, overrideAuthConfig?: BetterAuthOptions) => {
                 })
                 .where(eq(schema.organization.id, organization.id))
                 .returning()
-              log.set({ orgWithAddress: updatedOrg })
+              log.info({ orgWithAddress: updatedOrg })
             } catch (error: any) {
-              log.error(error)
-              throw createError({
-                message: error?.message,
-                why: 'Failed to created organization address',
-                fix: 'Try again later, contact support',
+              // log.error(error)
+							throw createError({
+								message: error?.message,
+								why: 'Failed to create organization',
+								fix: 'Try again later'
               })
             }
           },
