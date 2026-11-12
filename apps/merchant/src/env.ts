@@ -9,6 +9,9 @@ export const env = createEnv({
 		NODE_ENV: z.string(),
 		SWITCH_API_KEY: z.string(),
 		SWITCH_API_URL: z.url(),
+		ZERODEV_RPC: z.url(),
+		ENC_KEY: z.string().min(1),
+		FEE_COLLECTION_ADDRESS: z.string().startsWith('0x'),
   },
 
   /**

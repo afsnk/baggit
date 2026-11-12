@@ -10,7 +10,7 @@ import { organization, user } from "./auth";
 
 // Carries the actual values for processing the payment like provider details
 export const transaction = sqliteTable("transactions", {
-  id: text("id").primaryKey().$defaultFn(() => generateId('trx')),
+	id: text("id").primaryKey().$defaultFn(() => generateId('trx')),
   status: text("status", { enum: ["failed", "canceled", "expired", "pending", "complete"] }).default("pending"),
   settledForId: text("settled_for_id").notNull(), // The primitive id being fulfilled (invoice|order)
 	entityId: text("entity_id").notNull(), // ID for the entity owner of the transaction
@@ -31,37 +31,39 @@ export const transaction = sqliteTable("transactions", {
 ]);
 
 export type Asset = {
-	in: (CryptoAsset | FiatAsset);
-	out: (CryptoAsset | FiatAsset);
+	amount: number;
+	rate: number;
+	in?: (CryptoAsset | FiatAsset);
+	out?: (CryptoAsset | FiatAsset);
 	pass?: (CryptoAsset | FiatAsset)[];
 };
 
 type CryptoAsset = {
 	token: string;
-	symbol: string;
+	symbol: string; // Token symbol
 	tokenAddress: string;
 }
 type FiatAsset = {
 	name: string;
-	symbol: string;
-	country: string;
+	symbol: string; // Currency
+	country: string; // e.g NGN
 }
 
 export type Medium = (CryptoRail | FiatRail);
 
 export type CryptoRail = {
 	id: string; // psp ID for internal
-	baseAction: "swap" | "onramp" | "offramp" | string;
+	baseAction: "swap" | "onramp" | "offramp" | "transfer" | "collection" | string;
 	chainId: number | string;
 	network: string;
-	networkFee?: string | number;
+	fee?: string | number | Record<string, any>;
 }
 
 // Details about the PSP Fiat rail
 export type FiatRail = {
 	id: string; // psp ID for internal
 	baseAction: "transfer" | "payout" | "collection" | string;
-	fee: number | Record<string, any>;
+	fee?: string | number | Record<string, any>;
 }
 
 export type TransactionMeta = {
@@ -73,6 +75,7 @@ export type TransactionMeta = {
 
 export type Receipt = (CryptoReceipt | FiatReceipt);
 type CryptoReceipt = {
+	reference: string;
 	hash: string;
 	explorerUrl: string;
 	txBlock: string | number;
@@ -80,8 +83,6 @@ type CryptoReceipt = {
 }
 type FiatReceipt = {
 	refereence: string;
-	pspReference?: string;
-	receiptUrl: string; // Generated internally or stored from PSP
 	bank: {
 		name: string;
 		code: string;
@@ -91,6 +92,7 @@ type FiatReceipt = {
 		}
 		asset?: string;
 	};
+	receiptUrl?: string; // Generated internally or stored from PSP
 	[key: string]: any;
 }
 // TODO: Others like MOMO can be represented later on

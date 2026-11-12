@@ -8,7 +8,7 @@ interface BasePSPAdapter {
 }
 
 
-export abstract class PSPAdapter implements BasePSPAdapter {
+export abstract class PSPAdapterBase implements BasePSPAdapter {
 	abstract id: string;
 	abstract rate(dto: { country: string; currency?: string; direction: "offramp" | "onramp" | string; }): Promise<any>;
 	abstract status(dto: { reference: string; }): Promise<any>;
@@ -17,3 +17,7 @@ export abstract class PSPAdapter implements BasePSPAdapter {
 
 	// TODO: implement shared helper logger for psp
 }
+
+export type PSPAdapter<T extends BasePSPAdapter = BasePSPAdapter> = PSPAdapterBase & T;
+
+export const PSPAdapter = PSPAdapterBase;

@@ -21,7 +21,7 @@ export {
   selectTransaction,
   insertTransaction,
   patchTransaction,
-  transactionRelations,
+	transactionRelations,
 } from "./transaction"
 export {
   invoice,

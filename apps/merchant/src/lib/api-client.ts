@@ -1,12 +1,6 @@
-
 import { createPayout, getBanks, lookupBank } from '#/server/payout.functions'
 import { getAll } from '#/server/transaction.functions'
-import {
-  mutationOptions,
-  QueryClient,
-  queryOptions,
-} from '@tanstack/react-query'
-
+import { mutationOptions, queryOptions } from '@tanstack/react-query'
 
 // jwtClient.ts  (browser)
 // let cached: { token: string; expMs: number } | null = null;
@@ -54,20 +48,23 @@ import {
 //   return res;
 // }
 
-export const getTransactions = (orgId?: string) => queryOptions({
-  refetchOnMount: true,
-  retryOnMount: true,
-	refetchOnWindowFocus: true,
-	retry: true,
-	staleTime: 0,
-  queryKey: ['getTransactions', {orgId}],
-  queryFn: async () => {
-  	const data = await getAll({data: {orgId}})
+export const getTransactions = (orgId?: string) =>
+  queryOptions({
+    refetchOnMount: true,
+    retryOnMount: true,
+    refetchOnWindowFocus: true,
+    retry: true,
+		staleTime: 0,
+    enabled: !!orgId,
+    queryKey: ['getTransactions', { orgId }],
+    queryFn: async () => {
+      console.log(`Org ID`, orgId)
+      const data = await getAll({ data: { orgId: orgId || '' } })
 
-    return data.map((trx) => ({ ...trx, date: trx.createdAt }))
-	},
-	initialData: [],
-})
+      return data.map((trx) => ({ ...trx, date: trx.createdAt }))
+    },
+    initialData: [],
+  })
 //
 export const getBalanceOptions = queryOptions({
   refetchOnMount: true,
@@ -76,8 +73,9 @@ export const getBalanceOptions = queryOptions({
   staleTime: 30_0000,
   queryKey: ['getBalances'],
   queryFn: async () => {
-		return {
-			amount: 0
+    return {
+			amount: 0,
+      totalNgnBalance: 0,
     }
   },
 })

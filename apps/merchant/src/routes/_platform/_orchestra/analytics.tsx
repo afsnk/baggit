@@ -1,11 +1,15 @@
 import AnalyticsTable from '#/components/analytics-table'
-import { clawfundsOptions, getTransactions } from '#/lib/api-client'
+import {
+	// clawfundsOptions,
+	getTransactions
+} from '#/lib/api-client'
 import { useQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 import CheckoutRevenuePieChart from './-components/analytics/checkout-revenue'
 import WidgetRevenuePieChart from './-components/analytics/widget-revenue'
 import CrossRevenueBarChart from './-components/analytics/cross-revenue'
 import { authClient } from '#/lib/auth-client'
+import { toast } from 'sonner'
 
 export const Route = createFileRoute('/_platform/_orchestra/analytics')({
   beforeLoad: () => ({isUnderConstruction: true}),
@@ -14,8 +18,20 @@ export const Route = createFileRoute('/_platform/_orchestra/analytics')({
 
 function RouteComponent() {
   const {data: activeOrg} = authClient.useActiveOrganization()
-	const { data: transactionData, isLoading } = useQuery(getTransactions(activeOrg?.id))
-	useQuery(clawfundsOptions) // Triggers on page enter to any hanging transaction completed but not clawed to merchant address
+	const { data: transactionData, isLoading, error } = useQuery(getTransactions(activeOrg?.id))
+	// useQuery(clawfundsOptions) // Triggers on page enter to any hanging transaction completed but not clawed to merchant address
+
+	if (!activeOrg?.id) {
+		toast.info('Create organization', {
+			description: `Craete organization to view analytics`
+		})
+	}
+
+	if (error) {
+		toast.error(`Failed to get transactions`, {
+			description: error.message,
+		})
+	}
 
   return (
     <div className='grid gap-6'>

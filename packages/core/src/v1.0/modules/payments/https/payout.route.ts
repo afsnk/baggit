@@ -6,7 +6,7 @@ import type { DB } from '@core/adapters'
 import { SwitchAdapter } from '@core/adapters/psp/switch'
 import { createRouter } from '@shared/create-router'
 
-import { payoutInitSchema } from '../entities/payout.entities'
+import { payoutRequestSchema } from '../entities/payout.entities'
 import TransactionRepository from '../repositories/transaction.repository'
 import PayoutService from '../services/payout.service'
 
@@ -25,7 +25,7 @@ function createPayout(
     pspConfigs.switch.baseUrl,
     pspConfigs.switch.apiKey,
   )
-  const service = new PayoutService(adapter)
+	const service = new PayoutService(adapter, repository);
 
   const router = createRouter({
     name: 'payout',
@@ -64,7 +64,7 @@ function createPayout(
             code: z.string(),
           }),
         },
-        body: payoutInitSchema,
+        body: payoutRequestSchema,
       },
     )
     .get(

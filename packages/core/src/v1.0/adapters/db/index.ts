@@ -40,3 +40,5 @@ export function closeDB(): void {
 
 export { schema }
 export type { DB }
+export type { SelectTransaction, InsertTransaction, PatchTransaction } from "./schema/transaction"
+export type { SelectInvoice, InsertInvoice, PatchInvoice } from "./schema/invoice"

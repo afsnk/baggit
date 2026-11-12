@@ -6,9 +6,10 @@ import { Badge } from "#/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "#/components/ui/card";
 import { useIsMobile } from "#/hooks/use-mobile";
 import type { Transaction } from "@baggit/api/app";
+import type { SelectTransaction } from "@baggit/core";
 
 
-export default function CheckoutRevenuePieChart({ transactionData }: {transactionData?: Transaction[]}) {
+export default function CheckoutRevenuePieChart({ transactionData }: {transactionData?: SelectTransaction[]}) {
 	const computedData = transactionData?.map((trx) => ({
     date: new Intl.DateTimeFormat('en-US', {dateStyle: "medium"}).format(new Date(trx.createdAt!)),
     'usdt': (trx as unknown as { payment: any }).payment?.currency === 'usdt'? ((trx as unknown as { payment: any }).payment?.amount * (trx as unknown as { payment: any }).payment?.rate) : 0,
