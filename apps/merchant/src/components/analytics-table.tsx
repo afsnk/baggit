@@ -1,5 +1,3 @@
-'use client'
-
 import type {
   ColumnDef,
 } from '@tanstack/react-table'
@@ -7,7 +5,6 @@ import { LinkIcon } from 'lucide-react'
 import { cn } from '#/lib/utils.ts'
 import { Badge } from '#/components/ui/badge.tsx'
 import { Checkbox } from '#/components/ui/checkbox.tsx'
-import type { Transaction } from "@baggit/api/app"
 import { DataTable } from './data-table'
 import type { SelectTransaction } from '@baggit/core'
 
@@ -63,7 +60,7 @@ const columns: ColumnDef<SelectTransaction>[] = [
   {
     accessorKey: 'status',
     cell: ({ row }) => {
-      const status: Transaction['status'] = row.getValue('status')
+      const status: SelectTransaction['status'] = row.getValue('status')
       return (
         <Badge variant="outline">
           <span
