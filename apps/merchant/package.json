@@ -27,6 +27,7 @@
     "@better-auth-ui/core": "1.6.27",
     "@better-auth-ui/react": "1.6.27",
     "@better-auth/api-key": "1.7.18",
+    "better-auth": "1.7.18",
     "@ebay/nice-modal-react": "^1.2.13",
     "@faker-js/faker": "^10.3.0",
     "@number-flow/react": "^0.6.1",

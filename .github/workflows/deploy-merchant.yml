@@ -5,6 +5,10 @@ on:
     branches: [staging, preprod, main]
     paths:
       - "apps/merchant/**"
+      - "packages/core/**"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - "turbo.json"
       - ".github/workflows/deploy-merchant.yml"
   workflow_dispatch: {}
 
@@ -23,7 +27,7 @@ jobs:
           case "$BRANCH" in
             main)       ENV_NAME=production; WRANGLER_ENV=production ;;
             staging)    ENV_NAME=staging;    WRANGLER_ENV=staging ;;
-            preprod/*)  ENV_NAME=preprod;    WRANGLER_ENV=preprod ;;
+            preprod|preprod/*)  ENV_NAME=preprod;    WRANGLER_ENV=preprod ;;
             *)          ENV_NAME=preview;    WRANGLER_ENV=preview ;;
           esac
           echo "environment=$ENV_NAME"      >> "$GITHUB_OUTPUT"
@@ -51,13 +55,27 @@ jobs:
           node-version: 22
           cache: pnpm
 
+      # Cache turbo's local task cache between runs
+      - name: Cache turbo
+        uses: actions/cache@v4
+        with:
+          path: .turbo
+          key: turbo-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            turbo-${{ runner.os }}-
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build
-        working-directory: apps/merchant
+      # Run from the repo root so turbo can resolve the graph.
+      # `merchant...` = merchant + everything it depends on (@baggit/core),
+      # which turbo builds first via `dependsOn: ["^build"]`.
+      - name: Build (turbo)
         env:
           NITRO_PRESET: cloudflare_module
+          TURBO_CACHE_DIR: .turbo
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: ${{ vars.TURBO_TEAM }}
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           DATABASE_AUTH_TOKEN: ${{ secrets.DATABASE_AUTH_TOKEN }}
           SWITCH_API_URL: ${{ secrets.SWITCH_API_URL }}
@@ -70,13 +88,7 @@ jobs:
           BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
           BETTER_AUTH_TRUSTED_ORIGIN: ${{ secrets.BETTER_AUTH_TRUSTED_ORIGIN }}
           BETTER_AUTH_URL: ${{ secrets.BETTER_AUTH_URL }}
-          # FEATURE_FLAG_TRANSACTION_HISTORY: ${{ secrets.FEATURE_FLAG_TRANSACTION_HISTORY }}
-          # FEATURE_FLAG_CURRENCIES: ${{ secrets.FEATURE_FLAG_CURRENCIES }}
-          # FEATURE_FLAG_ADMIN_DASHBOARD: ${{ secrets.FEATURE_FLAG_ADMIN_DASHBOARD }}
-          # FEATURE_FLAG_DEVELOPER_FEE: ${{ secrets.FEATURE_FLAG_DEVELOPER_FEE }}
-          # DEVELOPER_FEE_PERCENT: ${{ secrets.DEVELOPER_FEE_PERCENT }}
-          # FEATURE_FLAG_RATE_LIMIT: ${{ secrets.FEATURE_FLAG_RATE_LIMIT }}
-        run: pnpm build
+        run: pnpm exec turbo run build --filter=@baggit/merchant...
 
       - name: Push runtime secrets to the Worker
         working-directory: apps/merchant/.output
@@ -98,9 +110,10 @@ jobs:
           echo "${{ secrets.GHUB_CLIENT_SECRET }}" | npx wrangler secret put GITHUB_CLIENT_SECRET --env ${{ needs.resolve.outputs.environment }}
 
       - name: Deploy ${{ needs.resolve.outputs.environment }} output
-        working-directory: apps/business
+        id: deploy
+        working-directory: apps/merchant
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          CLOUDFLARE_ENV: ${{ needs.resolve.outputs.environment }} # Define environment here
+          CLOUDFLARE_ENV: ${{ needs.resolve.outputs.environment }}
         run: pnpm exec nitro deploy --prebuilt
