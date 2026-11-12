@@ -8,7 +8,7 @@ import viteReact, { reactCompilerPreset } from '@vitejs/plugin-react'
 import babel from '@rolldown/plugin-babel'
 import tailwindcss from '@tailwindcss/vite'
 import { nitro } from "nitro/vite"
-// import { cloudflare } from '@cloudflare/vite-plugin'
+import { execSync } from 'node:child_process'
 
 const config = defineConfig({
 	resolve: {
@@ -34,11 +34,13 @@ const config = defineConfig({
       hooks: {
         compiled() {
           console.log(`[compiled] App compiled`)
+					console.log(`[drizzle] Pushing schema updates...`)
+					execSync('npx drizzle-kit push', { stdio: 'inherit' })
+					console.log(`[drizzle] Schema changes updated`)
         },
       },
       cloudflare: { deployConfig: false },
     }),
-    // cloudflare({ viteEnvironment: { name: 'ssr' } }),
     tailwindcss(),
     tanstackStart(),
     viteReact(),
