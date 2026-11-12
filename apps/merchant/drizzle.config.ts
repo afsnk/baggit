@@ -3,7 +3,7 @@ import { defineConfig } from "drizzle-kit"
 const src = "node_modules/@baggit/core/dist/v1.0/adapters/db/schema/*.js"
 
 export default defineConfig({
-  dialect: process.env.NODE_ENV === "development" ? "sqlite" : "turso",
+  dialect: "turso",
 	schema: src,
 		// process.env.NODE_ENV === "development" ? "./v1.0/adapters/db/schema/*.ts" : "./v1.0/adapters/db/schema/*.js",
   casing: "snake_case",
