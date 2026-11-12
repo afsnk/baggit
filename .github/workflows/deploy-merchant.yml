@@ -102,6 +102,7 @@ jobs:
           echo "${{ secrets.SWITCH_API_KEY }}" | npx wrangler secret put SWITCH_API_KEY --env ${{ needs.resolve.outputs.environment }}
           echo "${{ secrets.ENC_KEY }}" | npx wrangler secret put ENC_KEY --env ${{ needs.resolve.outputs.environment }}
           echo "${{ secrets.FEE_COLLECTION_ADDRESS }}" | npx wrangler secret put FEE_COLLECTION_ADDRESS --env ${{ needs.resolve.outputs.environment }}
+          echo "${{ secrets.ZERODEV_RPC }}" | npx wrangler secret put ZERODEV_RPC --env ${{ needs.resolve.outputs.environment }}
           echo "${{ secrets.GOOGLE_CLIENT_ID }}" | npx wrangler secret put GOOGLE_CLIENT_ID --env ${{ needs.resolve.outputs.environment }}
           echo "${{ secrets.GOOGLE_CLIENT_SECRET }}" | npx wrangler secret put GOOGLE_CLIENT_SECRET --env ${{ needs.resolve.outputs.environment }}
           echo "${{ secrets.NODE_ENV }}" | npx wrangler secret put NODE_ENV --env ${{ needs.resolve.outputs.environment }}
