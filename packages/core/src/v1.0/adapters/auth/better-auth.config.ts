@@ -13,8 +13,8 @@ import { createAuthMiddleware } from "better-auth/api"
 export const defaultAuthConfig: BetterAuthOptions = {
 	secret: process.env.BETTER_AUTH_SECRET,
   baseURL: {
-    allowedHosts: ["https://baggit.dev", "https://baggit.link"],
-    fallback: "https://baggit.dev"
+    allowedHosts: ["https://baggit.dev", "https://*.baggit.dev", "https://baggit.link", "https://*.baggit.link"],
+    fallback: process.env.VITE_BETTER_AUTH_URL ?? "https://baggit.dev"
   },
   appName: "Baggit Services",
   emailAndPassword: {
@@ -49,7 +49,8 @@ export const defaultAuthConfig: BetterAuthOptions = {
   trustedOrigins: async (request) => [
     // 'https://*.baggit.link',
     ...(process.env.TRUSTED_ORIGINS || '').split(','),
-    'https://baggit.link',
+		'https://baggit.link',
+    'https://*.baggit.link',
     'localhost:3000',
     'localhost:3001',
     'localhost:3011',
