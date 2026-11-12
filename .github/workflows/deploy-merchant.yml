@@ -88,7 +88,7 @@ jobs:
           BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
           BETTER_AUTH_TRUSTED_ORIGIN: ${{ secrets.BETTER_AUTH_TRUSTED_ORIGIN }}
           BETTER_AUTH_URL: ${{ secrets.BETTER_AUTH_URL }}
-        run: pnpm exec turbo run build --filter=@baggit/merchant...
+        run: pnpm exec turbo run build --filter=@baggit/core --filter=@baggit/merchant
 
       - name: Push runtime secrets to the Worker
         working-directory: apps/merchant/.output
