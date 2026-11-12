@@ -43,7 +43,7 @@ export function LoginForm({
 										console.log(`Login in`)
                     const { error } = await authClient.signIn.social({
                       provider: 'github',
-                      callbackURL: `${env.VITE_CLIENT_URL}/overview`,
+                      callbackURL: `${env.VITE_BETTER_AUTH_URL}/overview`,
                     })
 
                     if (error) {
@@ -63,7 +63,7 @@ export function LoginForm({
                   onClick={async () => {
                     const { data, error } = await authClient.signIn.social({
                       provider: 'google',
-                      callbackURL: `${env.VITE_CLIENT_URL}/overview`,
+                      callbackURL: `${env.VITE_BETTER_AUTH_URL}/overview`,
                     })
 
                     if (error) {
