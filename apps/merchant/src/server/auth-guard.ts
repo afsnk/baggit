@@ -4,29 +4,37 @@ import { getRequest } from '@tanstack/react-start/server'
 import { authClient } from '#/lib/auth-client'
 import { z } from 'zod'
 import { redirect } from '@tanstack/react-router'
+import { auth } from '#/lib/auth'
 
 export const authGuard = createServerFn()
   .validator(z.object().optional())
-  .handler(async () => {
-    const cookie = getRequest().headers.get('cookie') ?? ''
-    const { data: session, error } = await authClient.getSession({
-      fetchOptions: { headers: { cookie } },
-    })
+	.handler(async () => {
+		try {
+	    // const cookie = getRequest().headers.get('cookie') ?? ''
+	    const headers = getRequest().headers
+	    const data = await auth.api.getSession({
+	      headers,
+	    })
 
-    if (error) {
-      console.log(`Failed to fetch session`, JSON.stringify({ error }, null, 2))
-      throw redirect({
-        href: '/auth',
-        search: {},
-      })
-    }
+	    if (!data) {
+	      console.log(`No session data`)
+	      throw redirect({
+	        href: '/auth',
+	        search: {},
+	      })
+	    }
 
-    if (!session) {
-      throw redirect({
-        href: '/auth',
-        search: {},
-      })
-    }
+	    if (!data.session) {
+	      throw redirect({
+	        href: '/auth',
+	        search: {},
+	      })
+	    }
 
-    return session
+	    return data.session
+		}
+		catch (error: any) {
+			console.log(`Failed to fetch session`, JSON.stringify({ error }, null, 2))
+			throw error;
+		}
   })
