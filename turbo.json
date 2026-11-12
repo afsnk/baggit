@@ -21,7 +21,7 @@
     },
     "@baggit/core#build": {
       "dependsOn": ["^build"],
-      "outputs": []
+      "outputs": ["dist/**"]
     },
     "test": {
       "dependsOn": ["build"],
