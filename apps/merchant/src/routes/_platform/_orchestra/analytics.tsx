@@ -5,6 +5,7 @@ import {
 } from '#/lib/api-client'
 import { useQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
+import { useEffect } from 'react'
 import CheckoutRevenuePieChart from './-components/analytics/checkout-revenue'
 import WidgetRevenuePieChart from './-components/analytics/widget-revenue'
 import CrossRevenueBarChart from './-components/analytics/cross-revenue'
@@ -21,17 +22,21 @@ function RouteComponent() {
 	const { data: transactionData, isLoading, error } = useQuery(getTransactions(activeOrg?.id))
 	// useQuery(clawfundsOptions) // Triggers on page enter to any hanging transaction completed but not clawed to merchant address
 
-	if (!activeOrg?.id) {
-		toast.info('Create organization', {
-			description: `Craete organization to view analytics`
-		})
-	}
+	useEffect(() => {
+		if (!activeOrg?.id) {
+			toast.info('Create organization', {
+				description: `Craete organization to view analytics`
+			})
+		}
+	}, [activeOrg?.id])
 
-	if (error) {
-		toast.error(`Failed to get transactions`, {
-			description: error.message,
-		})
-	}
+	useEffect(() => {
+		if (error) {
+			toast.error(`Failed to get transactions`, {
+				description: error.message,
+			})
+		}
+	}, [error])
 
   return (
     <div className='grid gap-6'>

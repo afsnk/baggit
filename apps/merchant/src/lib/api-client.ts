@@ -53,12 +53,11 @@ export const getTransactions = (orgId?: string) =>
     refetchOnMount: true,
     retryOnMount: true,
     refetchOnWindowFocus: true,
-    retry: true,
-		staleTime: 0,
+    retry: 2,
+    staleTime: 0,
     enabled: !!orgId,
     queryKey: ['getTransactions', { orgId }],
     queryFn: async () => {
-      console.log(`Org ID`, orgId)
       const data = await getAll({ data: { orgId: orgId || '' } })
 
       return data.map((trx) => ({ ...trx, date: trx.createdAt }))
@@ -115,6 +114,7 @@ export const banks = queryOptions({
   refetchOnMount: true,
   retryOnMount: true,
   refetchOnWindowFocus: true,
+  retry: 1,
 })
 
 export const initPayoutOptions = mutationOptions({

@@ -63,6 +63,30 @@ export default function PayoutModal(props: IPayout) {
 		}
 	}, [customAmount, withdrawType])
 
+	useEffect(() => {
+		if (getBanks.isError && !getBanks.isFetching) {
+			toast.error('Failed to load banks', {
+				description: getBanks.error?.message,
+			})
+		}
+	}, [getBanks.isError, getBanks.isFetching, getBanks.error])
+
+	useEffect(() => {
+		if (lookupBank.isError) {
+			toast.error('Account lookup failed', {
+				description: lookupBank.error?.message,
+			})
+		}
+	}, [lookupBank.isError, lookupBank.error])
+
+	useEffect(() => {
+		if (createPayout.isError) {
+			toast.error('Payout request failed', {
+				description: createPayout.error?.message,
+			})
+		}
+	}, [createPayout.isError, createPayout.error])
+
   return (
     <Popover>
       <PopoverTrigger asChild>{props.children}</PopoverTrigger>
