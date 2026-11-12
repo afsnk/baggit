@@ -8,6 +8,7 @@ import viteReact, { reactCompilerPreset } from '@vitejs/plugin-react'
 import babel from '@rolldown/plugin-babel'
 import tailwindcss from '@tailwindcss/vite'
 import { nitro } from "nitro/vite"
+import { execSync } from 'node:child_process'
 
 const config = defineConfig({
 	resolve: {
@@ -32,7 +33,9 @@ const config = defineConfig({
 			rollupConfig: { external: [/^@sentry\//] },
       hooks: {
         compiled() {
-          console.log(`[compiled] App compiled`)
+					console.log(`[compiled] App compiled`)
+					execSync(`npx drizzle-kit push`, {stdio: "inherit"})
+					console.log(`[drizzle] DB Pushed!`)
         },
       },
       cloudflare: { deployConfig: false },

@@ -81,7 +81,6 @@ jobs:
           SWITCH_API_URL: ${{ secrets.SWITCH_API_URL }}
           SWITCH_API_KEY: ${{ secrets.SWITCH_API_KEY }}
           SERVER_URL: ${{ secrets.SERVER_URL }}
-          NODE_ENV: ${{ secrets.NODE_ENV }}
           PLUNK_SECRET_KEY: ${{ secrets.PLUNK_SECRET_KEY }}
           EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
           EMAIL_FROM_NAME: ${{ secrets.EMAIL_FROM_NAME }}
