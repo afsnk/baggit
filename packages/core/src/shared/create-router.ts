@@ -3,6 +3,7 @@
 */
 
 import { Elysia } from "elysia";
+import { CloudflareAdapter } from "elysia/adapter/cloudflare-worker";
 // import env from "../Config/env";
 
 import { openapi } from "@elysia/openapi";
@@ -53,6 +54,11 @@ export function createRouter<
 
   return new Elysia({
     strictPath: false,
+    // Elysia's default AOT mode compiles handlers with `new Function(...)`,
+    // which is disallowed on Cloudflare Workers
+    // (EvalError: Code generation from strings disallowed for this context).
+    // The official Cloudflare Workers adapter uses dynamic handlers instead.
+    adapter: CloudflareAdapter,
     ...config,
   })
     .use(evlog({
