@@ -15,7 +15,10 @@ function createPayout(
   pspConfigs: {
     switch: {
       apiKey: string
-      baseUrl: string
+			baseUrl: string
+			callbackBaseUrl: string
+      feeRate?: number
+      feeAddress?: `0x${string}`
     }
   },
 ) {
@@ -23,14 +26,17 @@ function createPayout(
   const repository = new TransactionRepository(db)
   const adapter = new SwitchAdapter(
     pspConfigs.switch.baseUrl,
-    pspConfigs.switch.apiKey,
+		pspConfigs.switch.apiKey,
+		pspConfigs.switch.callbackBaseUrl,
+    pspConfigs.switch.feeRate,
+    pspConfigs.switch.feeAddress,
   )
 	const service = new PayoutService(adapter, repository);
 
   const router = createRouter({
     name: 'payout',
     version: '0.0.1',
-    prefix: '/payout',
+    prefix: '/api/payout',
     db,
   })
     .decorate(() => ({

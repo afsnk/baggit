@@ -1,9 +1,9 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "baggit-pay",
-  "compatibility_date": "2025-09-02",
+  "name": "baggit-payment",
+  "compatibility_date": "2026-10-01",
   "compatibility_flags": ["nodejs_compat"],
-  "main": "@tanstack/react-start/server-entry",
+  "main": ".output/server/index.mjs",
   "keep_vars": true,
   "observability": {
     "enabled": false,
@@ -15,9 +15,75 @@
       "invocation_logs": true,
     },
     "traces": {
-      "enabled": true,
+      "enabled": false,
       "persist": true,
       "head_sampling_rate": 1,
+    },
+  },
+  "assets": {
+    "directory": ".output/public",
+  },
+  "preview_urls": true,
+
+  // Top-level route: puts preview URLs on your own domain
+  // → <preview-name>.preview.app.com
+  "routes": [
+    {
+      "pattern": "pay-preview.baggit.link",
+      "custom_domain": true,
+      "previews_enabled": true,
+      "enabled": false, // preview traffic only; remove to also serve production here
+    },
+  ],
+
+  "env": {
+    // ---------- staging → staging.app.com ----------
+    "staging": {
+      "name": "pay-staging",
+      "routes": [
+        {
+          "pattern": "pay-staging.baggit.link",
+          "custom_domain": true,
+          "previews_enabled": true,
+        },
+      ],
+      "vars": {
+      	"ENVIRONMENT": "staging",
+        "BETTER_AUTH_TRUSTED_ORIGINS": "https://pay-staging.baggit.link",
+        "VITE_BETTER_AUTH_URL": "https://pay-staging.baggit.link",
+        "VITE_APP_TITLE": "Payment",
+		    "VITE_CLIENT_URL": "https://pay-staging.baggit.link",
+        "NODE_ENV": "staging",
+        "PLUNK_API_URL": "https://next-api.useplunk.com",
+      },
+    },
+
+    // ---------- preprod → preprod.app.com ----------
+    "preprod": {
+      "name": "pay-preprod",
+      "routes": [
+        {
+          "pattern": "pay-preprod.baggit.link",
+          "custom_domain": true,
+          "previews_enabled": true,
+        },
+      ],
+      "vars": { "ENVIRONMENT": "preprod" },
+    },
+
+    // ---------- production → app.com ----------
+    "production": {
+      "name": "pay-production",
+      "routes": [
+        { "pattern": "pay.baggit.link", "custom_domain": true },
+      ],
+      "vars": {
+      	"ENVIRONMENT": "production",
+       "BETTER_AUTH_TRUSTED_ORIGINS": "https://pay.baggit.link",
+       "BETTER_AUTH_URL": "https://pay.baggit.link",
+       "NODE_ENV": "production",
+       "PLUNK_API_URL": "https://next-api.useplunk.com",
+      },
     },
   },
 }

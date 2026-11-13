@@ -7,6 +7,7 @@
   "scripts": {
     "dev": "pnpm -C packages/demo dev",
     "dev:merchant": "turbo dev --filter=@baggit/merchant",
+    "dev:pay": "turbo dev --filter=@baggit/pay",
     "build": "pnpm -r --filter ./packages build",
     "build:npm": "pnpm -C packages/npm build",
     "build:registry": "pnpm -C packages/registry build",

@@ -57,25 +57,25 @@ export type GlobalCustomer = {
 }
 
 export const selectInvoice = toZodV4SchemaTyped(createSelectSchema(invoice));
-export const insertInvoice = toZodV4SchemaTyped(createInsertSchema(invoice)
-  .required({
-  	subject: true,
+const internalInvoice = createInsertSchema(invoice)
+	.required({
+		subject: true,
 		amount: true,
 		currency: true,
 		reference: true,
 		orgId: true,
-    payment: true,
+		payment: true,
 		metadata: true,
-  })
-  .omit({
-    id: true,
-    createdAt: true,
+	})
+	.omit({
+		id: true,
+		createdAt: true,
 		updatedAt: true,
-    nextPayAt: true,
-  }));
+		nextPayAt: true,
+	});
+export const insertInvoice = toZodV4SchemaTyped(internalInvoice);
 
-// @ts-expect-error partial exists on zod v4 type
-export const patchInvoice = insertInvoice.partial()
+export const patchInvoice = internalInvoice.partial()
 
 export const invoiceRelations = relations(invoice, ({ one }) => ({
 	organization: one(organization, {

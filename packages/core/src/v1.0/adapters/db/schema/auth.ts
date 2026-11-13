@@ -1,5 +1,7 @@
 import { relations, sql } from "drizzle-orm";
 import { sqliteTable, text, integer, index, uniqueIndex } from "drizzle-orm/sqlite-core";
+import { createSelectSchema } from "drizzle-zod";
+import z from "zod";
 
 export const user = sqliteTable("user", {
   id: text("id").primaryKey(),
@@ -134,7 +136,7 @@ export const organization = sqliteTable(
     logo: text("logo"),
     createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull(),
     metadata: text("metadata", { mode: "json" }).$type<{
-      pk?: string;
+      encryptedPK?: string;
       address?: string;
       fromBlock?: number
       bankCode?: string;
@@ -244,3 +246,7 @@ export const invitationRelations = relations(invitation, ({ one }) => ({
     references: [user.id],
   }),
 }));
+
+
+export const selectOrganzation = createSelectSchema(organization)
+export type SelectOrganization = z.infer<typeof selectOrganzation>

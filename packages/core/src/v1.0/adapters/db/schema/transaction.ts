@@ -12,7 +12,7 @@ import { organization, user } from "./auth";
 export const transaction = sqliteTable("transactions", {
 	id: text("id").primaryKey().$defaultFn(() => generateId('trx')),
   status: text("status", { enum: ["failed", "canceled", "expired", "pending", "complete"] }).default("pending"),
-  settledForId: text("settled_for_id").notNull(), // The primitive id being fulfilled (invoice|order)
+  settledForId: text("settled_for_id").unique().notNull(), // The primitive id being fulfilled (invoice|order)
 	entityId: text("entity_id").notNull(), // ID for the entity owner of the transaction
   entityType: text("entity_type", {enum: ['org', 'user', 'anon']}).notNull(), // TYPE of the entity owner (org|user)
 	medium: text("medium", { mode: "json" }).$type<Medium>(), // Base is still crypto
@@ -69,7 +69,7 @@ export type FiatRail = {
 export type TransactionMeta = {
 	address?: `0x${string}` | string;
 	callbackUrl: string;
-	pk?: string;
+	encryptedPk?: string;
   [x: string]: any;
 }
 

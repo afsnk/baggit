@@ -10,13 +10,15 @@ export default class TransactionRepository {
 	constructor(private db: DB) {}
 
 	async create(entry: InsertTransaction) {
-		return await this.db.insert(transaction)
+		const [newTransaction] = await this.db.insert(transaction)
 			.values({...entry})
 			.returning()
 			.catch((error: any) => {
 				console.log(`Failed to create new transaction:—`, { error });
 				throw error;
 			})
+
+		return newTransaction;
 	}
 
 	async patch(entry: PatchTransaction, id: string) {
@@ -26,16 +28,23 @@ export default class TransactionRepository {
 			.returning();
 	}
 
-	async get(merchantId: string, id: string) {
+	async get(
+		id: string // Can also be settledForId — as it is unqiue and links to invoice or order
+	) {
+		// TOOD: Test id starts with inv_ | ord_
+
 		const result = await this.db.query.transaction.findFirst({
-			where: (fields, ops) => ops.and(ops.eq(fields.id, id), ops.eq(fields.entityId, merchantId)),
+			where: (fields, ops) => ops.or(
+				ops.eq(fields.id, id),
+				ops.eq(fields.settledForId, id)
+			),
 			with: {
 				order: true,
 				invoice: true,
 				org: true,
 			}
 		}).catch((error: any) => {
-			console.log(`Failed to fetch transaction for merchant ${merchantId} with id: ${id}:—`, { error });
+			console.log(`Failed to fetch transaction with id: ${id}:—`, { error });
 			throw error;
 		});
 

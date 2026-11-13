@@ -5,8 +5,18 @@ export const env = createEnv({
 	server: {
 		SERVER_URL: z.string().url().default('https://api.baggit.link'),
 		BETTER_AUTH_SECRET: z.string().optional(),
-		DATABASE_URL: z.string().url(),
+		DATABASE_URL: z.url().transform((arg) => arg.replace(/^turso:\/\//, 'https://')),
 		DATABASE_AUTH_TOKEN: z.string().optional(),
+		NODE_ENV: z.string(),
+		GOOGLE_CLIENT_ID: z.string(),
+		GOOGLE_CLIENT_SECRET: z.string(),
+		GITHUB_CLIENT_ID: z.string(),
+		GITHUB_CLIENT_SECRET: z.string(),
+		SWITCH_API_KEY: z.string(),
+		SWITCH_API_URL: z.string(),
+		ZERODEV_RPC: z.string(),
+		ENC_KEY: z.string(),
+		FEE_COLLECTION_ADDRESS: z.string(),
 	},
 
 	/**
@@ -17,6 +27,7 @@ export const env = createEnv({
 
 	client: {
 		VITE_API_URL: z.string().url().default('https://api.baggit.link'),
+		VITE_CLIENT_URL: z.string().url().default('https://pay.baggit.link'),
 		VITE_BETTER_AUTH_URL: z.url().default('https://pay.baggit.dev'),
 		VITE_NATS_CON_URL: z.url().default('wss://connect.ngs.global'),
     VITE_NATS_KV_KEY: z.string(),
@@ -28,7 +39,7 @@ export const env = createEnv({
    * What object holds the environment variables at runtime. This is usually
    * `process.env` or `import.meta.env`.
    */
-  runtimeEnv: import.meta.env,
+	runtimeEnv: typeof window === "undefined"? process.env : import.meta.env,
 
   /**
    * By default, this library will feed the environment variables directly to

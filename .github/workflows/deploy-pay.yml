@@ -1,0 +1,118 @@
+name: Deploy pay ui to Cloudflare
+
+on:
+  push:
+    branches: [staging, preprod, main]
+    paths:
+      - "apps/pay/**"
+      - "packages/core/**"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - "turbo.json"
+      - ".github/workflows/deploy-pay.yml"
+  workflow_dispatch: {}
+
+jobs:
+  resolve:
+    name: Resolve environment
+    runs-on: ubuntu-latest
+    outputs:
+      environment: ${{ steps.pick.outputs.environment }}
+      wrangler_env: ${{ steps.pick.outputs.wrangler_env }}
+    steps:
+      - id: pick
+        env:
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          case "$BRANCH" in
+            main)       ENV_NAME=production; WRANGLER_ENV=production ;;
+            staging)    ENV_NAME=staging;    WRANGLER_ENV=staging ;;
+            preprod|preprod/*)  ENV_NAME=preprod;    WRANGLER_ENV=preprod ;;
+            *)          ENV_NAME=preview;    WRANGLER_ENV=preview ;;
+          esac
+          echo "environment=$ENV_NAME"      >> "$GITHUB_OUTPUT"
+          echo "wrangler_env=$WRANGLER_ENV" >> "$GITHUB_OUTPUT"
+          echo "Branch '$BRANCH' → environment '$ENV_NAME'"
+
+  deploy:
+    name: Deploy to pay ${{ needs.resolve.outputs.environment }}
+    needs: resolve
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ needs.resolve.outputs.environment }}
+      url: ${{ steps.deploy.outputs.deployment-url }}
+    concurrency:
+      group: deploy-merchant-${{ needs.resolve.outputs.environment }}
+      cancel-in-progress: false
+    steps:
+      - run: echo "Deploying to ${{ needs.resolve.outputs.environment }}"
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      # Cache turbo's local task cache between runs
+      - name: Cache turbo
+        uses: actions/cache@v4
+        with:
+          path: .turbo
+          key: turbo-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            turbo-${{ runner.os }}-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # Run from the repo root so turbo can resolve the graph.
+      # `merchant...` = merchant + everything it depends on (@baggit/core),
+      # which turbo builds first via `dependsOn: ["^build"]`.
+      - name: Build (turbo)
+        env:
+          NITRO_PRESET: cloudflare_module
+          TURBO_CACHE_DIR: .turbo
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DATABASE_AUTH_TOKEN: ${{ secrets.DATABASE_AUTH_TOKEN }}
+          SWITCH_API_URL: ${{ secrets.SWITCH_API_URL }}
+          SWITCH_API_KEY: ${{ secrets.SWITCH_API_KEY }}
+          SERVER_URL: ${{ secrets.SERVER_URL }}
+          PLUNK_SECRET_KEY: ${{ secrets.PLUNK_SECRET_KEY }}
+          EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
+          EMAIL_FROM_NAME: ${{ secrets.EMAIL_FROM_NAME }}
+          BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
+          BETTER_AUTH_TRUSTED_ORIGIN: ${{ secrets.BETTER_AUTH_TRUSTED_ORIGIN }}
+          VITE_BETTER_AUTH_URL: https://merchant-staging.baggit.link
+        run: pnpm exec turbo run build --filter=@baggit/core --filter=@baggit/pay
+
+      - name: Push runtime secrets to the Worker
+        working-directory: apps/merchant/.output
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          echo "${{ secrets.DATABASE_URL }}" | npx wrangler secret put DATABASE_URL --env ${{ needs.resolve.outputs.environment }}
+          echo "${{ secrets.DATABASE_AUTH_TOKEN }}" | npx wrangler secret put DATABASE_AUTH_TOKEN --env ${{ needs.resolve.outputs.environment }}
+          echo "${{ secrets.SWITCH_API_URL }}" | npx wrangler secret put SWITCH_API_URL --env ${{ needs.resolve.outputs.environment }}
+          echo "${{ secrets.SWITCH_API_KEY }}" | npx wrangler secret put SWITCH_API_KEY --env ${{ needs.resolve.outputs.environment }}
+          echo "${{ secrets.ENC_KEY }}" | npx wrangler secret put ENC_KEY --env ${{ needs.resolve.outputs.environment }}
+          echo "${{ secrets.FEE_COLLECTION_ADDRESS }}" | npx wrangler secret put FEE_COLLECTION_ADDRESS --env ${{ needs.resolve.outputs.environment }}
+          echo "${{ secrets.ZERODEV_RPC }}" | npx wrangler secret put ZERODEV_RPC --env ${{ needs.resolve.outputs.environment }}
+          echo "${{ secrets.GOOGLE_CLIENT_ID }}" | npx wrangler secret put GOOGLE_CLIENT_ID --env ${{ needs.resolve.outputs.environment }}
+          echo "${{ secrets.GOOGLE_CLIENT_SECRET }}" | npx wrangler secret put GOOGLE_CLIENT_SECRET --env ${{ needs.resolve.outputs.environment }}
+          echo "${{ secrets.BETTER_AUTH_SECRET }}" | npx wrangler secret put BETTER_AUTH_SECRET --env ${{ needs.resolve.outputs.environment }}
+          echo "${{ secrets.GHUB_CLIENT_ID }}" | npx wrangler secret put GITHUB_CLIENT_ID --env ${{ needs.resolve.outputs.environment }}
+          echo "${{ secrets.GHUB_CLIENT_SECRET }}" | npx wrangler secret put GITHUB_CLIENT_SECRET --env ${{ needs.resolve.outputs.environment }}
+
+      - name: Deploy ${{ needs.resolve.outputs.environment }} output
+        id: deploy
+        working-directory: apps/pay
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_ENV: ${{ needs.resolve.outputs.environment }}
+        run: pnpm exec nitro deploy --prebuilt

@@ -69,8 +69,9 @@ export type SwitchOnrampInitResponse = {
     timestamp: string;
     data: {
       [key: string]: any;
-      deposit: {
-        bank_name: string
+			deposit: {
+				amount: number;
+				bank_name: string;
         bank_code: string;
         account_name: string;
 				account_number: string;

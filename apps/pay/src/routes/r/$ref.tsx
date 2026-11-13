@@ -1,5 +1,4 @@
-import { PaymentPage } from '#/components/payment-page'
-import { fetch } from '#/lib/api-client'
+// import { PaymentPage } from '#/components/payment-page'
 import { createFileRoute } from '@tanstack/react-router'
 import { z } from 'zod'
 import { Button } from "@/components/ui/button"
@@ -36,19 +35,19 @@ export const Route = createFileRoute('/r/$ref')({
     try {
       const ref = params.ref
 
-      const { data: invoiceData, error } = await fetch(`/v1/payment/:invoiceRef`, {
-        method: 'GET',
-        params: {
-          invoiceRef: ref,
-        }
-      })
+//       const { data: invoiceData, error } = await fetch(`/v1/payment/:invoiceRef`, {
+//         method: 'GET',
+//         params: {
+//           invoiceRef: ref,
+//         }
+//       })
+//
+//       if (error) {
+//         console.log(`Error fetching payment`, { error })
+//         throw error
+//       }
 
-      if (error) {
-        console.log(`Error fetching payment`, { error })
-        throw error
-      }
-
-      return { ...invoiceData}
+      return { }
     }
     catch (error: any) {
       console.log(`[checkout] Error getting payments`, { error })
@@ -94,8 +93,9 @@ function RouteComponent() {
     )
   }
 
-  return (
-    <PaymentPage
+	return (
+  <div>Load invoice ref</div>)
+    {/*<PaymentPage
       merchantCallbackUrl={data.payments[0].callbackUrl || merchantCallbackUrl}
       merchantName={data.metadata.merchantName || merchantName}
       amount={data.amount}
@@ -105,6 +105,5 @@ function RouteComponent() {
       exchangeRate={data.payments[0].rate}
       currency={data.payments[0].currency}
       reference={ref}
-    />
-  )
+    />*/}
 }
