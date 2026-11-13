@@ -42,7 +42,7 @@ jobs:
       name: ${{ needs.resolve.outputs.environment }}
       url: ${{ steps.deploy.outputs.deployment-url }}
     concurrency:
-      group: deploy-merchant-${{ needs.resolve.outputs.environment }}
+      group: deploy-pay-${{ needs.resolve.outputs.environment }}
       cancel-in-progress: false
     steps:
       - run: echo "Deploying to ${{ needs.resolve.outputs.environment }}"
