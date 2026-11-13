@@ -8,11 +8,21 @@ import { createServerFn } from "@tanstack/react-start"
 import {z} from "zod"
 
 
-export const createCheckout = createServerFn()
+export const getInvoice = createServerFn({method: "GET"})
 	.validator(
-		// Or get checkout schema from core
-		schema.insertInvoice
+		z.object({
+			id: z.string() // Invoice/Order ID
+		})
 	)
 	.handler(async ({ data }) => {
-		return await checkout.service.create(data)
+		// return await checkout.service.getInvoice(id);
 	})
+
+
+export const getPaymentDetails = createServerFn({method: "POST"})
+	.validator(z.object({
+		idempotencyKey: z.string(), // Returns same details for the same invoice/order(can be id's)
+		method: z.string(),
+		currency: z.string(),
+	}))
+	.handler(async () => {})

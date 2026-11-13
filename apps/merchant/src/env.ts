@@ -12,6 +12,10 @@ export const env = createEnv({
 		ZERODEV_RPC: z.url(),
 		ENC_KEY: z.string().min(1),
 		FEE_COLLECTION_ADDRESS: z.string().startsWith('0x'),
+		GOOGLE_CLIENT_ID: z.string(),
+		GOOGLE_CLIENT_SECRET: z.string(),
+		GITHUB_CLIENT_ID: z.string(),
+		GITHUB_CLIENT_SECRET: z.string(),
   },
 
   /**

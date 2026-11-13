@@ -6,6 +6,7 @@
     "#/*": "./src/*"
   },
   "scripts": {
+	  "predev": "rm -rf node_modules/.vite",
     "dev": "portless pay.baggit --app-port 3001 vite dev --port 3001",
     "generate-routes": "tsr generate",
     "build": "vite build",
@@ -15,11 +16,14 @@
     "test": "vitest run",
     "lint": "eslint",
     "format": "prettier --write . && eslint --fix",
-    "check": "prettier --check ."
+    "check": "prettier --check .",
+    "db:generate": "drizzle-kit generate",
+    "db:push": "drizzle-kit push",
+    "db:migrate": "drizzle-kit migrate"
   },
   "dependencies": {
-    "@baggit/api": "workspace:*",
     "@baggit/core": "workspace:*",
+    "@better-auth/api-key": "1.7.18",
     "@nats-io/kv": "^3.4.0",
     "@nats-io/nats-core": "^3.4.0",
     "@posthog/react": "^1.7.0",
