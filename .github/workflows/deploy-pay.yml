@@ -86,11 +86,11 @@ jobs:
           EMAIL_FROM_NAME: ${{ secrets.EMAIL_FROM_NAME }}
           BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
           BETTER_AUTH_TRUSTED_ORIGIN: ${{ secrets.BETTER_AUTH_TRUSTED_ORIGIN }}
-          VITE_BETTER_AUTH_URL: https://merchant-staging.baggit.link
+          VITE_BETTER_AUTH_URL: https://pay-staging.baggit.link
         run: pnpm exec turbo run build --filter=@baggit/core --filter=@baggit/pay
 
       - name: Push runtime secrets to the Worker
-        working-directory: apps/merchant/.output
+        working-directory: apps/pay/.output
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
