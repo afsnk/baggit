@@ -22,7 +22,7 @@ export const ramps = sqliteTable("ramps", {
     .$defaultFn(() => new Date())
     .$onUpdate(() => new Date()),
 }, (table) => [
-  index("ramp_reference_Idx").on(table.reference)
+  index("ramp_reference_idx").on(table.reference)
 ])
 
 export const selectRamp = toZodV4SchemaTyped(createSelectSchema(ramps))
